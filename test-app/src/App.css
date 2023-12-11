@@ -4,7 +4,10 @@ body {
   justify-content: center;
   height: 100vh;
   margin: 0;
+  background-image: url("http://localhost:8888/fichier/table.jpg");
 }
+
+
 
 .container {
   display: flex;
