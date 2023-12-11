@@ -17,3 +17,8 @@ server.listen(PORT, () => {
 app.get('/', (request, response) => {
   response.sendFile('index.html', {root: __dirname});
 });
+
+app.get('/fichier/:nomFichier', function(request, response) {
+    // console.log("renvoi de "+request.params.nomFichier);
+    response.sendFile(request.params.nomFichier, {root: __dirname});
+  });
