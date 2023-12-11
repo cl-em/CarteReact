@@ -24,25 +24,10 @@ function LoginForm() {
   );
 }
 
-function RegisterForm() {
-  return (
-    <div className="register-form">
-      <h2>Register</h2>
-      <br></br>
-      <button>Register !</button>
-    </div>
-  );
-}
-
 function MyApp() {
   return (
     <div className="container">
-      <div className="left-pane">
         <LoginForm />
-      </div>
-      <div className="right-pane">
-        <RegisterForm />
-      </div>
     </div>
   );
 }
