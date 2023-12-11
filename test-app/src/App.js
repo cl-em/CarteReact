@@ -16,8 +16,9 @@ function LoginForm() {
   return (
     <div className="login-form">
       <h2>Login</h2>
-      Username : <input type = "text" id="username"></input>
-      Password : <input type = "password" id="password"></input>
+      <input type = "text" placeholder="username" id="username"></input><br></br>
+      <input type = "password" placeholder="password" id="password"></input>
+      <br></br>
       <br></br>
       <button>Connect!</button>
     </div>

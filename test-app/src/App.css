@@ -19,4 +19,9 @@ body {
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
+  background-color: aliceblue;
+  border-radius: 20px;
+  display:flexbox;
+  align-items: center;
+  
 }
