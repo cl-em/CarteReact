@@ -2,11 +2,13 @@ import logo from './logo.svg';
 import './App.css';
 import io from 'socket.io-client';
 
+
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Link,
+  useNavigate
 } from "react-router-dom";
 
 
@@ -22,34 +24,25 @@ function test(){
 // but.addEventListener("click",test);
 
 function LoginForm() {
+  // Permet de naviger
+  const navigate = useNavigate();
 
   return (
     <div className="login-form">
       <h2>Login</h2>
-
+      <input type = "text" placeholder="username" id="username"></input><br></br>
+      <input type = "password" placeholder="password" id="password"></input>
       <br></br>
 
-      <input type="text" placeholder="Username" id="username"></input> <br></br>
-
-      <br></br>
-
-      <input type="password" placeholder="Password" id="password"></input> <br></br>
-
-      <br></br>
-
-      <button>Connect!</button>
-
-      <br></br>
-
-      <div className='register'>
-        <p>A remplacer par une </p>
-      </div>
-
+      // Permet d'aller dans localhost/games
+      <button onClick={()=>navigate("/games")}>Connect!</button>
     </div>
   );
 }
 
 const MyGame = ({jeu})=>{
+  const navigate = useNavigate();
+
   return (
     <div style={{
       backgroundColor:"blue",
@@ -67,30 +60,18 @@ const MyGame = ({jeu})=>{
 
 
 function MyApp() {
-  
-
   return (
-<<<<<<< HEAD
-        <LoginForm />
-=======
-    <div className="container">
-        <Router>
-                <Routes>
-                    <Route
-                        exact
-                        path="/"
-                        component={LoginForm}
-                    />
-                    <Route
-                        exact
-                        path="/games"
-                        component={MyGame}
-                    />
-                </Routes>
-            </Router>
+    <div>
+      // Defini toutes tes pages ici
+      <Router>
+        <Routes>
+          <Route path="/" element={<LoginForm />} />
+          <Route path="/register" element={} />
+          <Route path="/games" element={<MyGame jeu={"gros zizi"} />} />
+        </Routes>
+      </Router>
     </div>
->>>>>>> 52e2c70 (views)
   );
-}
+};
 
 export default MyApp;
