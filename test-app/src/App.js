@@ -1,29 +1,25 @@
-// src/App.js
-import React, { useEffect } from 'react';
+import logo from './logo.svg';
 import './App.css';
 
-import io from 'socket.io-client';
-
-// Connectez-vous au serveur Socket.IO
-const socket = io('http://localhost:8888');
-
-function App({ socket }) {
-  useEffect(() => {
-    socket.emit("salut");
-
-    return () => {
-      // Nettoyez les gestionnaires d'événements lors du démontage du composant
-    };
-  }, [socket]);
-
+function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>React with Socket.IO</h1>
-        <script src="/socket.io/socket.io.js"></script>
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
       </header>
     </div>
   );
 }
 
-export default App(socket);
+export default App;
