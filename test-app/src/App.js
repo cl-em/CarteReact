@@ -12,22 +12,39 @@ function test(){
 // let but = document.getElementById("but");
 // but.addEventListener("click",test);
 
-
-function MyButton({prop}) {
+function LoginForm() {
   return (
-    <button id={prop} onClick={test}>
-      I'm a button
-    </button>
-  );
-}
-
-
-// c'est le truc qui est affiché tout le temps ça peut juste etre un appel de fonction
-export default function MyApp() {
-  return (
-    <div>
-      <h1>Welcome to my app</h1>
-      <MyButton prop={"but"} />
+    <div className="login-form">
+      <h2>Login</h2>
+      Username : <input type = "text" id="username"></input>
+      Password : <input type = "text" id="password"></input>
+      <br></br>
+      <button>Connect!</button>
     </div>
   );
 }
+
+function RegisterForm() {
+  return (
+    <div className="register-form">
+      <h2>Register</h2>
+      <br></br>
+      <button>Register !</button>
+    </div>
+  );
+}
+
+function MyApp() {
+  return (
+    <div className="container">
+      <div className="left-pane">
+        <LoginForm />
+      </div>
+      <div className="right-pane">
+        <RegisterForm />
+      </div>
+    </div>
+  );
+}
+
+export default MyApp;
