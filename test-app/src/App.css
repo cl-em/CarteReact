@@ -4,7 +4,8 @@ body {
   justify-content: center;
   height: 100vh;
   margin: 0;
-  background-image: url("http://localhost:8888/fichier/table.jpg");
+  background: url("http://localhost:8888/fichier/table.jpg") center/cover no-repeat;
+
 }
 
 
