@@ -64,7 +64,7 @@ body {
   backdrop-filter: blur(5px);
   align-items: center;
   text-align: center;
-  padding: 45px 45px;
+  padding: 45px 75px;
   border-radius: 30%;
   box-shadow: 0 0 10px rgb(0, 0, 0);
 }
@@ -97,5 +97,11 @@ body {
   border: 2px solid rgb(255, 255, 255, 0.295);
   border-radius : 40px;
   box-shadow: 0 0 10px rgb(0, 0, 0); 
+}
+
+.lien {
+  color: rgba(0, 102, 255, 0.705); /* Couleur du texte du lien */
+  text-decoration: underline; /* Soulignement du texte comme un lien */
+  cursor: pointer; /* Curseur de type main pour indiquer que c'est cliquable */
 }
 

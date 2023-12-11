@@ -66,7 +66,7 @@ function LoginForm() {
 
       <button onClick={()=>navigate("/games")}>Envoyer!</button>
 
-      <p onClick={()=>navigate("/register")}>Vous n'avez pas de compte? Créez en un ici.</p>
+      <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
 
     </div>
   );
