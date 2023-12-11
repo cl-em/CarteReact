@@ -13,20 +13,24 @@ class Game {
 
     }
 
+    shuffleDeck(){
+        this.deck = this.deck.sort((a, b) => 0.5 - Math.random());
+    }
 
-    createDeck(){
+    createDeck(){//Crée un deck selon les spécifications de l'instance (valeurs et couleurs), puis le mélange
         for (var couleur of this.couleurs){
             for (var i=0;i<this.nbvaleurs;i++){
                 this.deck.push(new Carte(i,couleur));
             }
         }
+        this.shuffleDeck();
     }
 
-    shuffleDeck(){
+    shuffleDeck(){//Mélange le deck
         this.deck = this.deck.sort((a, b) => 0.5 - Math.random());
     }
 
-    drawCarte(){
+    drawCarte(){//Renvoie une carte au hasard du deck et l'en retire
        
         var retour = this.deck[0];
         this.deck.shift();
