@@ -12,18 +12,23 @@ const io = require('socket.io')(server, {
   allowEIO3: true
 });
 
-// SQL
-// var mysql = require('mysql');
-// var con = mysql.createConnection({
-//   host: "localhost",
-//   user: "cards_user",
-//   password: "D4m3D3P1k"
-// });
-// con.connect(function(err) {
-//   if (err) throw err;
-//   console.log("Connected!");
-// });
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('cards_game.sqlite');
 
+// Example de requete
+db.all('SELECT * FROM users', (err, rows) => {
+    if (err) {
+        throw err;
+    }
+    console.log(rows);
+});
+
+db.close((err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    console.log('Connexion à la base de données SQLite fermée.');
+});
 
 //-------------------------------Express-----------------------------------------------
 const PORT = 8888;
