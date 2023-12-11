@@ -24,6 +24,8 @@ const io = require('socket.io')(server, {
 //   console.log("Connected!");
 // });
 
+
+//-------------------------------Express-----------------------------------------------
 const PORT = 8888;
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
@@ -37,11 +39,26 @@ app.get('/fichier/:nomFichier', function(request, response) {
 app.get('/socket.io/', (req, res) => {
   res.send('Server is running.');
 });
+//-------------------------------Classes-----------------------------------------------
+const { Game } = require('./Game.js');
+const { Carte } = require('./Carte.js');
 
+
+//-------------------------------Fonctions-----------------------------------------------
+
+var game = new Game(["coeur","pic","trèfle","carreau"],13,"clem");
+game.createDeck();
+game.shuffleDeck();
+console.log(game.deck.length);
+console.log(game.drawCarte());
+console.log(game.deck.length);
+
+
+
+//-------------------------------Sockets-----------------------------------------------
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
-  // Ajoutez ici les gestionnaires d'événements Socket.IO
 
   socket.on("salut",()=>{
     console.log("salut");
