@@ -5,15 +5,6 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 
-import io from 'socket.io-client';
-
-// Connectez-vous au serveur Socket.IO
-const socket = io('http://localhost:8888');
-
-socket.on("connection",()=>{
-  console.log(socket.id);
-});
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

@@ -1,25 +1,33 @@
 import logo from './logo.svg';
 import './App.css';
+import io from 'socket.io-client';
+// Connectez-vous au serveur Socket.IO
+const socket = io('http://localhost:8888');
 
-function App() {
+socket.emit("salut");
+function test(){
+  socket.emit("salut");
+}
+
+// let but = document.getElementById("but");
+// but.addEventListener("click",test);
+
+
+function MyButton({prop}) {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <button id={prop} onClick={test}>
+      I'm a button
+    </button>
   );
 }
 
-export default App;
+
+// c'est le truc qui est affiché tout le temps ça peut juste etre un appel de fonction
+export default function MyApp() {
+  return (
+    <div>
+      <h1>Welcome to my app</h1>
+      <MyButton prop={"but"} />
+    </div>
+  );
+}
