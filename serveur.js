@@ -37,6 +37,11 @@ server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+app.get('/fichier/:nomFichier', function(request, response) {
+  console.log("renvoi de "+request.params.nomFichier);
+  response.sendFile(request.params.nomFichier, {root: __dirname});
+});
+
 app.get('/socket.io/', (req, res) => {
   res.send('Server is running.');
 });
@@ -47,7 +52,7 @@ io.on('connection', (socket) => {
   // Ajoutez ici les gestionnaires d'événements Socket.IO
 
   socket.on("salut",()=>{
-    console.log("ehehherzzoîjfrfihzebofiqç)gfjo");
+    console.log("salut");
   });
 
   socket.on('disconnect', () => {
