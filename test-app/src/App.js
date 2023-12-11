@@ -19,7 +19,6 @@ function LoginForm() {
       <input type = "text" placeholder="username" id="username"></input><br></br>
       <input type = "password" placeholder="password" id="password"></input>
       <br></br>
-      <br></br>
       <button>Connect!</button>
     </div>
   );

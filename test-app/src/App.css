@@ -16,12 +16,31 @@ body {
 }
 
 .login-form{
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   background-color: aliceblue;
   border-radius: 20px;
   display:flexbox;
   align-items: center;
+  text-align: center;
   
+}
+
+.login-form h2{
+  text-align: center;
+}
+.login-form button{
+  align-items: center;
+  padding:2px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+}
+.login-form input{
+border-radius: 10px;
+text-align: center;
+font-weight: bold;
+font-size:medium
+
+
+
 }
