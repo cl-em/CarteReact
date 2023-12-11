@@ -13,22 +13,36 @@ function test(){
 // but.addEventListener("click",test);
 
 function LoginForm() {
+
   return (
     <div className="login-form">
       <h2>Login</h2>
-      <input type = "text" placeholder="username" id="username"></input><br></br>
-      <input type = "password" placeholder="password" id="password"></input>
+
       <br></br>
+
+      <input type="text" placeholder="Username" id="username"></input> <br></br>
+
+      <br></br>
+
+      <input type="password" placeholder="Password" id="password"></input> <br></br>
+
+      <br></br>
+
       <button>Connect!</button>
+
+      <br></br>
+
+      <div className='register'>
+        <p>A remplacer par une </p>
+      </div>
+
     </div>
   );
 }
 
 function MyApp() {
   return (
-    <div className="container">
         <LoginForm />
-    </div>
   );
 }
 
