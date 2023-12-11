@@ -1,7 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
 import io from 'socket.io-client';
-
+import axios from 'axios';
+import { useState } from 'react';
+import ReactDOM from 'react-dom/client';
 
 import {
   BrowserRouter as Router,
@@ -48,23 +50,35 @@ function RegisterForm() {
 function LoginForm() {
   // Permet de naviger
   const navigate = useNavigate();
-
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const onFinish = values => {
+    const { username, password } = values;
+    axios.post('http://localhost:8888/login', { username, password })
+    .then((response) => {
+      if (response.data.validation) {
+        navigate("/games");
+      } else {
+        alert("Mauvais identifiants");
+      }
+    })
+  }
   return (
     <div className="login-form">
       <h2>Connexion</h2>
 
       <br></br>
 
-      <input type = "text" placeholder="Nom d'utilisateur" id="usernameLogin"></input><br></br>
+      <input type = "text" placeholder="Nom d'utilisateur" id="username" value={username} onChange={(e) => setUsername(e.target.value)}></input><br></br>
 
       <br></br>
 
-      <input type = "password" placeholder="Mot de passe" id="passwordLogin"></input>
+      <input type = "password" placeholder="Mot de passe" id="password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
 
       <br></br>
       <br></br>
 
-      <button onClick={()=>navigate("/games")}>Envoyer!</button>
+      <button onClick={()=>onFinish({username,password})}>Envoyer</button>
 
       <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
 

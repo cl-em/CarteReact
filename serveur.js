@@ -12,23 +12,6 @@ const io = require('socket.io')(server, {
   allowEIO3: true
 });
 
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('cards_game.sqlite');
-
-// Example de requete
-db.all('SELECT * FROM users', (err, rows) => {
-    if (err) {
-        throw err;
-    }
-    console.log(rows);
-});
-
-db.close((err) => {
-    if (err) {
-        console.error(err.message);
-    }
-    console.log('Connexion à la base de données SQLite fermée.');
-});
 
 //-------------------------------Express-----------------------------------------------
 const PORT = 8888;
@@ -44,6 +27,41 @@ app.get('/fichier/:nomFichier', function(request, response) {
 app.get('/socket.io/', (req, res) => {
   res.send('Server is running.');
 });
+
+//-------------------------------SQL-----------------------------------------------
+const sqlite3 = require('sqlite3').verbose();
+
+
+//-------------------------------Login-----------------------------------------------
+app.use(express.json());
+app.post('/login', (req, res) => {
+  const db = new sqlite3.Database('cards_game.sqlite');
+  console.log("login")
+  console.log(req.body);
+  const { username, password } = req.body;
+  db.all('SELECT * FROM users WHERE pseudo = ? AND password = ?', [username, password], (err, rows) => {
+    if (err) {
+        throw err;
+    }
+    console.log(rows);
+    if (rows.length > 0) {
+      res.send({ validation: true });
+    } else {
+      res.send({ validation: false });
+    }
+  }
+)
+db.close((err) => {
+  if (err) {
+      console.error(err.message);
+  }
+  console.log('Connexion à la base de données SQLite fermée.');
+});
+});
+//-------------------------------CLOSE SQL-----------------------------------------------
+
+//-------------------------------CLOSE SQL-----------------------------------------------
+
 //-------------------------------Classes-----------------------------------------------
 const { Game } = require('./Game.js');
 const { Carte } = require('./Carte.js');
