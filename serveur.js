@@ -1,26 +1,7 @@
-// const express = require('express');
-// const app = express();
-// const cors = require('cors');
-
-
-
-// const http = require('http');
-// // const { isNumberObject } = require('util/types');
-// const server = http.createServer(app);
-
-
-// const io = require("socket.io")(http, {
-//   allowRequest: (req, callback) => {
-//     const noOriginHeader = req.headers.origin === undefined;
-//     callback(null, noOriginHeader);
-//   }
-// });
-// app.use(cors());
 const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-// const { Server } = require("socket.io");
 const io = require('socket.io')(server, {
   cors: {
       origin: "http://localhost:3000",
@@ -31,6 +12,17 @@ const io = require('socket.io')(server, {
   allowEIO3: true
 });
 
+// SQL
+// var mysql = require('mysql');
+// var con = mysql.createConnection({
+//   host: "localhost",
+//   user: "cards_user",
+//   password: "D4m3D3P1k"
+// });
+// con.connect(function(err) {
+//   if (err) throw err;
+//   console.log("Connected!");
+// });
 
 const PORT = 8888;
 server.listen(PORT, () => {
