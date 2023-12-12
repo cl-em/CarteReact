@@ -96,8 +96,8 @@ class Bataille extends Game{
 //-----------------------Fonctions gestion jeu----------------------------------------------
 
 initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
-   
-    while (this.deck.length>=this.joueurs.length){//Distribution équitable des cartes
+
+while (this.deck.length>=this.joueurs.length){//Distribution équitable des cartes
         for (var joueur of this.joueurs){
             joueur.main.push(this.drawCarte());
         }
@@ -108,7 +108,31 @@ this.hasStarted = true;
 }
 
 
+tour(){
+    this.tourCourant++;
+     
+    var pactole;//Cartes en jeu
+    var winner=this.joueurs[0];
 
+    for (var joueur in this.joueurs){
+        pactole.push(this.joueurs[joueur].choix);
+        if (this.joueurs[joueur].choix.valeur>winner.choix.valeur){winner=this.joueurs[joueur];this.égalité=false;}//Cas d'égalité, il sera pris en charge par serveur.js selon le retour de cette fonction
+        else{if (this.joueurs[joueur].choix.valeur==winner.choix.valeur){winner=[winner,this.joueurs[joueur]];this.égalité=true}}
+        this.joueurs[joueur].choix=null;
+    }   
+
+    if (this.égalité==false){return false;}//On stoppe car il faut refaire un pli.
+
+
+    for (var joueur of this.joueurs){//Le gagnant remporte les cartes du pli
+        if (this.joueurs[joueur]==winner){
+            for (var carte of pactole){
+                this.joueurs[joueur].packet.push(carte)
+            }
+        }
+    }
+
+}
 
 
 
