@@ -50,6 +50,15 @@ function LoginForm() {
   // Permet de naviger
   const navigate = useNavigate();
 
+  const emitLogin = () => {
+    const username = document.getElementById("usernameLogin").value;
+    const password = document.getElementById("passwordLogin").value;
+    
+    socket.emit("login", {username,password});
+
+    navigate("/games");
+  }
+
   return (
     <div className="login-form">
       <h2>Connexion</h2>
@@ -65,7 +74,7 @@ function LoginForm() {
       <br></br>
       <br></br>
 
-      <button onClick={()=>{navigate("/games");}}>Envoyer!</button>
+      <button onClick={emitLogin}>Envoyer!</button>
 
       <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
 
@@ -79,13 +88,8 @@ function MyApp() {
     <div>
       <Router>
         <Routes>
-<<<<<<< HEAD
-          <Route path="/" element={<LoginForm />} /> 
-          {/* <Route path="/register" element={} /> */}
-=======
           <Route path="/" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
->>>>>>> f1d34fbe538eda054c5309a5f3ae5f77086fff11
           <Route path="/games" element={<Games/>} />
         </Routes>
       </Router>
