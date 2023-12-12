@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import io from 'socket.io-client';
+import md5 from 'md5';
 
 import {Games,ListRoom} from "./Games";
 
@@ -52,7 +53,8 @@ function LoginForm() {
 
   const emitLogin = () => {
     const username = document.getElementById("usernameLogin").value;
-    const password = document.getElementById("passwordLogin").value;
+    const password = md5(document.getElementById("passwordLogin").value);
+    console.log(username, password);
     
     socket.emit("login", {username,password});
 
