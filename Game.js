@@ -2,7 +2,7 @@ const { Carte } = require('./Carte.js');
 const { Joueur } = require('./Joueur.js');
 class Game {
 
-    constructor(couleurs,nbvaleurs,host/*host est un id d'utilisateur et crée une instance de la classe "joueur*/,io/*On fait passer l'io en paramètre pour permettre l'utilisation des sockets déjà établis*/) {
+    constructor(couleurs,nbvaleurs,host/*host est un id d'utilisateur et crée une instance de la classe "joueur*/,joueursMax/*Nombre maximal de joueurs dans la partie, on peut néanmoins la start avant*/) {
 
         this.id = "";//L'ID sera utilisé pour identifier chaque partie de manière indépendante. Ainsi, on pourra en avoir plusieurs simultanément.
         for (var i=0;i<9;i++){
@@ -14,6 +14,7 @@ class Game {
         this.nbvaleurs = nbvaleurs;
         this.deck = [];//Représente les cartes présentes dans le deck utilisé par la partie
         this.joueurs = [new Joueur(host,true)];
+        this.joueursMax = this.joueursMax;
         this.hasStarted = false;
         this.chat = [];
 
@@ -45,13 +46,33 @@ class Game {
         return retour;
     }
 
+//-----------------------Fonctions gestion jeu----------------------------------------------
+
+
+
 //-----------------------Fonctions gestion joueurs------------------------------------------
+addPlayer(idJoueur){
+    if (this.joueurs.length<this.joueursMax){
+    this.joueurs+= new Joueur(idJoueur,false);return true
+}
+else{return false;}
+}
+removePlayer(idJoueur){
+    for (var joueur in this.joueurs){
+        if (joueurs[joueur].id==idJoueur){
+            this.joueurs.splice(joueur)
+        }
+    }
+}
 
 
-
-//-----------------------Fonctions gestion jeu------------------------------------------
 
 //-----------------------Fonctions gestion chat-----------------------------------------
+
+message(origine,message){
+    if (this.chat.length>10){this.chat.splice();}
+    this.chat.push(origine+" : "+message);
+}
 
 }
 
@@ -63,8 +84,30 @@ class Bataille extends Game{
     constructor(host){
         super(["coeur","pic","trèfle","carreau"],13,host);
         this.createDeck();
-        
+        this.paquets = [];
+
     }
+
+    shufflePackets(){//Mélange les packets de chaque joueur
+        for (var packet of this.packets){
+        packet = packet.sort((a, b) => 0.5 - Math.random());
+        }
+    }
+//-----------------------Fonctions gestion jeu----------------------------------------------
+
+initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
+   
+    while (this.deck.length>=this.joueurs.length){//Distribution équitable des cartes
+        for (var joueur of this.joueurs){
+            joueur.main.push(this.drawCarte());
+        }
+    }
+
+this.hasStarted = true;
+
+}
+
+
 
 
 

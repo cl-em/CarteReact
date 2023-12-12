@@ -97,6 +97,10 @@ const verifyUser = (req, res, next) => {
 app.get('/verify', verifyUser, (req, res) => {
   return res.send({ validation: true });
 });
+//-------------------------------Variables-----------------------------------------------
+var partiesOuvertes = {}
+var partiesEnCours = {}
+
 
 //-------------------------------Classes-----------------------------------------------
 const { Game,Bataille } = require('./Game.js');
@@ -106,7 +110,7 @@ const { Carte } = require('./Carte.js');
 
 //-------------------------------Fonctions-----------------------------------------------
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
-var game = new Bataille(12345678,io);
+var game = new Bataille(12345678);
 game.createDeck();
 game.shuffleDeck();
 console.log(game.deck.length);

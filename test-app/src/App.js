@@ -53,7 +53,7 @@ function LoginForm() {
 
   const emitLogin = () => {
     const username = document.getElementById("usernameLogin").value;
-    const password = md5(document.getElementById("passwordLogin").value);
+    const password = md5(md5(document.getElementById("passwordLogin").value));
     console.log(username, password);
     
     socket.emit("login", {username,password});
