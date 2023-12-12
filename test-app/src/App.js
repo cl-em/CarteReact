@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import io from 'socket.io-client';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import {
@@ -48,12 +48,12 @@ function RegisterForm() {
 }
 
 function LoginForm() {
-  // Permet de naviger
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const onFinish = values => {
-    const { username, password } = values;
+  axios.defaults.withCredentials = true;
+  const onSubmit = (e) => {
+    e.preventDefault();
     axios.post('http://localhost:8888/login', { username, password })
     .then((response) => {
       if (response.data.validation) {
@@ -66,7 +66,7 @@ function LoginForm() {
   return (
     <div className="login-form">
       <h2>Connexion</h2>
-
+      <form onSubmit={onSubmit}>
       <br></br>
 
       <input type = "text" placeholder="Nom d'utilisateur" id="username" value={username} onChange={(e) => setUsername(e.target.value)}></input><br></br>
@@ -78,8 +78,8 @@ function LoginForm() {
       <br></br>
       <br></br>
 
-      <button onClick={()=>onFinish({username,password})}>Envoyer</button>
-
+      <button type="submit">Envoyer</button>
+      </form>
       <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
 
     </div>
@@ -90,7 +90,19 @@ function LoginForm() {
 
 const MyGame = ({jeu})=>{
   const navigate = useNavigate();
-
+  const [auth, setAuth] = useState(false);
+  useEffect(() => {
+    axios.get('http://localhost:8888/verify')
+    .then((response) => {
+      if (response.data.validation) {
+        setAuth(true);
+      }
+      else {
+        navigate("/");
+      }
+    })
+  
+  })
   return (
     <div style={{
       backgroundColor:"blue",
