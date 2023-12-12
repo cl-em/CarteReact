@@ -8,7 +8,7 @@ class Game {
         for (var i=0;i<9;i++){
             this.id = this.id+""+Math.floor(Math.random()*10);
         }
-        this.io = io
+        
         this.tourCourant = 0;
         this.couleurs = couleurs;
         this.nbvaleurs = nbvaleurs;
@@ -51,13 +51,17 @@ class Game {
 
 //-----------------------Fonctions gestion jeu------------------------------------------
 
+//-----------------------Fonctions gestion chat-----------------------------------------
+
 }
+
+
 //----------------------------Classe utilisée pour le jeu de la bataille-----------------------------
 
 class Bataille extends Game{
 
-    constructor(host,io){
-        super(["coeur","pic","trèfle","carreau"],13,host,io);
+    constructor(host){
+        super(["coeur","pic","trèfle","carreau"],13,host);
         this.createDeck();
         
     }
