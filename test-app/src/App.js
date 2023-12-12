@@ -34,14 +34,14 @@ function LoginForm() {
       <input type = "password" placeholder="password" id="password"></input>
       <br></br>
 
-      // Permet d'aller dans localhost/games
+      {/* // Permet d'aller dans localhost/games */}
       <button onClick={()=>navigate("/games")}>Connect!</button>
     </div>
   );
 }
 
-const MyGame = ({jeu})=>{
-  const navigate = useNavigate();
+const MyGame = ({jeu,event})=>{
+  // const navigate = useNavigate();
 
   return (
     <div style={{
@@ -51,23 +51,39 @@ const MyGame = ({jeu})=>{
       margin :"10px",
       textAlign : "center",
       padding: "250px 0"
-    }}>
+    }} onClick={event}>
       <p>{jeu}</p>
     </div>
   )
 
 }
 
+const ListRoom = ()=>{
+  const parsedUrl = new URL(window.location.href);
+  console.log(parsedUrl.searchParams.get("typejeu"));
+  return (<p></p>)
+}
+
+const Games = ()=>{
+  const navigate = useNavigate();
+  let listJeu = ["bataille","belote","uno"];
+  let listGames =[];
+  listJeu.forEach((element,index)=>{
+    listGames.push(<MyGame jeu={element} key={index} event={()=>navigate("/listJeu?typejeu="+element)}></MyGame>)
+  });
+  return (<div style={{display: "flex"}}>{listGames}</div>);
+};
 
 function MyApp() {
   return (
     <div>
-      // Defini toutes tes pages ici
+      {/* // Defini toutes tes pages ici */}
       <Router>
         <Routes>
           <Route path="/" element={<LoginForm />} />
-          <Route path="/register" element={} />
-          <Route path="/games" element={<MyGame jeu={"gros zizi"} />} />
+          {/* <Route path="/register" element={} /> */}
+          <Route path="/games" element={<Games/>} />
+          <Route path="/listJeu" element={<ListRoom />} />
         </Routes>
       </Router>
     </div>
