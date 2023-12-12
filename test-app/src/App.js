@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import io from 'socket.io-client';
 
+import {Games,ListRoom} from "./Games";
 
 import {
   BrowserRouter as Router,
@@ -12,7 +13,6 @@ import {
 } from "react-router-dom";
 
 
-// Connectez-vous au serveur Socket.IO
 const socket = io('http://localhost:8888');
 
 socket.emit("salut");
@@ -20,8 +20,27 @@ function test(){
   socket.emit("salut");
 }
 
-// let but = document.getElementById("but");
-// but.addEventListener("click",test);
+function RegisterForm() {
+  // Permet de naviger
+  const navigate = useNavigate();
+
+  return (
+    <div className="register-form">
+
+      <h2>Inscription</h2> <br></br>
+
+      <input type = "text" placeholder="Nom d'utilisateur" id="usernameRegister"></input> <br></br> <br></br>
+
+      <input type = "password" placeholder="Mot de passe" id="passwordRegister"></input> <br></br> <br></br>
+
+      <input type = "password" placeholder="Confirmer le mot de passe" id="passwordRegister2"></input> <br></br> <br></br> <br></br>
+
+      <button>S'inscrire !</button>
+      <button onClick={()=>navigate("/")}>Retourner à l'écran de connexion</button>
+      
+    </div>
+  );
+}
 
 function LoginForm() {
   // Permet de naviger
@@ -29,61 +48,36 @@ function LoginForm() {
 
   return (
     <div className="login-form">
-      <h2>Login</h2>
-      <input type = "text" placeholder="username" id="username"></input><br></br>
-      <input type = "password" placeholder="password" id="password"></input>
+      <h2>Connexion</h2>
+
       <br></br>
 
-      {/* // Permet d'aller dans localhost/games */}
-      <button onClick={()=>navigate("/games")}>Connect!</button>
+      <input type = "text" placeholder="Nom d'utilisateur" id="usernameLogin"></input><br></br>
+
+      <br></br>
+
+      <input type = "password" placeholder="Mot de passe" id="passwordLogin"></input>
+
+      <br></br>
+      <br></br>
+
+      <button onClick={()=>navigate("/games")}>Envoyer!</button>
+
+      <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
+
     </div>
   );
 }
 
-const MyGame = ({jeu,event})=>{
-  // const navigate = useNavigate();
-
-  return (
-    <div style={{
-      backgroundColor:"blue",
-      // height:"300px",
-      width: "250px",
-      margin :"10px",
-      textAlign : "center",
-      padding: "250px 0"
-    }} onClick={event}>
-      <p>{jeu}</p>
-    </div>
-  )
-
-}
-
-const ListRoom = ()=>{
-  const parsedUrl = new URL(window.location.href);
-  console.log(parsedUrl.searchParams.get("typejeu"));
-  return (<p></p>)
-}
-
-const Games = ()=>{
-  const navigate = useNavigate();
-  let listJeu = ["bataille","belote","uno"];
-  let listGames =[];
-  listJeu.forEach((element,index)=>{
-    listGames.push(<MyGame jeu={element} key={index} event={()=>navigate("/listJeu?typejeu="+element)}></MyGame>)
-  });
-  return (<div style={{display: "flex"}}>{listGames}</div>);
-};
-
+//Defini toutes tes pages ici
 function MyApp() {
   return (
     <div>
-      {/* // Defini toutes tes pages ici */}
       <Router>
         <Routes>
           <Route path="/" element={<LoginForm />} />
-          {/* <Route path="/register" element={} /> */}
+          <Route path="/register" element={<RegisterForm />} />
           <Route path="/games" element={<Games/>} />
-          <Route path="/listJeu" element={<ListRoom />} />
         </Routes>
       </Router>
     </div>
