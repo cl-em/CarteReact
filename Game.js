@@ -9,6 +9,7 @@ class Game {
             this.id = this.id+""+Math.floor(Math.random()*10);
         }
         this.io = io
+        this.tourCourant = 0;
         this.couleurs = couleurs;
         this.nbvaleurs = nbvaleurs;
         this.deck = [];//Représente les cartes présentes dans le deck utilisé par la partie
