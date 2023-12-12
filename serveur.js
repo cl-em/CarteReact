@@ -73,10 +73,6 @@ db.close((err) => {
 });
 
 
-app.post("/register",(res,req)=>{
-
-});
-
 //-------------------------------Verify login-----------------------------------------------
 
 const verifyUser = (req, res, next) => {
@@ -146,7 +142,7 @@ io.on('connection', (socket) => {
     // data : {id,pseudo,password}
     const db = new sqlite3.Database("cards_game.sqlite");
 
-    db.all("SELECT * FROM users WHERE idU = ?",[data.id],(err,rows)=>{
+    db.all("SELECT * FROM users WHERE pseudo = ?",[data.pseudo],(err,rows)=>{
       if(rows.length >0) socket.emit("creerCompte",false);
       
       else{
@@ -165,6 +161,6 @@ io.on('connection', (socket) => {
 //-------------------------------Verify login-----------------------------------------------
 
   socket.on('login',data=>{
-
+  
   })
 });

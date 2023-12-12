@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import io from 'socket.io-client';
+import { useState } from 'react';
 
 import {Games,ListRoom} from "./Games";
 
@@ -30,9 +31,9 @@ function RegisterForm() {
       <h2>Inscription</h2> <br></br>
 
       <form method='post' action='localhost:8888/register'>
-        <input type = "text" placeholder="Nom d'utilisateur" id="usernameRegister"></input> <br></br> <br></br>
+        <input type = "text" placeholder="Nom d'utilisateur" id="usernameRegister" name={"pseudo"}></input> <br></br> <br></br>
 
-        <input type = "password" placeholder="Mot de passe" id="passwordRegister"></input> <br></br> <br></br>
+        <input type = "password" placeholder="Mot de passe" id="passwordRegister" name={"password"}></input> <br></br> <br></br>
 
         <input type = "password" placeholder="Confirmer le mot de passe" id="passwordRegister2"></input> <br></br> <br></br> <br></br>
 
@@ -46,9 +47,17 @@ function RegisterForm() {
   );
 }
 
+
 function LoginForm() {
   // Permet de naviger
   const navigate = useNavigate();
+  const [message,setMessage] = useState("");
+
+  let idMdp= {};
+
+  const handleChange = event =>{
+    
+  };
 
   return (
     <div className="login-form">
@@ -56,11 +65,11 @@ function LoginForm() {
 
       <br></br>
 
-      <input type = "text" placeholder="Nom d'utilisateur" id="usernameLogin"></input><br></br>
+      <input type = "text" placeholder="Nom d'utilisateur" id="usernameLogin" onChange={handleChange}></input><br></br>
 
       <br></br>
 
-      <input type = "password" placeholder="Mot de passe" id="passwordLogin"></input>
+      <input type = "password" placeholder="Mot de passe" id="passwordLogin" onChange={handleChange}></input>
 
       <br></br>
       <br></br>
@@ -79,18 +88,14 @@ function MyApp() {
     <div>
       <Router>
         <Routes>
-<<<<<<< HEAD
           <Route path="/" element={<LoginForm />} /> 
           {/* <Route path="/register" element={} /> */}
-=======
           <Route path="/" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
->>>>>>> f1d34fbe538eda054c5309a5f3ae5f77086fff11
           <Route path="/games" element={<Games/>} />
         </Routes>
       </Router>
     </div>
   );
 };
-
 export default MyApp;
