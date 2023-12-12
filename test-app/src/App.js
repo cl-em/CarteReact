@@ -79,8 +79,13 @@ function MyApp() {
     <div>
       <Router>
         <Routes>
+<<<<<<< HEAD
+          <Route path="/" element={<LoginForm />} /> 
+          {/* <Route path="/register" element={} /> */}
+=======
           <Route path="/" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
+>>>>>>> f1d34fbe538eda054c5309a5f3ae5f77086fff11
           <Route path="/games" element={<Games/>} />
         </Routes>
       </Router>

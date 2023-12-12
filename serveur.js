@@ -36,9 +36,6 @@ const sqlite3 = require('sqlite3').verbose();
 //-------------------------------Login-----------------------------------------------
 app.use(express.json());
 app.use(cookieParser());
-
-// req c'est ce qu'il y a dans le post en gros
-// res c'est pour envoyer des réponses
 app.post('/login', (req, res) => {
 
   const db = new sqlite3.Database('cards_game.sqlite');
@@ -67,14 +64,12 @@ app.post('/login', (req, res) => {
     }
   }
 )
-
-  // fermeture de la dase de donnée
-  db.close((err) => {
-    if (err) {
-        console.error(err.message);
-    }
-    console.log('Connexion à la base de données SQLite fermée.');
-  });
+db.close((err) => {
+  if (err) {
+      console.error(err.message);
+  }
+  console.log('Connexion à la base de données SQLite fermée.');
+});
 });
 
 
@@ -84,21 +79,41 @@ app.post("/register",(res,req)=>{
 
 //-------------------------------Verify login-----------------------------------------------
 
+const verifyUser = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    res.send({ validation: false });
+  }
+  else {
+    jwt.verify(token, "secret", (err, decoded) => {
+      if (err) {
+        res.send({ validation: false });
+      } else {
+        next();
+      }
+    }
+  )}
+};
+app.get('/verify', verifyUser, (req, res) => {
+  return res.send({ validation: true });
+});
 
 //-------------------------------Classes-----------------------------------------------
-const { Game } = require('./Game.js');
+const { Game,Bataille } = require('./Game.js');
+const { Joueur } = require('./Joueur.js');
 const { Carte } = require('./Carte.js');
 
 
 //-------------------------------Fonctions-----------------------------------------------
-
-var game = new Game(["coeur","pic","trèfle","carreau"],13,"clem");
+console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
+var game = new Bataille(12345678,io);
 game.createDeck();
 game.shuffleDeck();
 console.log(game.deck.length);
 console.log(game.drawCarte());
 console.log(game.deck.length);
-
+console.log("Id de la game: "+game.id)
+console.log("------------------------------------------------------------------------------------")
 
 
 //-------------------------------Sockets-----------------------------------------------
@@ -146,4 +161,10 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
+
+//-------------------------------Verify login-----------------------------------------------
+
+  socket.on('login',data=>{
+
+  })
 });
