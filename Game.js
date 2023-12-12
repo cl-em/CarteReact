@@ -1,18 +1,25 @@
 const { Carte } = require('./Carte.js');
-
+const { Joueur } = require('./Joueur.js');
 class Game {
 
-    constructor(couleurs,nbvaleurs,host/*host est de la classe globale "utilisateur" et crée une instance de la classe "joueur*/) {
+    constructor(couleurs,nbvaleurs,host/*host est un id d'utilisateur et crée une instance de la classe "joueur*/,io/*On fait passer l'io en paramètre pour permettre l'utilisation des sockets déjà établis*/) {
+
+        this.id = "";//L'ID sera utilisé pour identifier chaque partie de manière indépendante. Ainsi, on pourra en avoir plusieurs simultanément.
+        for (var i=0;i<9;i++){
+            this.id = this.id+""+Math.floor(Math.random()*10);
+        }
+        this.io = io
         this.couleurs = couleurs;
         this.nbvaleurs = nbvaleurs;
         this.deck = [];//Représente les cartes présentes dans le deck utilisé par la partie
-        this.joueurs = [];
-
+        this.joueurs = [new Joueur(host,true)];
+        this.hasStarted = false;
+        this.chat = [];
 
 
 
     }
-
+//-----------------------Fonctions gestion cartes------------------------------------------
     shuffleDeck(){
         this.deck = this.deck.sort((a, b) => 0.5 - Math.random());
     }
@@ -37,7 +44,25 @@ class Game {
         return retour;
     }
 
+//-----------------------Fonctions gestion joueurs------------------------------------------
+
+
+
+//-----------------------Fonctions gestion jeu------------------------------------------
+
+}
+//----------------------------Classe utilisée pour le jeu de la bataille-----------------------------
+
+class Bataille extends Game{
+
+    constructor(host,io){
+        super(["coeur","pic","trèfle","carreau"],13,host,io);
+        this.createDeck();
+        
+    }
+
+
 
 
 }
-module.exports = { Game };
+module.exports = { Game,Bataille };

@@ -80,7 +80,7 @@ function MyApp() {
       {/* // Defini toutes tes pages ici */}
       <Router>
         <Routes>
-          <Route path="/" element={<LoginForm />} />
+          <Route path="/" element={<LoginForm />} /> 
           {/* <Route path="/register" element={} /> */}
           <Route path="/games" element={<Games/>} />
           <Route path="/listJeu" element={<ListRoom />} />
