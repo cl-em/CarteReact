@@ -105,3 +105,40 @@ body {
   cursor: pointer; /* Curseur de type main pour indiquer que c'est cliquable */
 }
 
+.jeu{
+  display: flex;
+  width: px;
+  color: white;
+  align-items: center;
+  text-align: center;
+}
+
+.jeu1 , .jeu2, .jeu3{
+  display: flex;
+  margin: 20px;
+  width: 500px;
+  color: white;
+  background-color: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.295);
+  backdrop-filter: blur(5px);
+  align-items: center;
+  text-align: center;
+  padding: 250px 10px;
+  border-radius: 30%;
+  box-shadow: 0 0 50px rgb(0, 0, 0);
+}
+
+.jeu1 {
+  background: url("http://localhost:8888/fichier/bataille.jpg") center/cover no-repeat;
+  filter : blur(3px);
+}
+
+.jeu2 {
+  background: url("http://localhost:8888/fichier/belote.jpg") center/cover no-repeat;
+  filter : blur(3px);
+}
+
+.jeu3 {
+  background: url("http://localhost:8888/fichier/poker.jpg") center/cover no-repeat;
+  filter : blur(3px);
+}

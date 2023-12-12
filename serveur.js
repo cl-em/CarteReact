@@ -36,55 +36,54 @@ const sqlite3 = require('sqlite3').verbose();
 //-------------------------------Login-----------------------------------------------
 app.use(express.json());
 app.use(cookieParser());
+
+// req c'est ce qu'il y a dans le post en gros
+// res c'est pour envoyer des réponses
 app.post('/login', (req, res) => {
+
   const db = new sqlite3.Database('cards_game.sqlite');
-  console.log("login")
-  console.log(req.body);
-  const { username, password } = req.body;
-  db.all('SELECT * FROM users WHERE pseudo = ? AND password = ?', [username, password], (err, rows) => {
+  // console.log("login")
+  // console.log(req.body);
+  const { id, password } = req.body;
+
+  // row c'est un tableau de réponse
+  db.all('SELECT * FROM users WHERE  = ? AND password = ?', [id, password], (err, rows) => {
     if (err) {
         throw err;
     }
-    console.log(rows);
-    if (rows.length > 0) {
-      const name = rows[0].pseudo;
-      console.log(`User ${name} logged in`);
-      const token = jwt.sign({name}, "secret", { expiresIn: '1h' });
-      res.cookie('token', token, { httpOnly: true });
+    // console.log(rows);
+    if (rows.length > 0 && pass) {
+      
+      //const name = rows[0].pseudo;
+      // console.log(`User ${name} logged in`);
+      // const token = jwt.sign({name}, "secret", { expiresIn: '1h' });
+      // res.cookie('token', token, { httpOnly: true });
+
+      
+
       res.send({ validation: true });
     } else {
       res.send({ validation: false });
     }
   }
 )
-db.close((err) => {
-  if (err) {
-      console.error(err.message);
-  }
-  console.log('Connexion à la base de données SQLite fermée.');
+
+  // fermeture de la dase de donnée
+  db.close((err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    console.log('Connexion à la base de données SQLite fermée.');
+  });
 });
+
+
+app.post("/register",(res,req)=>{
+
 });
 
 //-------------------------------Verify login-----------------------------------------------
 
-const verifyUser = (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) {
-    res.send({ validation: false });
-  }
-  else {
-    jwt.verify(token, "secret", (err, decoded) => {
-      if (err) {
-        res.send({ validation: false });
-      } else {
-        next();
-      }
-    }
-  )}
-};
-app.get('/verify', verifyUser, (req, res) => {
-  return res.send({ validation: true });
-});
 
 //-------------------------------Classes-----------------------------------------------
 const { Game } = require('./Game.js');
@@ -109,6 +108,39 @@ io.on('connection', (socket) => {
 
   socket.on("salut",()=>{
     console.log("salut");
+  });
+
+  socket.on("login",(data)=>{
+    // data : {id,password}
+    const db = new sqlite3.Database('cards_game.sqlite');
+
+    db.all('SELECT * FROM users WHERE idU = ? AND password = ?', [data.id,data.password], (err, rows) => {
+        if(rows.length >0){
+          // si l'id et le mdp sont bon alors j'envoie true
+          socket.emit("login",true);
+        }else {
+          socket.emit("login",false);
+        }
+    });
+
+    db.close();
+
+  });
+
+  socket.on("creerCompte",(data)=>{
+    // data : {id,pseudo,password}
+    const db = new sqlite3.Database("cards_game.sqlite");
+
+    db.all("SELECT * FROM users WHERE idU = ?",[data.id],(err,rows)=>{
+      if(rows.length >0) socket.emit("creerCompte",false);
+      
+      else{
+        db.prepare("INSERT INTO users VALUES(?,?,?)").run([data.id,data.pseudo,data.password]).finalize();
+        socket.emit("creerCompte",true);
+      }
+    });
+    db.close();
+    
   });
 
   socket.on('disconnect', () => {

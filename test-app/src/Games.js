@@ -12,36 +12,37 @@ import {
 } from "react-router-dom";
 
 
-const MyGame = ({jeu,event})=>{
-    // const navigate = useNavigate();
+function MyGame(){
+    const navigate = useNavigate();
   
   return (
-    <div style={{
-      backgroundColor:"blue",
-      // height:"300px",
-      width: "250px",
-      margin :"10px",
-      textAlign : "center",
-      padding: "250px 0"
-    }} onClick={event}>
-      <p>{jeu}</p>
+
+    <div className='jeu'>
+
+    <div className='jeu1' onClick={()=>navigate("/bataille")}>
+      <p>Belote</p>
     </div>
+
+    <div className='jeu2' onClick={()=>navigate("/belote")}>
+    </div>
+
+    <div className='jeu3' onClick={()=>navigate("/poker")}>
+    </div>
+
+    </div>
+
   )
 
 }
 
+/*
 export  const ListRoom = ()=>{
   const parsedUrl = new URL(window.location.href);
   console.log(parsedUrl.searchParams.get("typejeu"));
   return (<p></p>)
 }
+*/
 
 export const Games = ()=>{
-  const navigate = useNavigate();
-  let listJeu = ["bataille","belote","uno"];
-  let listGames =[];
-  listJeu.forEach((element,index)=>{
-    listGames.push(<MyGame jeu={element} key={index} event={()=>navigate("/listJeu?typejeu="+element)}></MyGame>)
-  });
-  return (<div style={{display: "flex"}}>{listGames}</div>);
+  return (<MyGame/>);
 };
