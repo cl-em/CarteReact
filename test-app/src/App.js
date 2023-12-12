@@ -51,13 +51,6 @@ function RegisterForm() {
 function LoginForm() {
   // Permet de naviger
   const navigate = useNavigate();
-  const [message,setMessage] = useState("");
-
-  let idMdp= {};
-
-  const handleChange = event =>{
-    
-  };
 
   return (
     <div className="login-form">
@@ -74,7 +67,7 @@ function LoginForm() {
       <br></br>
       <br></br>
 
-      <button onClick={()=>{navigate("/games");}}>Envoyer!</button>
+      <button onClick={emitLogin}>Envoyer!</button>
 
       <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
 
