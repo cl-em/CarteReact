@@ -1,0 +1,38 @@
+
+DROP TABLE IF EXISTS `joueurs_bataille`;
+CREATE TABLE `joueurs_bataille` (
+  `idJ` INTEGER PRIMARY KEY,
+  `idP` INTEGER NOT NULL,
+  `idU` INTEGER NOT NULL,
+  `cartePosee` TEXT,
+  `cartesMain` TEXT NOT NULL,
+  FOREIGN KEY (`idP`) REFERENCES `parties` (`idP`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  FOREIGN KEY (`idU`) REFERENCES `users` (`idU`) ON DELETE RESTRICT ON UPDATE RESTRICT
+);
+
+
+DROP TABLE IF EXISTS `parties_bataille`;
+CREATE TABLE `parties_bataille` (
+  `idP` INTEGER PRIMARY KEY,
+  `idCreateur` INTEGER NOT NULL,
+  `idInitiateur` INTEGER NOT NULL,
+  `idMainActuelle` INTEGER NOT NULL,
+  `tourActuel` INTEGER NOT NULL,
+  `pause` INTEGER NOT NULL,
+  `finish` INTEGER NOT NULL,
+  FOREIGN KEY (`idCreateur`) REFERENCES `users` (`idU`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  FOREIGN KEY (`idInitiateur`) REFERENCES `users` (`idU`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  FOREIGN KEY (`idMainActuelle`) REFERENCES `users` (`idU`) ON DELETE RESTRICT ON UPDATE RESTRICT
+);
+
+
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `idU` INTEGER PRIMARY KEY,
+  `pseudo` TEXT NOT NULL,
+  `password` TEXT NOT NULL,
+  `score` INTEGER NOT NULL DEFAULT '0',
+  `timeCreation` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (`pseudo`)
+);
