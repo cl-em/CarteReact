@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import io from 'socket.io-client';
 import md5 from 'md5';
+import React, { useState, useEffect } from 'react';
 
 import {Games} from "./Games";
 import {Parties} from "./Parties";
@@ -123,6 +124,40 @@ function LoginForm() {
   );
 }
 
+function Chat() {
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    socket.on('message', (msg) => {
+      setMessages((messages) => [...messages, msg]);
+    });
+    return () => socket.off("message");
+  }, []);
+
+  const sendMessage = () => {
+    socket.emit('message', message);
+    setMessage('');
+  };
+
+  return (
+    <div>
+      <ul>
+        {messages.map((msg, index) => (
+          <li key={index}>{msg}</li>
+        ))}
+      </ul>
+      <input
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
+      />
+      <button onClick={sendMessage}>Envoyer</button>
+    </div>
+  );
+}
+
+
 //Defini toutes tes pages ici
 function MyApp() {
   return (
@@ -134,6 +169,7 @@ function MyApp() {
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
           <Route path="/bataille" element={<Parties/>} />
+          <Route path="/chat" element={<Chat/>} />
         </Routes>
       </Router>
     </div>
