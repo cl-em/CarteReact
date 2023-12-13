@@ -14,7 +14,7 @@ class Game {
         this.nbvaleurs = nbvaleurs;
         this.deck = [];//Représente les cartes présentes dans le deck utilisé par la partie
         this.joueurs = [new Joueur(host,true)];
-        this.joueursMax = this.joueursMax;
+        this.joueursMax = joueursMax;
         this.hasStarted = false;
         this.chat = [];
 
@@ -53,7 +53,7 @@ class Game {
 //-----------------------Fonctions gestion joueurs------------------------------------------
 addPlayer(idJoueur){
     if (this.joueurs.length<this.joueursMax){
-    this.joueurs+= new Joueur(idJoueur,false);return true
+    this.joueurs.push(new Joueur(idJoueur,false));return true
 }
 else{return false;}
 }
@@ -65,6 +65,11 @@ removePlayer(idJoueur){
     }
 }
 
+emptyChoices(){//Pour les fins de tour
+    for (var joueur of this.joueurs){
+        joueur.choix = null;
+    }
+}
 
 
 //-----------------------Fonctions gestion chat-----------------------------------------
@@ -81,16 +86,16 @@ message(origine,message){
 
 class Bataille extends Game{
 
-    constructor(host){
-        super(["coeur","pic","trèfle","carreau"],13,host);
+    constructor(host,nbJoueurs){
+        super(["coeur","pic","trèfle","carreau"],13,host,nbJoueurs);
         this.createDeck();
         this.paquets = [];
 
     }
 
-    shufflePackets(){//Mélange les packets de chaque joueur
-        for (var packet of this.packets){
-        packet = packet.sort((a, b) => 0.5 - Math.random());
+    shufflePaquets(){//Mélange les paquets de chaque joueur
+        for (var paquet of this.paquets){
+        paquet = paquet.sort((a, b) => 0.5 - Math.random());
         }
     }
 //-----------------------Fonctions gestion jeu----------------------------------------------
@@ -103,38 +108,110 @@ while (this.deck.length>=this.joueurs.length){//Distribution équitable des cart
         }
     }
 
+    for (var joueur of this.joueurs){this.paquets.push([])}
 this.hasStarted = true;
 
 }
 
+canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait un choix
+
+    for (var joueur of this.joueurs){
+        if (joueur.éliminé==false && joueur.choix==null){return false}
+    }
+    return true
+}
 
 tour(){
     this.tourCourant++;
      
-    var pactole;//Cartes en jeu
+    var pactole=[];//Cartes en jeu
     var winner=this.joueurs[0];
-
     for (var joueur in this.joueurs){
         pactole.push(this.joueurs[joueur].choix);
         if (this.joueurs[joueur].choix.valeur>winner.choix.valeur){winner=this.joueurs[joueur];this.égalité=false;}//Cas d'égalité, il sera pris en charge par serveur.js selon le retour de cette fonction
-        else{if (this.joueurs[joueur].choix.valeur==winner.choix.valeur){winner=[winner,this.joueurs[joueur]];this.égalité=true}}
-        this.joueurs[joueur].choix=null;
+        else{if (this.joueurs[joueur].choix.valeur==winner.choix.valeur&&this.joueurs[joueur]!=winner){this.joueurségalité=[winner,this.joueurs[joueur]];this.égalité=true;}}
     }   
 
-    if (this.égalité==false){return false;}//On stoppe car il faut refaire un pli.
+    if (this.égalité==true){this.pactoleAttente = pactole;this.emptyChoices();return false;}//On stoppe car il faut refaire un pli.
 
 
-    for (var joueur of this.joueurs){//Le gagnant remporte les cartes du pli
+
+    for (var joueur in this.joueurs){//Le gagnant remporte les cartes du pli
         if (this.joueurs[joueur]==winner){
             for (var carte of pactole){
-                this.joueurs[joueur].packet.push(carte)
+                this.paquets[joueur].push(carte)
             }
         }
     }
 
+
+    //On remet les paquets dans la main de chaque joueur
+    this.shufflePaquets();
+    for (var joueur in this.joueurs){
+if (this.joueurs[joueur].main.length==0){
+    if (this.paquets[joueur].length==0){this.joueurs[joueur].éliminé=true;}//éliminé s'il n'a ni main, ni paquet
+    else{this.joueurs[joueur].main = this.paquets[joueur]}
+}
+    }
+this.emptyChoices();
+return winner;
+}
+
+canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait un choix
+
+    for (var joueur of this.joueurs){
+        if (joueur.éliminé==false && joueur.choix==null&&this.joueurs.includes(joueur)){return false}
+    }
+    return true
 }
 
 
+tourégalité(){
+    var égalitédouble = false;//teste si l'égalité est une égalité
+    var winner = 0;
+for (var joueur of this.joueurségalité){
+    for (var i of this.joueurs){
+        if (joueur.idJoueur==i.idJoueur && i.choix>winner){winner = i}
+        else if (joueur.idJoueur==i.idJoueur && i.choix==winner){égalitédouble=true;winner=[winner,i];}
+    }
+}
+
+if (this.égalitédouble){//On distribue les cartes équitablement entre membres du tour d'égalité
+    while (this.pactoleAttente.length>0){
+        for (var i of winner){
+            for (var joueur of this.joueurs){
+                if (joueur.idJoueur==i.idJoueur && this.pactole.length>0){
+                    joueur.paquet.push(this.pactole.shift())
+                }
+            }            
+        }
+    }
+}
+
+    else { //Le gagnant de l'égalité récolte tout
+        for (var joueur in this.joueurs){
+            if (this.joueurs[joueur].idJoueur==winner.idJoueur){
+                while (this.pactoleAttente.length>0){
+                this.paquet[joueur].push(this.pactoleAttente.shift())
+                }
+        }
+    }
+
+
+}//On prépare pour poursuivre
+this.égalité=false;
+this.pactoleAttente = null;
+this.joueurségalité = null;
+this.shufflePaquets();
+}
+
+existeWinner(){//Renvoie false si aucun gagnant, true si une personne a gagné
+    for (var joueur in this.joueurs){
+        if (this.joueurs[joueur].main.length+this.paquets[joueur]==(this.couleurs.length*this.nbvaleurs)){return this.joueurs[joueur]}
+    }
+return false;
+}
 
 }
+
 module.exports = { Game,Bataille };

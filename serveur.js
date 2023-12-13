@@ -110,13 +110,23 @@ const { Carte } = require('./Carte.js');
 
 //-------------------------------Fonctions-----------------------------------------------
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
-var game = new Bataille(12345678);
-game.createDeck();
-game.shuffleDeck();
-console.log(game.deck.length);
-console.log(game.drawCarte());
-console.log(game.deck.length);
-console.log("Id de la game: "+game.id)
+
+var game = new Bataille(12345678,2);
+console.log("joueurs max: "+game.joueursMax)
+console.log("ajout de Jean: "+game.addPlayer("Jean"));
+game.initGame();
+
+
+console.log("tour de J1: "+game.joueurs[0].setChoice(game.joueurs[0].main[0].valeur,game.joueurs[0].main[0].couleur))
+console.log("tour de J2: "+game.joueurs[1].setChoice(game.joueurs[1].main[0].valeur,game.joueurs[1].main[0].couleur))
+
+for (var p of game.joueurs){console.log(p)}
+console.log("|------------un tour passe--------------|")
+console.log("Tour possible: "+game.canTour())
+game.tour();
+
+console.log(game.paquets)
+
 console.log("------------------------------------------------------------------------------------")
 
 

@@ -18,9 +18,10 @@ setChoice(valeur,couleur){//Pour sauvegarder la carte utilisée et la retirer de
     for (var carte in this.main){
         if (this.main[carte].valeur==valeur && this.main[carte].couleur==couleur){
             this.choix = this.main[carte];
-            this.main.splice(carte,1)
+            this.main.splice(carte,1);return true;
         }
     }
+    return false;
 }
 
 
