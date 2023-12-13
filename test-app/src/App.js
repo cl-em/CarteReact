@@ -2,8 +2,10 @@ import logo from './logo.svg';
 import './App.css';
 import io from 'socket.io-client';
 import md5 from 'md5';
+import React, { useState, useEffect } from 'react';
 
-import {Games,ListRoom} from "./Games";
+import {Games} from "./Games";
+import {Parties} from "./Parties";
 
 import {
   BrowserRouter as Router,
@@ -25,26 +27,58 @@ function RegisterForm() {
   // Permet de naviger
   const navigate = useNavigate();
 
+  const emitRegister = () => {
+    document.getElementById("messageVerifMdp").textContent = "";
+    let username = document.getElementById("usernameRegister").value;
+    let password = "";
+    let passwordVerif = "";
+
+    if(document.getElementById("passwordRegister").value !== ""){
+      password = md5(document.getElementById("passwordRegister").value);
+    }
+  
+    if(document.getElementById("passwordRegister2").value !== ""){
+      passwordVerif = md5(document.getElementById("passwordRegister2").value);
+    }
+  
+    if((username !== "") && (password !== "") && (passwordVerif !== "") && (password===passwordVerif)){
+      socket.emit("register", {"pseudo":username, "password":password})
+      navigate("/registerConfirm");
+    }
+    else{
+      document.getElementById('messageVerifMdp').textContent = "**Veuillez remplir tout les champs et vérifier que vos mots de passe correspondent !";
+    }
+  }
+
   return (
-    <div className="register-form" >
+    <div className="register-form">
 
       <h2>Inscription</h2> <br></br>
 
-      <form method='post' action='localhost:8888/register'>
         <input type = "text" placeholder="Nom d'utilisateur" id="usernameRegister"></input> <br></br> <br></br>
 
         <input type = "password" placeholder="Mot de passe" id="passwordRegister"></input> <br></br> <br></br>
 
         <input type = "password" placeholder="Confirmer le mot de passe" id="passwordRegister2"></input> <br></br> <br></br> <br></br>
 
-        {/* <input type='submit' value={"S'inscrire !"}></input> */}
-        <button type='submit'>S'inscrire !</button>
-      </form>
+        <button onClick={emitRegister}>S'inscrire !</button>
 
-      <button onClick={()=>navigate("/")}>Retourner à l'écran de connexion</button>
+        <button onClick={() => navigate("/")}>Retourner à l'écran de connexion</button>
+
+        <p><span id="messageVerifMdp"></span></p>
       
     </div>
   );
+}
+
+function RegisterConfirm(){
+  const navigate = useNavigate();
+  return(
+    <div className="register-confirm">
+      <h2>Votre inscription a bien été effectuée!</h2> <br></br> <br></br>
+      <button onClick={() => navigate("/")}>Retourner à l'écran de connexion</button>
+    </div>
+  )
 }
 
 function LoginForm() {
@@ -52,13 +86,24 @@ function LoginForm() {
   const navigate = useNavigate();
 
   const emitLogin = () => {
+<<<<<<< HEAD
     const username = document.getElementById("usernameLogin").value;
     const password = md5(md5(document.getElementById("passwordLogin").value));
+=======
+    let username = document.getElementById("usernameLogin").value;
+    let password = "";
+    
+    if(document.getElementById("passwordLogin").value !== ""){
+        password = md5(document.getElementById("passwordLogin").value);
+    } 
+    
+>>>>>>> 5ca448205dcfcfcd03054be06036bcf5be5245eb
     console.log(username, password);
     
-    socket.emit("login", {username,password});
-
-    navigate("/games");
+    if((username !== "") && (password !== "")){ //ajouter verif bdd
+      socket.emit("login", {"pseudo":username,"password":password});
+      navigate("/games"); //a virer si username + password pas dans la bdd
+    }
   }
 
   return (
@@ -67,7 +112,7 @@ function LoginForm() {
 
       <br></br>
 
-      <input type = "text" placeholder="Nom d'utilisateur" id="usernameLogin"></input><br></br>
+      <input type="text" placeholder="Nom d'utilisateur" id="usernameLogin"></input><br></br>
 
       <br></br>
 
@@ -84,6 +129,40 @@ function LoginForm() {
   );
 }
 
+function Chat() {
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    socket.on('message', (msg) => {
+      setMessages((messages) => [...messages, msg]);
+    });
+    return () => socket.off("message");
+  }, []);
+
+  const sendMessage = () => {
+    socket.emit('message', message);
+    setMessage('');
+  };
+
+  return (
+    <div>
+      <ul>
+        {messages.map((msg, index) => (
+          <li key={index}>{msg}</li>
+        ))}
+      </ul>
+      <input
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
+      />
+      <button onClick={sendMessage}>Envoyer</button>
+    </div>
+  );
+}
+
+
 //Defini toutes tes pages ici
 function MyApp() {
   return (
@@ -92,7 +171,10 @@ function MyApp() {
         <Routes>
           <Route path="/" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
+          <Route path="/bataille" element={<Parties/>} />
+          <Route path="/chat" element={<Chat/>} />
         </Routes>
       </Router>
     </div>
