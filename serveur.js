@@ -117,16 +117,18 @@ console.log("ajout de Jean: "+game.addPlayer("Jean"));
 game.initGame();
 
 
-console.log("tour de J1: "+game.joueurs[0].setChoice(game.joueurs[0].main[0].valeur,game.joueurs[0].main[0].couleur))
-console.log("tour de J2: "+game.joueurs[1].setChoice(game.joueurs[1].main[0].valeur,game.joueurs[1].main[0].couleur))
-
+game.joueurs[0].setChoice(game.joueurs[0].main[0].valeur,game.joueurs[0].main[0].couleur)
+game.joueurs[1].choix = game.joueurs[0].choix;
 for (var p of game.joueurs){console.log(p)}
 console.log("|------------un tour passe--------------|")
 console.log("Tour possible: "+game.canTour())
 game.tour();
 
-console.log(game.paquets)
+console.log(game.pactoleAttente)
 
+
+console.log("|------------un tour d'égalité passe--------------|")
+/*ça a l'air fonctionnel :)*/
 console.log("------------------------------------------------------------------------------------")
 
 

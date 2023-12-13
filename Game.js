@@ -168,31 +168,35 @@ canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait u
 
 tourégalité(){
     var égalitédouble = false;//teste si l'égalité est une égalité
-    var winner = 0;
+    var winner = this.joueurségalité[0];
+    var winners = []
 for (var joueur of this.joueurségalité){
     for (var i of this.joueurs){
-        if (joueur.idJoueur==i.idJoueur && i.choix>winner){winner = i}
-        else if (joueur.idJoueur==i.idJoueur && i.choix==winner){égalitédouble=true;winner=[winner,i];}
+        if (joueur.idJoueur==i.idJoueur){this.pactoleAttente.push(i.choix);}
+        if (joueur.idJoueur==i.idJoueur && i.choix.valeur>winner.choix.valeur){winner = i;winners = [winner];égalitédouble=false}
+        else if (joueur.idJoueur==i.idJoueur && i.choix.valeur==winner.choix.valeur){égalitédouble=true;winners.push(i);}
     }
 }
 
-if (this.égalitédouble){//On distribue les cartes équitablement entre membres du tour d'égalité
+
+if (égalitédouble){//On distribue les cartes équitablement entre membres du tour d'égalité
     while (this.pactoleAttente.length>0){
-        for (var i of winner){
-            for (var joueur of this.joueurs){
-                if (joueur.idJoueur==i.idJoueur && this.pactole.length>0){
-                    joueur.paquet.push(this.pactole.shift())
+        for (var i of winners){
+            for (var joueur in this.joueurs){
+                if (this.joueurs[joueur].idJoueur==i.idJoueur && this.pactoleAttente.length>0){
+                    this.paquets[joueur].push(this.pactoleAttente.shift())
                 }
             }            
         }
     }
 }
 
-    else { //Le gagnant de l'égalité récolte tout
+    else {//Le gagnant de l'égalité récolte tout 
+    while (this.pactoleAttente.length>0){
         for (var joueur in this.joueurs){
             if (this.joueurs[joueur].idJoueur==winner.idJoueur){
-                while (this.pactoleAttente.length>0){
-                this.paquet[joueur].push(this.pactoleAttente.shift())
+                    
+                this.paquets[joueur].push(this.pactoleAttente.shift())
                 }
         }
     }
@@ -202,6 +206,7 @@ if (this.égalitédouble){//On distribue les cartes équitablement entre membres
 this.égalité=false;
 this.pactoleAttente = null;
 this.joueurségalité = null;
+this.égalitédouble = false;
 this.shufflePaquets();
 }
 
