@@ -141,20 +141,24 @@ io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
 
-  socket.on("salut",()=>{
-    console.log("salut");
-  });
+  // socket.on("salut",()=>{
+  //   console.log("salut");
+  // });
 
+<<<<<<< HEAD
   socket.on("infosLobby",date=>{
     
   })
 
   socket.on('parties ouvertes',data=>{
+=======
+  socket.on('demandepartiesouvertes',data=>{
+>>>>>>> dd3af265e207eb6346a52fd206a8722365a13f7d
     var retour = []
     for (var partie of partiesOuvertes){
       if (partie.type==data){retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax})}
     }
-    socket.emit('parties ouvertes bataille')
+    socket.emit('parties ouvertes bataille', retour);
   });
 
   socket.on("login",(data)=>{
@@ -162,9 +166,11 @@ io.on('connection', (socket) => {
     const db = new sqlite3.Database('cards_game.sqlite');
 
     db.all('SELECT * FROM users WHERE pseudo = ? AND password = ?', [data.pseudo,data.password], (err, rows) => {
+      // console.log(rows.idU);
+      console.log(rows);
         if(rows.length==1){
           // si l'id et le mdp sont bon alors j'envoie true
-          socket.emit("login",rows.idU);
+          socket.emit("login",rows[0].idU);
         }else {
           socket.emit("login",false);
         }
