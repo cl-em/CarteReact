@@ -102,7 +102,6 @@ var partiesEnCours = []
 const { Game,Bataille } = require('./Game.js');
 const { Joueur } = require('./Joueur.js');
 const { Carte } = require('./Carte.js');
-const { idJoueur } = require('./test-app/src/App.js');
 
 
 //-------------------------------Fonctions-----------------------------------------------
