@@ -186,3 +186,71 @@ body {
   border-radius : 40px;
   box-shadow: 0 0 10px rgb(0, 0, 0); 
 }
+
+.Table{
+  height: 600px;
+  width: 600px;
+  background-color: red;
+  border: 2px solid rgba(255, 255, 255, 0.295);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgb(0, 0, 0);
+}
+
+.j1, .j2, .j3, .j4, .j5, .j6, .j7, .j8, .j9, .j10{
+  position: absolute;
+  transform: translate(-50%, -50%);
+  height: 50px;
+  width: 50px;
+  background-color: rgb(17, 0, 255);
+  border: 2px solid rgba(255, 255, 255, 0.295);
+  box-shadow: 0 0 10px rgb(0, 0, 0);
+}
+
+.j1{
+  top: 50%;
+}
+
+.j2{
+  top: 21%;
+  left: 42%;
+}
+
+.j3{
+  top: 79%;
+  right: 38.5%;
+}
+
+.j4{
+  top: 50%;
+  left: 72.5%;
+}
+
+.j5{
+  top: 30%;
+  left: 67%;
+}
+
+.j6{
+  top: 30%;
+  right: 64%;
+}
+
+.j7{
+  top: 69%;
+  right: 64%;
+}
+
+.j8{
+  top: 69%;
+  left: 67%;
+}
+
+.j9{
+  top: 79%;
+  left: 42%;
+}
+
+.j10{
+  top: 21%;
+  right: 38.5%;
+}
