@@ -146,6 +146,10 @@ function ListePartiesBataille(){
           setPartiesOuvertes(data);
       });
   }, [partiesOuvertes]);
+
+  const rejoindrePartie = (idPartie) => {
+      socket.emit('rejoindre partie bataille', idPartie);
+  }
   return (
 
   <div className="listeParties">
@@ -155,7 +159,8 @@ function ListePartiesBataille(){
           <p>{partie.id}</p>
           <p>{partie.joueursActuels}/{partie.joueursMax}</p>
           <p>Bataille</p>
-          <button onClick={()=>navigate("/bataille")}>Rejoindre !</button>
+          {/* <button onClick={()=>navigate("/bataille")}>Rejoindre !</button> */}
+          <button onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
         </div>
       )
     })}
