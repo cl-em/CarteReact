@@ -223,10 +223,10 @@ io.on('connection', (socket) => {
 //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
 
 socket.on("rejoindre partie bataille", data=>{
-for (var partie of partiesOuvertes){
+for (var partie of partiesOuvertes){ 
   if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
     partie.addPlayer(data.idJoueur)
-    socket.emit("rejoindre partie bataille",true)
+    socket.emit("rejoindre partie bataille",partie.idPartie)
     return;
   }
   socket.emit("rejoindre partie bataille",false);
