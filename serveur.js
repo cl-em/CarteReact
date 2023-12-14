@@ -122,6 +122,8 @@ game.tour();
 
 console.log(game.pactoleAttente)
 
+partiesOuvertes.push(game);
+
 
 console.log("|------------un tour d'égalité passe--------------|")
 /*ça a l'air fonctionnel :)*/
@@ -146,6 +148,10 @@ io.on('connection', (socket) => {
 
   socket.on("salut",()=>{
     console.log("salut");
+  });
+
+  socket.on('parties ouvertes',()=>{
+    socket.emit("parties ouvertes",partiesOuvertes);
   });
 
   socket.on("login",(data)=>{
