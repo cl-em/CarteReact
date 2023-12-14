@@ -152,8 +152,8 @@ function ListePartiesBataille(){
       console.log(idPartie);
       socket.on('rejoindre partie bataille', (data) => {
           console.log(data);
-          if (data) {
-              navigate("/bataille");
+          if (data != false && data == idPartie) {
+              navigate("/bataille_"+idPartie);
           }
       }
       );
