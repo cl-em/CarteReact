@@ -6,7 +6,7 @@ import md5 from 'md5';
 import React, { useState, useEffect } from 'react';
 // import { useHistory } from 'react-router-dom';
 
-import {} from Bataille;
+// import {} from Bataille;
 
 import {Games} from "./Games";
 import {Parties} from "./Parties";
@@ -18,7 +18,7 @@ import {
   Link,
   useNavigate
 } from "react-router-dom";
-import { Bataille } from './Bataille';
+// import { Bataille } from './Bataille';
 
 
 const socket = io('http://localhost:8888');

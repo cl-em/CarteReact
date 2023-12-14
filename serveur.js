@@ -149,7 +149,7 @@ io.on('connection', (socket) => {
     
   })
 
-  socket.on('parties ouvertes',data=>{
+  socket.on('demandepartiesouvertes',data=>{
     var retour = []
     for (var partie of partiesOuvertes){
       if (partie.type==data){retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax})}
