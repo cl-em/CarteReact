@@ -151,8 +151,11 @@ function ListePartiesBataille(){
       socket.emit('rejoindre partie bataille', {idPartie, idJoueur});
   }
   return (
-
+  <div className='joinpartieID'>
+    <input type="text" placeholder="Id de la partie" id="idPartie"></input>
+    <button onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button>
   <div className="listeParties">
+    {/* input text de l'id de la partie */}
     {partiesOuvertes.map((partie,index)=>{
       return(
         <div className={"test".concat(index%2)} key={index}>
@@ -164,6 +167,7 @@ function ListePartiesBataille(){
         </div>
       )
     })}
+  </div>
   </div>
 
   )
