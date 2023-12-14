@@ -87,7 +87,7 @@ message(origine,message){
 class Bataille extends Game{
 
     constructor(host,nbJoueurs){
-        super(["coeur","pic","trèfle","carreau"],13,host,nbJoueurs);
+        super(["coeur","pique","trèfle","carreau"],13,host,nbJoueurs);
         this.createDeck();
         this.paquets = [];
 

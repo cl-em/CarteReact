@@ -86,10 +86,6 @@ function LoginForm() {
   const navigate = useNavigate();
 
   const emitLogin = () => {
-<<<<<<< HEAD
-    const username = document.getElementById("usernameLogin").value;
-    const password = md5(md5(document.getElementById("passwordLogin").value));
-=======
     let username = document.getElementById("usernameLogin").value;
     let password = "";
     
@@ -97,7 +93,6 @@ function LoginForm() {
         password = md5(document.getElementById("passwordLogin").value);
     } 
     
->>>>>>> 5ca448205dcfcfcd03054be06036bcf5be5245eb
     console.log(username, password);
     
     if((username !== "") && (password !== "")){ //ajouter verif bdd
