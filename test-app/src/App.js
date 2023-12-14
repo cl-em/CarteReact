@@ -6,7 +6,7 @@ import md5 from 'md5';
 import React, { useState, useEffect } from 'react';
 // import { useHistory } from 'react-router-dom';
 
-import {} from Bataille;
+import { Bataille } from './Bataille';
 
 import {Games} from "./Games";
 import {Parties} from "./Parties";
@@ -18,7 +18,6 @@ import {
   Link,
   useNavigate
 } from "react-router-dom";
-import { Bataille } from './Bataille';
 
 
 const socket = io('http://localhost:8888');
@@ -84,7 +83,7 @@ function RegisterConfirm(){
     </div>
   )
 }
-let idJoueur;
+export let idJoueur;
 function LoginForm() {
   // Permet de naviger
   const navigate = useNavigate();
@@ -211,7 +210,8 @@ function MyApp() {
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
-          <Route path="/bataille" element={<ListePartiesBataille/>} />
+          {/* <Route path="/bataille" element={<ListePartiesBataille/>} /> */}
+          {/* <Route path="/bataille" element={<Test2/>}/> */}
           <Route path="/chat" element={<Chat/>} />
         </Routes>
       </Router>
