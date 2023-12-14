@@ -144,18 +144,20 @@ io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
 
-  socket.on("salut",()=>{
-    console.log("salut");
-  });
+  // socket.on("salut",()=>{
+  //   console.log("salut");
+  // });
 
   socket.on("login",(data)=>{
     // data : {id,password}
     const db = new sqlite3.Database('cards_game.sqlite');
 
     db.all('SELECT * FROM users WHERE pseudo = ? AND password = ?', [data.pseudo,data.password], (err, rows) => {
+      // console.log(rows.idU);
+      console.log(rows);
         if(rows.length==1){
           // si l'id et le mdp sont bon alors j'envoie true
-          socket.emit("login",rows.idU);
+          socket.emit("login",rows[0].idU);
         }else {
           socket.emit("login",false);
         }
