@@ -207,11 +207,16 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 
-  socket.on('newGame',data=>{
-
-
+  //Création d'une partie
+  socket.on('newBataille',data=>{
 
   })
+
+//Demande d'actualisation des infos bataille
+
+socket.on('demandeBataille',data=>{
+  
+})
 
 //-------------------------------Verify login-----------------------------------------------
 
