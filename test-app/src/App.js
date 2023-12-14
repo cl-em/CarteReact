@@ -85,7 +85,6 @@ function LoginForm() {
   const navigate = useNavigate();
 
   const emitLogin = () => {
-    const password = md5(md5(document.getElementById("passwordLogin").value));
     let username = document.getElementById("usernameLogin").value;
     // let password = "";
     
