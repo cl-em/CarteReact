@@ -148,7 +148,15 @@ function ListePartiesBataille(){
   }, [partiesOuvertes]);
 
   const rejoindrePartie = (idPartie) => {
-      socket.emit('rejoindre partie bataille', idPartie);
+      socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
+      console.log(idPartie);
+      socket.on('rejoindre partie bataille', (data) => {
+          console.log(data);
+          if (data) {
+              navigate("/bataille");
+          }
+      }
+      );
   }
   return (
   <div className='joinpartieID'>
