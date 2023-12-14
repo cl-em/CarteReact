@@ -6,7 +6,7 @@ import md5 from 'md5';
 import React, { useState, useEffect } from 'react';
 // import { useHistory } from 'react-router-dom';
 
-import { Bataille } from './Bataille';
+import {} from Bataille;
 
 import {Games} from "./Games";
 import {Parties} from "./Parties";
@@ -18,6 +18,7 @@ import {
   Link,
   useNavigate
 } from "react-router-dom";
+import { Bataille } from './Bataille';
 
 
 const socket = io('http://localhost:8888');
@@ -145,6 +146,10 @@ function ListePartiesBataille(){
           setPartiesOuvertes(data);
       });
   }, [partiesOuvertes]);
+
+  const rejoindrePartie = (idPartie) => {
+      socket.emit('rejoindre partie bataille', idPartie);
+  }
   return (
 
   <div className="listeParties">
@@ -154,7 +159,8 @@ function ListePartiesBataille(){
           <p>{partie.id}</p>
           <p>{partie.joueursActuels}/{partie.joueursMax}</p>
           <p>Bataille</p>
-          <button onClick={()=>navigate("/bataille")}>Rejoindre !</button>
+          {/* <button onClick={()=>navigate("/bataille")}>Rejoindre !</button> */}
+          <button onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
         </div>
       )
     })}
