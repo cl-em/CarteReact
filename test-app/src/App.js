@@ -148,7 +148,7 @@ function ListePartiesBataille(){
   }, [partiesOuvertes]);
 
   const rejoindrePartie = (idPartie) => {
-      socket.emit('rejoindre partie bataille', {idPartie, idJoueur});
+      socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
   }
   return (
   <div className='joinpartieID'>
