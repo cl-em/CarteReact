@@ -18,7 +18,7 @@ import {
   Link,
   useNavigate
 } from "react-router-dom";
-import { Bataille } from './Bataille';
+import { Bataille ,Lobby} from './Bataille';
 
 
 const socket = io('http://localhost:8888');
@@ -148,7 +148,7 @@ function ListePartiesBataille(){
   }, [partiesOuvertes]);
 
   const rejoindrePartie = (idPartie) => {
-      socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
+      socket.emit('rejoindre partie bataille', idPartie);
   }
   return (
   <div className='joinpartieID'>
@@ -222,6 +222,9 @@ function MyApp() {
           <Route path="/games" element={<Games/>} />
           <Route path="/bataille" element={<ListePartiesBataille/>} />
           {/* <Route path="/bataille" element={<Test2/>}/> */}
+
+          <Route path='/test'element={<Lobby listesjoueurs={[]} nbjoueurs={7} joueursmax={11}/>}/>
+
           <Route path="/chat" element={<Chat/>} />
         </Routes>
       </Router>

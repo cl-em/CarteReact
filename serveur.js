@@ -135,6 +135,13 @@ const getUserById = (id)=>{
   });
 }
 
+const existeId = (id)=>{
+  const db = new sqlite3.Database("cards_game.sqlite");
+  db.all("SELECT * FROM users WHERE idU = ?",[id],(err,rows)=>{
+    return rows.length>=1;
+  });
+}
+
 
 //-------------------------------Sockets-----------------------------------------------
 io.on('connection', (socket) => {
