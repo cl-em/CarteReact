@@ -6,7 +6,7 @@ import md5 from 'md5';
 import React, { useState, useEffect } from 'react';
 // import { useHistory } from 'react-router-dom';
 
-import {} from Bataille;
+// import {} from Bataille;
 
 import {Games} from "./Games";
 import {Parties} from "./Parties";
@@ -148,7 +148,7 @@ function ListePartiesBataille(){
   }, [partiesOuvertes]);
 
   const rejoindrePartie = (idPartie) => {
-      socket.emit('rejoindre partie bataille', idPartie);
+      socket.emit('rejoindre partie bataille', {idPartie, idJoueur});
   }
   return (
 
@@ -216,7 +216,7 @@ function MyApp() {
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
-          {/* <Route path="/bataille" element={<ListePartiesBataille/>} /> */}
+          <Route path="/bataille" element={<ListePartiesBataille/>} />
           {/* <Route path="/bataille" element={<Test2/>}/> */}
           <Route path="/chat" element={<Chat/>} />
         </Routes>
