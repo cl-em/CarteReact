@@ -94,8 +94,8 @@ app.get('/verify', verifyUser, (req, res) => {
   return res.send({ validation: true });
 });
 //-------------------------------Variables-----------------------------------------------
-var partiesOuvertes = {}
-var partiesEnCours = {}
+var partiesOuvertes = []
+var partiesEnCours = []
 
 
 //-------------------------------Classes-----------------------------------------------
@@ -196,6 +196,12 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
+
+  socket.on('newGame',data=>{
+
+
+
+  })
 
 //-------------------------------Verify login-----------------------------------------------
 

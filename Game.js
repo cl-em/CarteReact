@@ -90,6 +90,7 @@ class Bataille extends Game{
         super(["coeur","pique","trèfle","carreau"],13,host,nbJoueurs);
         this.createDeck();
         this.paquets = [];
+        this.type="Bataille"
 
     }
 
