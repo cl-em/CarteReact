@@ -145,15 +145,11 @@ io.on('connection', (socket) => {
   //   console.log("salut");
   // });
 
-<<<<<<< HEAD
   socket.on("infosLobby",date=>{
     
   })
 
   socket.on('parties ouvertes',data=>{
-=======
-  socket.on('demandepartiesouvertes',data=>{
->>>>>>> dd3af265e207eb6346a52fd206a8722365a13f7d
     var retour = []
     for (var partie of partiesOuvertes){
       if (partie.type==data){retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax})}
