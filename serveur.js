@@ -94,8 +94,8 @@ app.get('/verify', verifyUser, (req, res) => {
   return res.send({ validation: true });
 });
 //-------------------------------Variables-----------------------------------------------
-var partiesOuvertes = {}
-var partiesEnCours = {}
+var partiesOuvertes = []
+var partiesEnCours = []
 
 
 //-------------------------------Classes-----------------------------------------------
@@ -122,6 +122,8 @@ game.tour();
 
 console.log(game.pactoleAttente)
 
+partiesOuvertes.push(game);
+
 
 console.log("|------------un tour d'égalité passe--------------|")
 /*ça a l'air fonctionnel :)*/
@@ -147,6 +149,14 @@ io.on('connection', (socket) => {
   // socket.on("salut",()=>{
   //   console.log("salut");
   // });
+
+  socket.on('parties ouvertes',data=>{
+    var retour = []
+    for (var partie of partiesOuvertes){
+      if (partie.type==data){retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax})}
+    }
+    socket.emit('parties ouvertes bataille')
+  });
 
   socket.on("login",(data)=>{
     // data : {id,password}
@@ -198,6 +208,17 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
+
+  //Création d'une partie
+  socket.on('newBataille',data=>{
+
+  })
+
+//Demande d'actualisation des infos bataille
+
+socket.on('demandeBataille',data=>{
+  
+})
 
 //-------------------------------Verify login-----------------------------------------------
 

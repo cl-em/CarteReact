@@ -1,5 +1,6 @@
 import './App.css';
-
+import io from 'socket.io-client';
+import { useState, useEffect } from 'react';
 
 import {
     useNavigate
@@ -7,7 +8,22 @@ import {
 
 function ListePartiesBataille(){
     const navigate = useNavigate();
+    const [partiesOuvertes, setPartiesOuvertes] = useState([]);
+    const socket = io('http://localhost:8888');
+    useEffect(() => {
+        socket.emit('parties ouvertes');
+        socket.on('parties ouvertes', (data) => {
+            console.log('Liste mise à jour : ', data);
+            setPartiesOuvertes(data);
+        });
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
+    for (let i = 0; i < partiesOuvertes.length; i++) {
+        console.log(partiesOuvertes[i]);
+    }
     return (
 
     <div className="listeParties">
