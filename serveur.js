@@ -150,8 +150,12 @@ io.on('connection', (socket) => {
     console.log("salut");
   });
 
-  socket.on('parties ouvertes',()=>{
-    socket.emit("parties ouvertes",partiesOuvertes);
+  socket.on('parties ouvertes',data=>{
+    var retour = []
+    for (var partie of partiesOuvertes){
+      if (partie.type==data){retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax})}
+    }
+    socket.emit('parties ouvertes bataille')
   });
 
   socket.on("login",(data)=>{
