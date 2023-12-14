@@ -4,6 +4,9 @@ import io from 'socket.io-client';
 // import { useState } from 'react';
 import md5 from 'md5';
 import React, { useState, useEffect } from 'react';
+// import { useHistory } from 'react-router-dom';
+
+import {} from Bataille;
 
 import {Games} from "./Games";
 import {Parties} from "./Parties";
@@ -15,6 +18,7 @@ import {
   Link,
   useNavigate
 } from "react-router-dom";
+import { Bataille } from './Bataille';
 
 
 const socket = io('http://localhost:8888');
@@ -80,7 +84,7 @@ function RegisterConfirm(){
     </div>
   )
 }
-
+let idJoueur;
 function LoginForm() {
   // Permet de naviger
   const navigate = useNavigate();
@@ -100,6 +104,14 @@ function LoginForm() {
       // navigate("/games"); //a virer si username + password pas dans la bdd
     }
   }
+
+  socket.on("login",(reponse)=>{
+    console.log(reponse);
+    if(reponse){
+      idJoueur=reponse;
+      navigate("/games");
+    }
+  })
 
   return (
     <div className="login-form">
@@ -185,15 +197,6 @@ function Chat() {
     </div>
   );
 }
-let idJoueur;
-socket.on("login",(reponse)=>{
-  const navigate = useNavigate("");
-  // la reponse c'est l'id du joueur 
-  if(reponse){
-    idJoueur= reponse
-    navigate("/games");
-  }
-});
 
 
 //Defini toutes tes pages ici
@@ -204,7 +207,7 @@ function MyApp() {
         <Routes>
           <Route path="/" element={<LoginForm />} /> 
           {/* <Route path="/register" element={} /> */}
-          <Route path="/" element={<LoginForm />} />
+          {/* <Route path="/" element={<LoginForm />} />   */}
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
