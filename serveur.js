@@ -216,22 +216,28 @@ io.on('connection', (socket) => {
   });
 
   //Création d'une partie
-  socket.on('newBataille',data=>{
-
+  socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
+      
+  socket.on("creer partie bataille",data=>{
+    let partie = new Bataille(idJoueur,joueursMax)
+    partiesOuvertes.push(partie)
+    socket.emit("creer partie bataille",partie.id)
   })
+  
 
 //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
 
 socket.on("rejoindre partie bataille", data=>{
-for (var partie of partiesOuvertes){
-  if (data.idPartie==partie.id){
+for (var partie of partiesOuvertes){ 
+  if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
     partie.addPlayer(data.idJoueur)
-    socket.emit("rejoindre partie bataille",true)
+    socket.emit("rejoindre partie bataille",partie.id)
     return;
   }
+}
+
   socket.emit("rejoindre partie bataille",false);
   return;
-}
 
 
 })
@@ -251,7 +257,7 @@ socket.on('infosLobby',data=>{
     retour.push(getUserById(j.idJoueur))
   }
 
-  socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax})
+  socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
 })
 
 //-------------------------------Verify login-----------------------------------------------

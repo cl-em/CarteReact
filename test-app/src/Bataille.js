@@ -46,7 +46,33 @@ socket.emit("infoLobby",{idJoueur:"",idPartie:""});
 export function Lobby({listesjoueurs,nbjoueurs,joueursmax}){
     // listesjoueurs : liste de string,
 
-    return (<div><p>{nbjoueurs}/{joueursmax}</p></div>)
+    return (
+        
+    <div>
+        <div className='Table'>
+            <div className='j1'>
+            </div>
+            <div className='j2'>
+            </div>    
+            <div className='j3'>
+            </div>
+            <div className='j4'>
+            </div>
+            <div className='j5'>
+            </div>    
+            <div className='j6'>
+            </div>
+            <div className='j7'>
+            </div>
+            <div className='j8'>
+            </div>    
+            <div className='j9'>
+            </div>   
+            <div className='j10'>
+            </div> 
+        </div>
+    </div>
+    )
 }
 
 
