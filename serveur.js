@@ -215,9 +215,7 @@ io.on('connection', (socket) => {
 
 //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
 
-socket.emit('rejoindre partie bataille', {idPartie, idJoueur})
 socket.on("rejoindre partie bataille", data=>{
-
 
 
 })
@@ -237,7 +235,7 @@ socket.on('infosLobby',data=>{
     retour.push(getUserById(j.idJoueur))
   }
 
-  socket.emit('infosLobby',{'joueurs':retour,'nbjoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax})
+  socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax})
 })
 
 //-------------------------------Verify login-----------------------------------------------
