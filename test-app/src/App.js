@@ -159,7 +159,7 @@ function ListePartiesBataille(){
       );
   }
   return (
-  <div className='joinpartieID'>
+  <div className='joinPartieId'>
     <input type="text" placeholder="Id de la partie" id="idPartie"></input>
     <button onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button>
   <div className="listeParties">
@@ -180,6 +180,28 @@ function ListePartiesBataille(){
 
   )
 
+}
+
+function CreatePartieBataille(){
+  // donner le idjoueur + joueursmax puis rediriger vers partie en attente
+  const navigate = useNavigate();
+  const [joueursMax, setJoueursMax] = useState(2);
+  const createPartie = () => {
+      socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
+      socket.on('creer partie bataille', (data) => {
+          console.log(data);
+          if (data != false) {
+              navigate("/bataille_"+data);
+          }
+      }
+      );
+  }
+  return (
+  <div className="createPartie">
+    <input type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input>
+    <button onClick={createPartie}>Créer !</button>
+  </div>
+  )
 }
 
 function Chat() {
@@ -229,6 +251,7 @@ function MyApp() {
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
           <Route path="/bataille" element={<ListePartiesBataille/>} />
+          <Route path="/bataille_create" element={<CreatePartieBataille/>} />
           {/* <Route path="/bataille" element={<Test2/>}/> */}
 
           <Route path='/test'element={<Lobby listesjoueurs={[]} nbjoueurs={7} joueursmax={11}/>}/>
