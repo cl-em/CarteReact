@@ -108,21 +108,16 @@ const { Carte } = require('./Carte.js');
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
 
 var game = new Bataille(12345678,2);
-console.log("joueurs max: "+game.joueursMax)
-console.log("ajout de Jean: "+game.addPlayer("Jean"));
-game.initGame();
+var game2 = new Bataille(123435678,2);
+var game3 = new Bataille(122345678,5);
 
+game2.addPlayer(9999)
+game2.addPlayer(2)
 
-game.joueurs[0].setChoice(game.joueurs[0].main[0].valeur,game.joueurs[0].main[0].couleur)
-game.joueurs[1].choix = game.joueurs[0].choix;
-for (var p of game.joueurs){console.log(p)}
-console.log("|------------un tour passe--------------|")
-console.log("Tour possible: "+game.canTour())
-game.tour();
-
-console.log(game.pactoleAttente)
 
 partiesOuvertes.push(game);
+partiesOuvertes.push(game2);
+partiesOuvertes.push(game3);
 
 
 console.log("|------------un tour d'égalité passe--------------|")
@@ -149,6 +144,10 @@ io.on('connection', (socket) => {
   socket.on("salut",()=>{
     console.log("salut");
   });
+
+  socket.on("infosLobby",date=>{
+    
+  })
 
   socket.on('parties ouvertes',data=>{
     var retour = []
@@ -215,7 +214,7 @@ io.on('connection', (socket) => {
 //Demande d'actualisation des infos bataille
 
 socket.on('demandeBataille',data=>{
-  
+
 })
 
 //-------------------------------Verify login-----------------------------------------------
