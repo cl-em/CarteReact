@@ -1,13 +1,6 @@
-// import logo from './logo.svg';
 import './App.css';
-// import io from 'socket.io-client';
-
 
 import {
-  // BrowserRouter as Router,
-  // Routes,
-  // Route,
-  // Link,
   useNavigate
 } from "react-router-dom";
 
@@ -34,14 +27,6 @@ function MyGame(){
   )
 
 }
-
-/*
-export  const ListRoom = ()=>{
-  const parsedUrl = new URL(window.location.href);
-  console.log(parsedUrl.searchParams.get("typejeu"));
-  return (<p></p>)
-}
-*/
 
 export const Games = ()=>{
   return (<MyGame/>);

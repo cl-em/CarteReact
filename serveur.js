@@ -93,6 +93,10 @@ const verifyUser = (req, res, next) => {
 app.get('/verify', verifyUser, (req, res) => {
   return res.send({ validation: true });
 });
+//-------------------------------Variables-----------------------------------------------
+var partiesOuvertes = {}
+var partiesEnCours = {}
+
 
 //-------------------------------Classes-----------------------------------------------
 const { Game,Bataille } = require('./Game.js');
@@ -102,13 +106,25 @@ const { Carte } = require('./Carte.js');
 
 //-------------------------------Fonctions-----------------------------------------------
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
-var game = new Bataille(12345678,io);
-game.createDeck();
-game.shuffleDeck();
-console.log(game.deck.length);
-console.log(game.drawCarte());
-console.log(game.deck.length);
-console.log("Id de la game: "+game.id)
+
+var game = new Bataille(12345678,2);
+console.log("joueurs max: "+game.joueursMax)
+console.log("ajout de Jean: "+game.addPlayer("Jean"));
+game.initGame();
+
+
+game.joueurs[0].setChoice(game.joueurs[0].main[0].valeur,game.joueurs[0].main[0].couleur)
+game.joueurs[1].choix = game.joueurs[0].choix;
+for (var p of game.joueurs){console.log(p)}
+console.log("|------------un tour passe--------------|")
+console.log("Tour possible: "+game.canTour())
+game.tour();
+
+console.log(game.pactoleAttente)
+
+
+console.log("|------------un tour d'égalité passe--------------|")
+/*ça a l'air fonctionnel :)*/
 console.log("------------------------------------------------------------------------------------")
 
 const getUserById = (id)=>{
@@ -171,6 +187,11 @@ io.on('connection', (socket) => {
     db.close();
     
   });
+
+  socket.on('message', data => {
+    console.log(data)
+    io.emit('message', `${socket.id.substring(0, 5)}: ${data}`)
+});
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
