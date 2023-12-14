@@ -213,10 +213,31 @@ io.on('connection', (socket) => {
 
   })
 
+//------------------------------------REJOINDRE UNE PARTIE------------------------------------------
+
+socket.emit('rejoindre partie bataille', {idPartie, idJoueur})
+socket.on("rejoindre partie bataille", data=>{
+
+
+
+})
+
+
 //Demande d'actualisation des infos bataille
 
-socket.on('demandeBataille',data=>{
+socket.on('infosLobby',data=>{
+  var partie;
 
+  for (g of partiesOuvertes){//On sélectionne la bonne partie
+    if (g.id==data.idPartie){partie=g} 
+  }
+
+  var retour = []; 
+  for (var j of partie.joueurs){//On renvoie la liste des joueurs
+    retour.push(getUserById(j.idJoueur))
+  }
+
+  socket.emit('infosLobby',{'joueurs':retour,'nbjoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax})
 })
 
 //-------------------------------Verify login-----------------------------------------------
