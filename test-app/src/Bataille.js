@@ -11,6 +11,34 @@ const socket = io('http://localhost:8888');
 
 // let IdJoueur;
 
+function P2({nomJ}){
+    return (
+        <di>
+            <p>element</p>
+        </di>
+    );
+}
+
+let listeJoueursP=[];
+let hote;
+socket.on("infoLobby",data=>{
+    //data {listejoueurs,nbjoueurs,joueurs,idHote}
+    listeJoueursP=data.listesjoueurs;
+
+    hote = data.host;
+});
+
+
+
+export function Accueil({liste,css}){
+    let listeP = [];
+    liste.forEach((element,index)=>{
+        listeP.push(<div><p>{element}</p></div>);
+    });
+    return(
+        <div style={{padding:"0",margin:"0"}}>{listeP}</div>
+    )
+}
 
 
 socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
@@ -20,13 +48,6 @@ export function Lobby({listesjoueurs,nbjoueurs,joueursmax}){
 
     return (<div><p>{nbjoueurs}/{joueursmax}</p></div>)
 }
-
-socket.on("infoLobby", (data) => { //liste de joueurs (liste de json), taille du paquet, liste de cartes, carte avec valeur et couleur comme attribut
-    // data {listejoueurs:tableau,nbjoueurs:int,joueursmax:int}
-
-
-
-});
 
 
 
