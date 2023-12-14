@@ -17,9 +17,7 @@ import {
 const socket = io('http://localhost:8888');
 
 socket.emit("salut");
-function test(){
-  socket.emit("salut");
-}
+// elouand met ton code ici
 
 function RegisterForm() {
   // Permet de naviger
@@ -52,17 +50,28 @@ function LoginForm() {
   // Permet de naviger
   const navigate = useNavigate();
 
+  const emitLogin = () => {
+    const username = document.getElementById("usernameLogin").value;
+    const password = document.getElementById("passwordLogin").value;
+    // console.log("id":username,password);
+
+    
+    socket.emit("login", {"pseudo":username,"password":password});
+
+    navigate("/games");
+  }
+
   return (
     <div className="login-form">
       <h2>Connexion</h2>
 
       <br></br>
 
-      <input type = "text" placeholder="Nom d'utilisateur" id="usernameLogin" onChange={handleChange}></input><br></br>
+      <input type = "text" placeholder="Nom d'utilisateur" id="usernameLogin"></input><br></br>
 
       <br></br>
 
-      <input type = "password" placeholder="Mot de passe" id="passwordLogin" onChange={handleChange}></input>
+      <input type = "password" placeholder="Mot de passe" id="passwordLogin"></input>
 
       <br></br>
       <br></br>

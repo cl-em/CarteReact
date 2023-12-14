@@ -111,6 +111,17 @@ console.log(game.deck.length);
 console.log("Id de la game: "+game.id)
 console.log("------------------------------------------------------------------------------------")
 
+const getUserById = (id)=>{
+  const db = new sqlite3.Database("cards_game.sqlite");
+  db.all("SELECT pseudo FROM users WHERE idU = ?",[id],(err,rows)=>{
+    if(rows.length>0){
+      return rows.pseudo;
+    }else{
+      return null;
+    }
+  });
+}
+
 
 //-------------------------------Sockets-----------------------------------------------
 io.on('connection', (socket) => {
@@ -139,14 +150,21 @@ io.on('connection', (socket) => {
   });
 
   socket.on("creerCompte",(data)=>{
-    // data : {id,pseudo,password}
+    // data : {pseudo,password}
     const db = new sqlite3.Database("cards_game.sqlite");
+    console.log("ouai ça creer un compte");
+
 
     db.all("SELECT * FROM users WHERE pseudo = ?",[data.pseudo],(err,rows)=>{
       if(rows.length >0) socket.emit("creerCompte",false);
       
       else{
-        db.prepare("INSERT INTO users VALUES(?,?,?)").run([data.id,data.pseudo,data.password]).finalize();
+
+        let id = parseInt(Math.random()*10**8);
+        // db.prepare("INSERT INTO users VALUES(?,?,?)").run([id,data.pseudo,data.password]).finalize();
+        db.run("INSERT INTO users(idU,pseudo,password) VALUES(?,?,?)",[id,data.pseudo,data.password],(err)=>{
+          console.log(err);
+        });
         socket.emit("creerCompte",true);
       }
     });
@@ -160,7 +178,4 @@ io.on('connection', (socket) => {
 
 //-------------------------------Verify login-----------------------------------------------
 
-  socket.on('login',data=>{
-  
-  })
 });
