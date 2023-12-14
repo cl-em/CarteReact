@@ -102,6 +102,7 @@ var partiesEnCours = []
 const { Game,Bataille } = require('./Game.js');
 const { Joueur } = require('./Joueur.js');
 const { Carte } = require('./Carte.js');
+const { idJoueur } = require('./test-app/src/App.js');
 
 
 //-------------------------------Fonctions-----------------------------------------------
@@ -216,9 +217,14 @@ io.on('connection', (socket) => {
   });
 
   //Création d'une partie
-  socket.on('newBataille',data=>{
-
+  socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
+      
+  socket.on("creer partie bataille",data=>{
+    let partie = new Bataille(idJoueur,joueursMax)
+    partiesOuvertes.push(partie)
+    socket.emit("creer partie bataille",partie.id)
   })
+  
 
 //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
 
