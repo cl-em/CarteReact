@@ -124,6 +124,35 @@ function LoginForm() {
   );
 }
 
+function ListePartiesBataille(){
+  const navigate = useNavigate();
+  const [partiesOuvertes, setPartiesOuvertes] = useState([]);
+  useEffect(() => {
+      socket.emit('demandepartiesouvertes', 'Bataille');
+      socket.on('parties ouvertes bataille', (data) => {
+          // console.log('Liste mise à jour : ', data);
+          setPartiesOuvertes(data);
+      });
+  }, [partiesOuvertes]);
+  return (
+
+  <div className="listeParties">
+    {partiesOuvertes.map((partie,index)=>{
+      return(
+        <div className={"test".concat(index%2)} key={index}>
+          <p>{partie.id}</p>
+          <p>{partie.joueursActuels}/{partie.joueursMax}</p>
+          <p>Bataille</p>
+          <button onClick={()=>navigate("/bataille")}>Rejoindre !</button>
+        </div>
+      )
+    })}
+  </div>
+
+  )
+
+}
+
 function Chat() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
@@ -179,7 +208,7 @@ function MyApp() {
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
-          <Route path="/bataille" element={<Parties/>} />
+          <Route path="/bataille" element={<ListePartiesBataille/>} />
           <Route path="/chat" element={<Chat/>} />
         </Routes>
       </Router>
