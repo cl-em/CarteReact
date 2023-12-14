@@ -224,9 +224,7 @@ io.on('connection', (socket) => {
 
 socket.on("rejoindre partie bataille", data=>{
 for (var partie of partiesOuvertes){ 
-  console.log(partie.id+"|"+data.idPartie)
   if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
-    console.log("true!")
     partie.addPlayer(data.idJoueur)
     socket.emit("rejoindre partie bataille",partie.id)
     return;
@@ -254,7 +252,7 @@ socket.on('infosLobby',data=>{
     retour.push(getUserById(j.idJoueur))
   }
 
-  socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax})
+  socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
 })
 
 //-------------------------------Verify login-----------------------------------------------
