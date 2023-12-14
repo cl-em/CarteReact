@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import io from 'socket.io-client';
-import { useState } from 'react';
+// import { useState } from 'react';
 import md5 from 'md5';
 import React, { useState, useEffect } from 'react';
 
@@ -21,6 +21,7 @@ const socket = io('http://localhost:8888');
 
 socket.emit("salut");
 // elouand met ton code ici
+
 
 function RegisterForm() {
   // Permet de naviger
@@ -86,17 +87,17 @@ function LoginForm() {
 
   const emitLogin = () => {
     let username = document.getElementById("usernameLogin").value;
-    // let password = "";
+    let password = "";
     
     if(document.getElementById("passwordLogin").value !== ""){
-        password = md5(document.getElementById("passwordLogin").value);
+      password = md5(document.getElementById("passwordLogin").value);
     } 
     
     console.log(username, password);
     
     if((username !== "") && (password !== "")){ //ajouter verif bdd
       socket.emit("login", {"pseudo":username,"password":password});
-      navigate("/games"); //a virer si username + password pas dans la bdd
+      // navigate("/games"); //a virer si username + password pas dans la bdd
     }
   }
 
@@ -155,6 +156,15 @@ function Chat() {
     </div>
   );
 }
+let idJoueur;
+socket.on("login",(reponse)=>{
+  const navigate = useNavigate("");
+  // la reponse c'est l'id du joueur 
+  if(reponse){
+    idJoueur= reponse
+    navigate("/games");
+  }
+});
 
 
 //Defini toutes tes pages ici

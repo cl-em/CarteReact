@@ -152,10 +152,10 @@ io.on('connection', (socket) => {
     // data : {id,password}
     const db = new sqlite3.Database('cards_game.sqlite');
 
-    db.all('SELECT * FROM users WHERE idU = ? AND password = ?', [data.id,data.password], (err, rows) => {
-        if(rows.length >0){
+    db.all('SELECT * FROM users WHERE pseudo = ? AND password = ?', [data.pseudo,data.password], (err, rows) => {
+        if(rows.length==1){
           // si l'id et le mdp sont bon alors j'envoie true
-          socket.emit("login",true);
+          socket.emit("login",rows.idU);
         }else {
           socket.emit("login",false);
         }
@@ -165,7 +165,7 @@ io.on('connection', (socket) => {
 
   });
 
-  socket.on("creerCompte",(data)=>{
+  socket.on("register",(data)=>{
     // data : {pseudo,password}
     const db = new sqlite3.Database("cards_game.sqlite");
     console.log("ouai ça creer un compte");

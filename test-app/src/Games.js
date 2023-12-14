@@ -5,9 +5,11 @@ import {
 } from "react-router-dom";
 
 
+
 function MyGame(){
-    const navigate = useNavigate();
-  
+  const navigate = useNavigate();
+  // console.log(idJoueur);
+
   return (
 
     <div className='jeu'>
