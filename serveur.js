@@ -194,10 +194,6 @@ io.on('connection', (socket) => {
   //   console.log("salut");
   // });
 
-  socket.on("infosLobby",date=>{
-    
-  })
-
   socket.on('demandepartiesouvertes',data=>{
     var retour = []
     for (var partie of partiesOuvertes){
@@ -301,7 +297,7 @@ io.on('connection', (socket) => {
         }
       }
     }
-    console.log(infosJoueurs)
+    console.log(main)
     socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
   })
   
@@ -330,18 +326,21 @@ for (var partie of partiesOuvertes){
 //Demande d'actualisation des infos bataille
 
 socket.on('infosLobby',data=>{
-  var partie;
 
-  for (var g of partiesOuvertes){//On sélectionne la bonne partie
-    if (g.id==data.idPartie){partie=g} 
-  }
+
+  for (var partie of partiesOuvertes){//On sélectionne la bonne partie
+
+    if (partie.id==data.idPartie){ 
 
   var retour = []; 
   for (var j of partie.joueurs){//On renvoie la liste des joueurs
-    retour.push(getUserById(j.idJoueur))
+    
+    retour.push(pseudos[j.idJoueur])
   }
-
   socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
+  return
+}
+}
 })
 
 

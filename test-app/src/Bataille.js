@@ -72,10 +72,12 @@ function MainJoueur({listeCartes}){
 let listeCartes;
 let listeJoueurs;
 let infosJoueurs;
-let urlP = new URL(document.location).searchParams;
-let idP = urlP.get("idPartie")
+
 
 export const Bataille = () => {
+    let urlP = new URL(document.location).searchParams;
+let idP = urlP.get("idPartie")
+    console.log(idP)
     //const playersList = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8', 'Player 9', 'Player10'];
     socket.emit("infosLobby", {"idPartie":idP});
 
@@ -85,8 +87,7 @@ export const Bataille = () => {
         // console.log(listeJoueurs);
     });
 
-    socket.emit("wantCarte",idJoueur);
-
+   
     //console.log(urlP.get("idPartie"));
 
 
