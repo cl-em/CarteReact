@@ -4,8 +4,6 @@ import {io} from "socket.io-client";
 import React, { useEffect, useState } from 'react';
 
 
-import images from './images';
-
 import {
     useNavigate
 } from "react-router-dom";
