@@ -101,6 +101,10 @@ app.get('/verify', verifyUser, (req, res) => {
 //-------------------------------Variables-----------------------------------------------
 var partiesOuvertes = []
 var partiesEnCours = []
+var pseudos = {};
+
+
+
 
 
 //-------------------------------Classes-----------------------------------------------
@@ -110,6 +114,22 @@ const { Carte } = require('./Carte.js');
 
 
 //-------------------------------Fonctions-----------------------------------------------
+
+//Démarrage d'une partie
+
+function lancerPartie(idPartie){
+  for (var partie in partiesOuvertes){
+    if (partiesOuvertes[partie].id==idPartie){
+      partiesOuvertes[partie].initGame();
+      partiesEnCours.push(partiesOuvertes[partie]);
+      partiesOuvertes.splice(partie)
+      console.log("lancement de la partie "+idPartie)
+    }
+  }
+}
+
+
+
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
 
 var game = new Bataille(12345678,2);
@@ -131,7 +151,7 @@ console.log("|------------un tour d'égalité passe--------------|")
 /*ça a l'air fonctionnel :)*/
 console.log("------------------------------------------------------------------------------------")
 
-const getUserById = (id)=>{
+const getUserById = (id)=>{//FONCTION A NE PAS UTILISER MARCHE PAS MERCI
   let retour;
 
   const db = new sqlite3.Database("cards_game.sqlite");
@@ -146,15 +166,15 @@ const getUserById = (id)=>{
   return retour;
 }
 
-const existeId = (id)=>{
-
-  let retour;
+const existeId = (id) => {
+  var retour;
   const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT * FROM users WHERE idU = ?",[id],(err,rows)=>{
-    retour =  rows.length>=1;
+    retour = rows.length>=1;
+    console.log(rows)
   });
-  return retour
-}
+  return retour;
+};
 
 
 //-------------------------------Sockets-----------------------------------------------
@@ -234,27 +254,37 @@ io.on('connection', (socket) => {
 
       
   socket.on("creer partie bataille",data=>{
-    if (!existeId(data.idJoueur)){
-      socket.emit("creer partie bataille",false);console.log((data.idJoueur));return;
+    
+    const db = new sqlite3.Database("cards_game.sqlite");
+    db.all("SELECT * FROM users WHERE idU = ?",[data.idJoueur],(err,rows)=>{
+    
+    if (rows.length<1){
+      socket.emit("creer partie bataille",false);
+      return;
     }
-    var joueursMax = data.joueursMax;
-    if (joueursMax>8){
-      joueursMax=8
-    }
-    let partie = new Bataille(data.idJoueur,joueursMax)
-    partiesOuvertes.push(partie)
-    socket.emit("creer partie bataille",partie.id)
+    else{
+      var joueursMax = data.joueursMax;
+      if (!Number.isInteger(joueursMax)||joueursMax>8){
+        joueursMax=8
+      }
+      let partie = new Bataille(data.idJoueur,joueursMax)
+      partiesOuvertes.push(partie)
+      console.log("Création d'une partie par "+data.idJoueur+" dont l'id sera "+partie.id)
+    socket.emit("creer partie bataille",partie.id)}
+    })
   })
   //Sockets de la partie----------------------------------
 
 
   socket.on("wantCarte",data=>{
+
     var main = [];
     var infosJoueurs = []
     for (var partie of partiesEnCours){
-      if (partie.id == data.idPartie){
-        for (var joueur in partie.joueurs){//Renvoi de la main du joueur
-          if (partie.joueurs[joueur].idJoueur==data.idJoueur){
+      if (partie.id == data.idPartie){console.log("partie trouvée")
+        for (var joueur in partie.joueurs){console.log(partie.joueurs[joueur].idJoueur)//Renvoi de la main du joueur
+          if (partie.joueurs[joueur].idJoueur==data.idJoueur){console.log("joueur trouvé")
+            console.log("joueur: "+partie.joueurs[joueur])
               main = partie.joueurs[joueur].main;
           }
           else{
@@ -272,9 +302,13 @@ io.on('connection', (socket) => {
 socket.on("rejoindre partie bataille", data=>{
 for (var partie of partiesOuvertes){ 
   if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
-    partie.addPlayer(data.idJoueur)
-    socket.emit("rejoindre partie bataille",partie.id)
-    return;
+    if (partie.addPlayer(data.idJoueur)!=false){
+      console.log(partie.joueurs)
+    socket.emit("rejoindre partie bataille",partie.id);
+    if (partie.joueurs.length==partie.joueursMax){
+      lancerPartie(partie.id)
+    }
+    return;}
   }
 }
 
@@ -302,6 +336,5 @@ socket.on('infosLobby',data=>{
   socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
 })
 
-//-------------------------------Verify login-----------------------------------------------
 
 });

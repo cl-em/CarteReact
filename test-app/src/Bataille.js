@@ -90,14 +90,15 @@ export const Bataille = () => {
 
 
     socket.emit("wantCarte",{"idPartie":urlP.get("idPartie"),"idJoueur":idJoueur});
-
         socket.on("getCarte",(data)=>{
-            listeCartes = data.main;
-            infosJoueurs = data.infosJoueurs;
+           listeCartes = data.main;
+           console.log(listeCartes)
+            //infosJoueurs = data.infosJoueurs;
         });
 
 
     listeCartes = [{valeur: '1', couleur: 'coeur' },{ valeur: '2', couleur: 'trefle' }];
+    listeJoueurs = ["salut","kyky","zizi"]
 
     return ( 
         <div>

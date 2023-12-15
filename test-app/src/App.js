@@ -134,13 +134,13 @@ function LoginForm() {
       <button onClick={emitLogin}>Envoyer!</button>
       <div id="messageErreur"></div>
 
-      <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
+      <p>Vous n'avez pas de compte ? <p onClick={()=>navigate("/register")} className="lien">Créez-en un !</p></p>
     </div>
   );
 }
 
 function ListePartiesBataille(){
-  // console.log(idJoueur);
+  
   const navigate = useNavigate();
   const [partiesOuvertes, setPartiesOuvertes] = useState([]);
   useEffect(() => {
@@ -155,24 +155,24 @@ function ListePartiesBataille(){
       socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
       socket.on('creer partie bataille', (idPartie) => {
           console.log(idPartie);
-          if (idPartie == false) {
+          if (idPartie == false) {//<Lobby listesjoueurs={listeJoueurs} nbjoueurs={9} joueursmax={10} />
             idJoueur = null;
             navigate("/");
           }
           else{
-            navigate("/batailleJeu?idPartie="+idPartie);
+            navigate("/bataille?idPartie="+idPartie);
           }
       }
       );
   }
   const rejoindrePartie = (idPartie) => {
-    // console.log(idJoueur);
-      socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
+    socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
+    console.log(idJoueur);
       console.log(idPartie);
       socket.on('rejoindre partie bataille', (data) => {
-          // console.log(data);
+          
           if (data != false && data == idPartie) {
-              navigate("/batailleJeu?idPartie="+idPartie);
+              navigate("/bataille?idPartie"+idPartie);
           }
           else{
             const message = "La partie est pleine ou n'existe pas !";

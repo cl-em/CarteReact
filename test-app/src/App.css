@@ -100,7 +100,8 @@ body {
 }
 
 .lien {
-  color: rgba(0, 102, 255, 0.705); /* Couleur du texte du lien */
+  color: aliceblue; /* Couleur du texte du lien */
+  font-weight: bold;
   text-decoration: underline; /* Soulignement du texte comme un lien */
   cursor: pointer; /* Curseur de type main pour indiquer que c'est cliquable */
 }
