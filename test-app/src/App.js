@@ -140,7 +140,7 @@ function LoginForm() {
 }
 
 function ListePartiesBataille(){
-  console.log(idJoueur);
+  // console.log(idJoueur);
   const navigate = useNavigate();
   const [partiesOuvertes, setPartiesOuvertes] = useState([]);
   useEffect(() => {
@@ -160,19 +160,19 @@ function ListePartiesBataille(){
             navigate("/");
           }
           else{
-            navigate("/bataille_"+idPartie);
+            navigate("/batailleJeu?idPartie="+idPartie);
           }
       }
       );
   }
   const rejoindrePartie = (idPartie) => {
-    console.log(idJoueur);
+    // console.log(idJoueur);
       socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
       console.log(idPartie);
       socket.on('rejoindre partie bataille', (data) => {
           // console.log(data);
           if (data != false && data == idPartie) {
-              navigate("/bataille_"+idPartie);
+              navigate("/batailleJeu?idPartie="+idPartie);
           }
           else{
             const message = "La partie est pleine ou n'existe pas !";
@@ -264,7 +264,7 @@ function MyApp() {
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
           <Route path="/bataille" element={<ListePartiesBataille/>} />
-          <Route path='/kyky'element={<Bataille/>}/>
+          <Route path='/batailleJeu'element={<Bataille/>}/>
           <Route path="/chat" element={<Chat/>} />
         </Routes>
       </Router>
