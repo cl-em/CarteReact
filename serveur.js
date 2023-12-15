@@ -155,8 +155,6 @@ partiesOuvertes.push(game);
 partiesOuvertes.push(game2);
 partiesOuvertes.push(game3);
 
-console.log(partiesOuvertes,partiesEnCours);
-
 
 console.log("|------------un tour d'égalité passe--------------|")
 /*ça a l'air fonctionnel :)*/

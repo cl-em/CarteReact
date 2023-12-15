@@ -73,10 +73,11 @@ let listeCartes;
 let listeJoueurs;
 let infosJoueurs;
 let urlP = new URL(document.location).searchParams;
+let idP = urlP.get("idPartie")
 
 export const Bataille = () => {
     //const playersList = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8', 'Player 9', 'Player10'];
-    socket.emit("infosLobby", {idPartie:urlP.get("idPartie")});
+    socket.emit("infosLobby", {"idPartie":idP});
 
     socket.on("infosLobby", (data) => { //liste de joueurs (liste de json), taille du paquet, liste de cartes, carte avec valeur et couleur comme attribut
     // data {listejoueurs:tableau,nbjoueurs:int,joueursmax:int}
@@ -92,7 +93,7 @@ export const Bataille = () => {
     socket.emit("wantCarte",{"idPartie":urlP.get("idPartie"),"idJoueur":idJoueur});
         socket.on("getCarte",(data)=>{
            listeCartes = data.main;
-           console.log(listeCartes)
+           //console.log(listeCartes)
             //infosJoueurs = data.infosJoueurs;
         });
 

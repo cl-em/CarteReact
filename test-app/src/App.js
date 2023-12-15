@@ -160,7 +160,7 @@ function ListePartiesBataille(){
             navigate("/");
           }
           else{
-            navigate("/bataille?idPartie="+idPartie);
+            navigate("/batailleJeu?idPartie="+idPartie);
           }
       }
       );
@@ -172,7 +172,7 @@ function ListePartiesBataille(){
       socket.on('rejoindre partie bataille', (data) => {
           
           if (data != false && data == idPartie) {
-              navigate("/bataille?idPartie"+idPartie);
+              navigate("/batailleJeu?idPartie="+idPartie);
           }
           else{
             const message = "La partie est pleine ou n'existe pas !";
