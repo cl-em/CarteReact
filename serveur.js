@@ -25,6 +25,11 @@ app.get('/fichier/:nomFichier', function(request, response) {
   response.sendFile(request.params.nomFichier, {root: __dirname});
 });
 
+app.get('/carte/:nomFichier', function(request, response) {
+  console.log("renvoi de "+request.params.nomFichier);
+  response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
+});
+
 app.get('/socket.io/', (req, res) => {
   res.send('Server is running.');
 });
