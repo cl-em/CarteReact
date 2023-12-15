@@ -140,6 +140,7 @@ function LoginForm() {
 }
 
 function ListePartiesBataille(){
+  console.log(idJoueur);
   const navigate = useNavigate();
   const [partiesOuvertes, setPartiesOuvertes] = useState([]);
   useEffect(() => {
@@ -149,8 +150,23 @@ function ListePartiesBataille(){
           setPartiesOuvertes(data);
       });
   }, [partiesOuvertes]);
-
+  const [joueursMax, setJoueursMax] = useState(2);
+  const createPartie = () => {
+      socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
+      socket.on('creer partie bataille', (idPartie) => {
+          console.log(idPartie);
+          if (idPartie == false) {
+            idJoueur = null;
+            navigate("/");
+          }
+          else{
+            navigate("/bataille_"+idPartie);
+          }
+      }
+      );
+  }
   const rejoindrePartie = (idPartie) => {
+    console.log(idJoueur);
       socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
       console.log(idPartie);
       socket.on('rejoindre partie bataille', (data) => {
@@ -165,68 +181,57 @@ function ListePartiesBataille(){
       );
   }
   return (
-  <div className='joinPartieId'>
-    <input type="text" placeholder="Id de la partie" id="idPartie"></input>
-    <button onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button>
-  <div className="listeParties">
-    {/* input text de l'id de la partie */}
-    {partiesOuvertes.map((partie,index)=>{
-      return(
-        <div className={"test".concat(index%2)} key={index}>
-          <p>{partie.id}</p>
-          <p>{partie.joueursActuels}/{partie.joueursMax}</p>
-          <p>Bataille</p>
-          {/* <button onClick={()=>navigate("/bataille")}>Rejoindre !</button> */}
-          <button onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
-        </div>
-      )
-    })}
-  </div>
+  <div className='main'>
+    <div className='joinPartieId'>
+      <input type="text" placeholder="Id de la partie" id="idPartie"></input>
+      <button onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button>
+    </div>
+    <div className="createPartie">
+      <input type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input>
+      <button onClick={createPartie}>Créer !</button>
+    </div>
+    <div className="listeParties">
+      {/* input text de l'id de la partie */}
+      {partiesOuvertes.map((partie,index)=>{
+        return(
+          <div className={"test".concat(index%2)} key={index}>
+            <p>{partie.id}</p>
+            <p>{partie.joueursActuels}/{partie.joueursMax}</p>
+            <p>Bataille</p>
+            {/* <button onClick={()=>navigate("/bataille")}>Rejoindre !</button> */}
+            <button onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
+          </div>
+        )
+      })}
+    </div>
   </div>
 
   )
 
 }
 
-function CreatePartieBataille(){
-  // donner le idjoueur + joueursmax puis rediriger vers partie en attente
-  const navigate = useNavigate();
-  const [joueursMax, setJoueursMax] = useState(2);
-  const createPartie = () => {
-      socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
-      socket.on('creer partie bataille', (idPartie) => {
-          console.log(idPartie);
-          if (idPartie == false) {
-            idJoueur = null;
-            navigate("/login");
-          }
-          else{
-            navigate("/bataille_"+idPartie);
-          }
-      }
-      );
-  }
-  return (
-  <div className="createPartie">
-    <input type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input>
-    <button onClick={createPartie}>Créer !</button>
-  </div>
-  )
-}
-
-function Chat(idPartie) {
+function Chat() {
+  // const navigate = useNavigate();
+  // const idJoueur = 1;
+  // console.log(idJoueur);
+  // if (idJoueur == undefined){
+  //   navigate("/");
+  // }
+  const currentUrl = window.location.href;
+  const urlParts = currentUrl.split('?idPartie=');
+  const idPartie = urlParts[urlParts.length - 1];
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    socket.on('message', (msg) => {
+    socket.on('message '.concat(idPartie), (msg) => {
       setMessages((messages) => [...messages, msg]);
     });
     return () => socket.off("message");
   }, []);
 
   const sendMessage = () => {
-    socket.emit('message', message);
+    socket.emit('message', {message, idPartie, idJoueur});
     setMessage('');
   };
 
@@ -259,10 +264,7 @@ function MyApp() {
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
           <Route path="/bataille" element={<ListePartiesBataille/>} />
-          <Route path="/bataille_create" element={<CreatePartieBataille/>} />
-
           <Route path='/kyky'element={<Bataille/>}/>
-
           <Route path="/chat" element={<Chat/>} />
         </Routes>
       </Router>

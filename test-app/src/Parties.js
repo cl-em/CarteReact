@@ -1,12 +1,14 @@
 import './App.css';
 import io from 'socket.io-client';
 import { useState, useEffect } from 'react';
+import {idJoueur} from './App.js';
 
 import {
     useNavigate
 } from "react-router-dom";
 
 function ListePartiesBataille(){
+
     const navigate = useNavigate();
     const [partiesOuvertes, setPartiesOuvertes] = useState([]);
     const socket = io('http://localhost:8888');
@@ -23,6 +25,7 @@ function ListePartiesBataille(){
 
     for (let i = 0; i < partiesOuvertes.length; i++) {
         console.log(partiesOuvertes[i]);
+        
     }
     return (
 

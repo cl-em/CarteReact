@@ -25,17 +25,12 @@ app.get('/fichier/:nomFichier', function(request, response) {
   response.sendFile(request.params.nomFichier, {root: __dirname});
 });
 
-app.get('/carte/:nomFichier', function(request, response) {
-  console.log("renvoi de "+request.params.nomFichier);
-  response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
-});
-
 app.get('/socket.io/', (req, res) => {
   res.send('Server is running.');
 });
 
 //-------------------------------SQL-----------------------------------------------
-const sqlite3 = require('sqlite3').verbose();//Verbose affiche les erreurs
+const sqlite3 = require('sqlite3').verbose();
 
 
 //-------------------------------Login-----------------------------------------------
@@ -109,7 +104,6 @@ const { Joueur } = require('./Joueur.js');
 const { Carte } = require('./Carte.js');
 
 
-
 //-------------------------------Fonctions-----------------------------------------------
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
 
@@ -136,21 +130,23 @@ const getUserById = (id)=>{
   const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT pseudo FROM users WHERE idU = ?",[id],(err,rows)=>{
     if(rows.length>0){
-      retour =rows.pseudo;
+      retour = rows[0].pseudo;
     }else{
-      retour =  null;
+      retour =  false;
     }
   });
+
   return retour;
 }
 
 const existeId = (id)=>{
-  let retour
+
+  let retour;
   const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT * FROM users WHERE idU = ?",[id],(err,rows)=>{
-    retour =  (rows.length>=1);
+    retour =  rows.length>=1;
   });
-  return retour;
+  return retour
 }
 
 
@@ -197,7 +193,7 @@ io.on('connection', (socket) => {
   socket.on("register",(data)=>{
     // data : {pseudo,password}
     const db = new sqlite3.Database("cards_game.sqlite");
-    console.log("ouai ça creer un compte");
+    
 
 
     db.all("SELECT * FROM users WHERE pseudo = ?",[data.pseudo],(err,rows)=>{
@@ -218,8 +214,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('message', data => {
-    console.log(data)
-    io.emit('message', `${socket.id.substring(0, 5)}: ${data}`)
+    // verif que idJoueur soit dans idPartie et que joueur soit authentifié
+    console.log(data);
+    io.emit('message '.concat(data.idPartie), (data.idJoueur).toString().concat(" : ").concat(data.message));
 });
 
   socket.on('disconnect', () => {
@@ -227,11 +224,11 @@ io.on('connection', (socket) => {
   });
 
   //Création d'une partie
-  //socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
+
       
   socket.on("creer partie bataille",data=>{
     if (!existeId(data.idJoueur)){
-      socket.emit("creer partie bataille",false);console.log(existeId(data.idJoueur));return;
+      socket.emit("creer partie bataille",false);console.log((data.idJoueur));return;
     }
     var joueursMax = data.joueursMax;
     if (joueursMax>8){
@@ -240,6 +237,26 @@ io.on('connection', (socket) => {
     let partie = new Bataille(data.idJoueur,joueursMax)
     partiesOuvertes.push(partie)
     socket.emit("creer partie bataille",partie.id)
+  })
+  //Sockets de la partie----------------------------------
+
+
+  socket.on("wantCarte",data=>{
+    var main = [];
+    var infosJoueurs = []
+    for (var partie of partiesEnCours){
+      if (partie.id == data.idPartie){
+        for (var joueur in partie.joueurs){//Renvoi de la main du joueur
+          if (partie.joueurs[joueur].idJoueur==data.idJoueur){
+              main = partie.joueurs[joueur].main;
+          }
+          else{
+            infosJoueurs.push({"pseudo":getUserById(joueur.idJoueur),"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length})
+          }
+        }
+      }
+    }
+    socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
   })
   
 
