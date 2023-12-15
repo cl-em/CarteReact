@@ -1,7 +1,7 @@
 import './App.css';
 import {idJoueur} from './App.js';
 import {io} from "socket.io-client";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 
 
@@ -66,22 +66,32 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
 }*/  
 
 //a mettre dans export const bataille pour récupérer la liste des joueurs
-socket.on("infoLobby", (data) => { //liste de joueurs (liste de json), taille du paquet, liste de cartes, carte avec valeur et couleur comme attribut
-    // data {listejoueurs:tableau,nbjoueurs:int,joueursmax:int}
 
-
-});
 
 //<MainJoueur listeCartes={listeDeCartes} />
 //<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
 
 export const Bataille = () => {
-    const playersList = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8', 'Player 9', 'Player10'];
-    //const listeDeCartes = [{ valeur: '1', couleur: 'coeur' },{ valeur: '2', couleur: 'trefle' }];
+    // const playersList = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8', 'Player 9', 'Player10'];
+    let [infoPartie,setInfoPartie] = useState({});
+    infoPartie.joueurs=[];
+    
+    useEffect(()=>{
+        socket.on("infoLobby", (data) => { //liste de joueurs (liste de json), taille du paquet, liste de cartes, carte avec valeur et couleur comme attribut
+            // data {listejoueurs:tableau,nbjoueurs:int,joueursmax:int}
+            setInfoPartie(data);
+        
+        });
+    },[infoPartie]);
+
+
+    const playersList = infoPartie.joueurs;
+    const listeDeCartes = [{ valeur: '1', couleur: 'coeur' },{ valeur: '2', couleur: 'trefle' }];
     
     return ( 
         <div>
             <Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
+            
         </div>
     );
 };
