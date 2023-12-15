@@ -215,7 +215,8 @@ io.on('connection', (socket) => {
 
   socket.on('message', data => {
     // verif que idJoueur soit dans idPartie et que joueur soit authentifié
-    io.emit('message '.concat(data.idPartie), data.message);
+    console.log(data);
+    io.emit('message '.concat(data.idPartie), (data.idJoueur).toString().concat(" : ").concat(data.message));
 });
 
   socket.on('disconnect', () => {
