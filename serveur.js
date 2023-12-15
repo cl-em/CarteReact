@@ -295,6 +295,5 @@ socket.on('infosLobby',data=>{
   socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
 })
 
-//-------------------------------Verify login-----------------------------------------------
 
 });
