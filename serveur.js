@@ -143,9 +143,9 @@ function lancerPartie(idPartie){
 
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
 
-var game = new Bataille(12345678,2);
-var game2 = new Bataille(123435678,2);
-var game3 = new Bataille(122345678,5);
+var game = new Bataille(1,2);
+var game2 = new Bataille(99,2);
+var game3 = new Bataille(1,5);
 
 game2.addPlayer(99)
 game2.addPlayer(1)
@@ -301,7 +301,7 @@ io.on('connection', (socket) => {
         }
       }
     }
-    console.log(main)
+    console.log(infosJoueurs)
     socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
   })
   
