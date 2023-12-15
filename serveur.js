@@ -96,6 +96,10 @@ app.get('/verify', verifyUser, (req, res) => {
 //-------------------------------Variables-----------------------------------------------
 var partiesOuvertes = []
 var partiesEnCours = []
+var pseudos = {};
+
+
+
 
 
 //-------------------------------Classes-----------------------------------------------
@@ -124,7 +128,7 @@ console.log("|------------un tour d'égalité passe--------------|")
 /*ça a l'air fonctionnel :)*/
 console.log("------------------------------------------------------------------------------------")
 
-const getUserById = (id)=>{
+const getUserById = (id)=>{//FONCTION A NE PAS UTILISER MARCHE PAS MERCI
   let retour;
 
   const db = new sqlite3.Database("cards_game.sqlite");
@@ -237,7 +241,7 @@ io.on('connection', (socket) => {
     }
     else{
       var joueursMax = data.joueursMax;
-      if (joueursMax>8){
+      if (!Number.isInteger(joueursMax)||joueursMax>8){
         joueursMax=8
       }
       let partie = new Bataille(data.idJoueur,joueursMax)
@@ -250,6 +254,9 @@ io.on('connection', (socket) => {
 
 
   socket.on("wantCarte",data=>{
+    
+
+    
     var main = [];
     var infosJoueurs = []
     for (var partie of partiesEnCours){

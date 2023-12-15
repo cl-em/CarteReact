@@ -134,7 +134,7 @@ function LoginForm() {
       <button onClick={emitLogin}>Envoyer!</button>
       <div id="messageErreur"></div>
 
-      <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
+      <p>Vous n'avez pas de compte ? <p onClick={()=>navigate("/register")} className="lien">Créez-en un !</p></p>
     </div>
   );
 }
