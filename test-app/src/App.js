@@ -211,7 +211,7 @@ function ListePartiesBataille(){
 
 function Chat() {
   // const navigate = useNavigate();
-  const idJoueur = 1;
+  // const idJoueur = 1;
   // console.log(idJoueur);
   // if (idJoueur == undefined){
   //   navigate("/");

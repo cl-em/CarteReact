@@ -189,8 +189,8 @@ body {
 
 .Table{
   position: relative;
-  height: 600px;
-  width: 600px;
+  height: 60vh;
+  width: 60vh;
   background-color: red;
   border: 2px solid rgba(255, 255, 255, 0.295);
   border-radius: 50%;
@@ -210,3 +210,19 @@ body {
   /*transform: translate(-20px, -20px);*/
 }
 
+.divCartes{
+  margin-top: 4vh;
+  display: flex;
+  background-color: transparent;
+  height: 13vh;
+  position: absolute;
+  overflow-x: auto;
+  left: 50%; 
+  transform: translateX(-50%);
+}
+
+.divCartes img{
+  margin-left: 2px;
+  max-width: 100%;
+  height: auto;
+}

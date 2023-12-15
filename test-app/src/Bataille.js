@@ -56,7 +56,7 @@ function MainJoueur({listeCartes}){
     };
     
     return (
-        <div>
+        <div className='divCartes'>
             {listeCartes.map((carte, index) => (
             <img id={index + 1} src={CheminImage(carte)} alt={`Carte ${carte.valeur} ${carte.couleur}`} />
             ))}
@@ -82,6 +82,7 @@ export const Bataille = () => {
         
         });
     },[infoPartie]);
+    socket.emit("wantCarte",idJoueur);
 
     let [listCarte,setListCarte] = useState([]);
     let urlP = new URL(document.location).searchParams;
@@ -90,7 +91,8 @@ export const Bataille = () => {
 
     socket.emit("wantCarte",{"idPartie":urlP.get("idPartie"),"idJoueur":idJoueur});
     useEffect(()=>{
-        socket.on("getCarte",(data)=>{//Je te le renvoie sous cette forme:socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
+        socket.emit("wantCarte",idJoueur);
+        socket.on("getCarte",(data)=>{
             setListCarte(data);
         });
     },[listCarte]);
