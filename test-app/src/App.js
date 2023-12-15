@@ -154,12 +154,11 @@ function ListePartiesBataille(){
   const createPartie = () => {
       socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
       socket.on('creer partie bataille', (idPartie) => {
-        console.log(idJoueur);console.log(idPartie);
-          if (idPartie == false) {
-            idJoueur = null;
-            navigate("/");
-          }
-          else{
+        if (idPartie == false) {
+          idJoueur = null;
+          navigate("/");
+        }
+        else{
             navigate("/bataille_"+idPartie);
           }
       }

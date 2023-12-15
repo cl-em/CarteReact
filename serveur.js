@@ -139,15 +139,15 @@ const getUserById = (id)=>{
   return retour;
 }
 
-const existeId = (id)=>{
-
-  let retour;
+const existeId = (id) => {
+  var retour;
   const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT * FROM users WHERE idU = ?",[id],(err,rows)=>{
-    retour =  rows.length>=1;
+    retour = rows.length>=1;
+    console.log(rows)
   });
-  return retour
-}
+  return retour;
+};
 
 
 //-------------------------------Sockets-----------------------------------------------
@@ -226,16 +226,24 @@ io.on('connection', (socket) => {
 
       
   socket.on("creer partie bataille",data=>{
-    if (!existeId(data.idJoueur)){
-      socket.emit("creer partie bataille",false);console.log((data.idJoueur));return;
+    
+    const db = new sqlite3.Database("cards_game.sqlite");
+    db.all("SELECT * FROM users WHERE idU = ?",[data.idJoueur],(err,rows)=>{
+    
+    if (rows.length<1){
+      socket.emit("creer partie bataille",false);
+      return;
     }
+    else{
+    console.log("Création d'une partie par "+data.idJoueur)
     var joueursMax = data.joueursMax;
     if (joueursMax>8){
       joueursMax=8
     }
     let partie = new Bataille(data.idJoueur,joueursMax)
     partiesOuvertes.push(partie)
-    socket.emit("creer partie bataille",partie.id)
+    socket.emit("creer partie bataille",partie.id)+" dont l'id sera "+partie.id}
+    })
   })
   //Sockets de la partie----------------------------------
 
