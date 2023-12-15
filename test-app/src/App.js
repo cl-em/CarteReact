@@ -248,14 +248,11 @@ function MyApp() {
       <Router>
         <Routes>
           <Route path="/" element={<LoginForm />} /> 
-          {/* <Route path="/register" element={} /> */}
-          {/* <Route path="/" element={<LoginForm />} />   */}
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
           <Route path="/bataille" element={<ListePartiesBataille/>} />
           <Route path="/bataille_create" element={<CreatePartieBataille/>} />
-          {/* <Route path="/bataille" element={<Test2/>}/> */}
 
           <Route path='/kyky'element={<Bataille/>}/>
 
