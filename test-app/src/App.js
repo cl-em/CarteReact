@@ -171,7 +171,7 @@ function ListePartiesBataille(){
       socket.on('rejoindre partie bataille', (data) => {
           
           if (data != false && data == idPartie) {
-              navigate("/bataille_"+idPartie);
+              navigate("/kyky?idPartie="+idPartie);
           }
           else{
             const message = "La partie est pleine ou n'existe pas !";

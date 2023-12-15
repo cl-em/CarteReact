@@ -82,7 +82,6 @@ export const Bataille = () => {
         
         });
     },[infoPartie]);
-    socket.emit("wantCarte",idJoueur);
 
     let [listCarte,setListCarte] = useState([]);
     let urlP = new URL(document.location).searchParams;
@@ -91,7 +90,6 @@ export const Bataille = () => {
 
     socket.emit("wantCarte",{"idPartie":urlP.get("idPartie"),"idJoueur":idJoueur});
     useEffect(()=>{
-        socket.emit("wantCarte",idJoueur);
         socket.on("getCarte",(data)=>{
             setListCarte(data);
         });

@@ -114,6 +114,22 @@ const { Carte } = require('./Carte.js');
 
 
 //-------------------------------Fonctions-----------------------------------------------
+
+//Démarrage d'une partie
+
+function lancerPartie(idPartie){
+  for (var partie in partiesOuvertes){
+    if (partiesOuvertes[partie].id==idPartie){
+      partiesOuvertes[partie].initGame();
+      partiesEnCours.push(partiesOuvertes[partie]);
+      partiesOuvertes.splice(partie)
+      console.log("lancement de la partie "+idPartie)
+    }
+  }
+}
+
+
+
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
 
 var game = new Bataille(12345678,2);
@@ -259,15 +275,14 @@ io.on('connection', (socket) => {
 
 
   socket.on("wantCarte",data=>{
-    
 
-    
     var main = [];
     var infosJoueurs = []
     for (var partie of partiesEnCours){
-      if (partie.id == data.idPartie){
-        for (var joueur in partie.joueurs){//Renvoi de la main du joueur
-          if (partie.joueurs[joueur].idJoueur==data.idJoueur){
+      if (partie.id == data.idPartie){console.log("partie trouvée")
+        for (var joueur in partie.joueurs){console.log(partie.joueurs[joueur].idJoueur)//Renvoi de la main du joueur
+          if (partie.joueurs[joueur].idJoueur==data.idJoueur){console.log("joueur trouvé")
+            console.log("joueur: "+partie.joueurs[joueur])
               main = partie.joueurs[joueur].main;
           }
           else{
@@ -285,8 +300,12 @@ io.on('connection', (socket) => {
 socket.on("rejoindre partie bataille", data=>{
 for (var partie of partiesOuvertes){ 
   if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
-    if (partie.addPlayer(data.idJoueur!=false)){
-    socket.emit("rejoindre partie bataille",partie.id)
+    if (partie.addPlayer(data.idJoueur)!=false){
+      console.log(partie.joueurs)
+    socket.emit("rejoindre partie bataille",partie.id);
+    if (partie.joueurs.length==partie.joueursMax){
+      lancerPartie(partie.id)
+    }
     return;}
   }
 }
