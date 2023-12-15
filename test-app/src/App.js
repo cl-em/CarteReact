@@ -257,7 +257,7 @@ function MyApp() {
           <Route path="/bataille_create" element={<CreatePartieBataille/>} />
           {/* <Route path="/bataille" element={<Test2/>}/> */}
 
-          <Route path='/test'element={<Accueil liste={["1","2","3"]} />}/>
+          <Route path='/kyky'element={<Bataille/>}/>
 
           <Route path="/chat" element={<Chat/>} />
         </Routes>

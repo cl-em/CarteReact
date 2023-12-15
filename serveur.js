@@ -216,7 +216,7 @@ io.on('connection', (socket) => {
   });
 
   //Création d'une partie
-  socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
+  //socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
       
   socket.on("creer partie bataille",data=>{
     let partie = new Bataille(idJoueur,joueursMax)
