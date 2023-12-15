@@ -18,7 +18,7 @@ import {
   Link,
   useNavigate
 } from "react-router-dom";
-import { Bataille ,Lobby} from './Bataille';
+import { Bataille ,Lobby,Accueil} from './Bataille';
 
 
 const socket = io('http://localhost:8888');
@@ -104,12 +104,15 @@ function LoginForm() {
       // navigate("/games"); //a virer si username + password pas dans la bdd
     }
   }
+  let messageErreur;
 
   socket.on("login",(reponse)=>{
     console.log(reponse);
     if(reponse){
       idJoueur=reponse;
       navigate("/games");
+    }else{
+      document.getElementById("messageErreur").innerHTML = "<p>Identifiant ou mot de passe incorrect</p>"
     }
   })
 
@@ -129,9 +132,9 @@ function LoginForm() {
       <br></br>
 
       <button onClick={emitLogin}>Envoyer!</button>
+      <div id="messageErreur"></div>
 
       <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
-
     </div>
   );
 }
@@ -252,16 +255,13 @@ function MyApp() {
       <Router>
         <Routes>
           <Route path="/" element={<LoginForm />} /> 
-          {/* <Route path="/register" element={} /> */}
-          {/* <Route path="/" element={<LoginForm />} />   */}
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<Games/>} />
           <Route path="/bataille" element={<ListePartiesBataille/>} />
           <Route path="/bataille_create" element={<CreatePartieBataille/>} />
-          {/* <Route path="/bataille" element={<Test2/>}/> */}
 
-          <Route path='/test'element={<Lobby listesjoueurs={[]} nbjoueurs={7} joueursmax={11}/>}/>
+          <Route path='/kyky'element={<Bataille/>}/>
 
           <Route path="/chat" element={<Chat/>} />
         </Routes>
