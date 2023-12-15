@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 
 function ListePartiesBataille(){
-    console.log(idJoueur);
+
     const navigate = useNavigate();
     const [partiesOuvertes, setPartiesOuvertes] = useState([]);
     const socket = io('http://localhost:8888');
@@ -25,6 +25,7 @@ function ListePartiesBataille(){
 
     for (let i = 0; i < partiesOuvertes.length; i++) {
         console.log(partiesOuvertes[i]);
+        
     }
     return (
 
