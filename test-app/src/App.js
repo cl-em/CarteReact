@@ -154,9 +154,12 @@ function ListePartiesBataille(){
       socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
       console.log(idPartie);
       socket.on('rejoindre partie bataille', (data) => {
-          console.log(data);
+          // console.log(data);
           if (data != false && data == idPartie) {
               navigate("/bataille_"+idPartie);
+          }
+          else{
+            const message = "La partie est pleine ou n'existe pas !";
           }
       }
       );
@@ -191,10 +194,14 @@ function CreatePartieBataille(){
   const [joueursMax, setJoueursMax] = useState(2);
   const createPartie = () => {
       socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
-      socket.on('creer partie bataille', (data) => {
-          console.log(data);
-          if (data != false) {
-              navigate("/bataille_"+data);
+      socket.on('creer partie bataille', (idPartie) => {
+          console.log(idPartie);
+          if (idPartie == false) {
+            idJoueur = null;
+            navigate("/login");
+          }
+          else{
+            navigate("/bataille_"+idPartie);
           }
       }
       );
@@ -207,7 +214,7 @@ function CreatePartieBataille(){
   )
 }
 
-function Chat() {
+function Chat(idPartie) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
 

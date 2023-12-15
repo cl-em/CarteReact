@@ -4,7 +4,6 @@ import {io} from "socket.io-client";
 import React, { useEffect, useState } from 'react';
 
 
-
 import {
     useNavigate
 } from "react-router-dom";
@@ -47,13 +46,13 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
         );
     }
 
-/*function MainJoueur({listeCartes}){
+function MainJoueur({listeCartes}){
     
     const CheminImage = (carte) => {
         const { valeur, couleur } = carte;
         const nomImage = `${valeur}_${couleur}.png`;
         console.log(nomImage);
-        return `http://localhost:8888/fichier/CartesAJouer/${nomImage}`; //foutre chemin des cartes
+        return `http://localhost:8888/carte/${nomImage}`; //foutre chemin des cartes
     };
     
     return (
@@ -63,12 +62,12 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
             ))}
         </div>
     );
-}*/  
+}
 
 //a mettre dans export const bataille pour récupérer la liste des joueurs
 
 
-//<MainJoueur listeCartes={listeDeCartes} />
+
 //<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
 
 export const Bataille = () => {
@@ -99,7 +98,7 @@ export const Bataille = () => {
     return ( 
         <div>
             <Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
-            
+            <MainJoueur listeCartes={listeDeCartes} />
         </div>
     );
 };
