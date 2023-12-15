@@ -130,21 +130,26 @@ console.log("|------------un tour d'égalité passe--------------|")
 console.log("------------------------------------------------------------------------------------")
 
 const getUserById = (id)=>{
+  let retour;
+
   const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT pseudo FROM users WHERE idU = ?",[id],(err,rows)=>{
     if(rows.length>0){
-      return rows.pseudo;
+      retour =rows.pseudo;
     }else{
-      return null;
+      retour =  null;
     }
   });
+  return retour;
 }
 
 const existeId = (id)=>{
+  let retour
   const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT * FROM users WHERE idU = ?",[id],(err,rows)=>{
-    return (rows.length>=1);
+    retour =  (rows.length>=1);
   });
+  return retour;
 }
 
 
