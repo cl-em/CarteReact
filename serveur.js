@@ -30,7 +30,7 @@ app.get('/socket.io/', (req, res) => {
 });
 
 //-------------------------------SQL-----------------------------------------------
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('sqlite3').verbose();//Verbose affiche les erreurs
 
 
 //-------------------------------Login-----------------------------------------------
@@ -138,7 +138,7 @@ const getUserById = (id)=>{
 const existeId = (id)=>{
   const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT * FROM users WHERE idU = ?",[id],(err,rows)=>{
-    return rows.length>=1;
+    return (rows.length>=1);
   });
 }
 
@@ -219,7 +219,14 @@ io.on('connection', (socket) => {
   //socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
       
   socket.on("creer partie bataille",data=>{
-    let partie = new Bataille(idJoueur,joueursMax)
+    if (!existeId(data.idJoueur)){
+      socket.emit("creer partie bataille",false);console.log(existeId(data.idJoueur));return;
+    }
+    var joueursMax = data.joueursMax;
+    if (joueursMax>8){
+      joueursMax=8
+    }
+    let partie = new Bataille(data.idJoueur,joueursMax)
     partiesOuvertes.push(partie)
     socket.emit("creer partie bataille",partie.id)
   })
