@@ -144,11 +144,9 @@ function lancerPartie(idPartie){
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
 
 var game = new Bataille(1,2);
-var game2 = new Bataille(99,2);
+
 var game3 = new Bataille(1,5);
 
-game2.addPlayer(99)
-game2.addPlayer(1)
 
 
 partiesOuvertes.push(game);
@@ -301,9 +299,9 @@ io.on('connection', (socket) => {
     socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
   })
   
-
-//------------------------------------REJOINDRE UNE PARTIE------------------------------------------
-
+  
+  //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
+  
 socket.on("rejoindre partie bataille", data=>{
 for (var partie of partiesOuvertes){ 
   if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
@@ -311,6 +309,7 @@ for (var partie of partiesOuvertes){
     socket.emit("rejoindre partie bataille",partie.id);
     if (partie.joueurs.length==partie.joueursMax){
       lancerPartie(partie.id)
+      socket.emit("gameStarting",{"idPartie":data.idPartie})
     }
     return;}
   }
@@ -321,6 +320,40 @@ for (var partie of partiesOuvertes){
 
 
 })
+//-----------------------------------------JOUER UNE CARTE-----------------------
+
+socket.on('carteJouée',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
+  
+  for (var partie of partiesEnCours){
+    if (partie.id==data.idPartie){
+      for (var joueur of partie.joueurs){
+        if (joueur.idJoueur==partie){
+//PAS FINI A FINIR
+          if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){
+            socket.emit('carteJouée',true);
+            if (partie.canTour()){
+              partie.tour();
+
+              io.emit('tourPassé',{"idPartie":partie.id,"égalité":partie.égalité})
+
+            }
+
+          }
+          else{
+            socket.emit('carteJouée',false)
+          }
+
+
+
+
+        }
+      }
+    }
+  }
+
+}
+)
+
 
 
 //Demande d'actualisation des infos bataille
