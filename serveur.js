@@ -186,7 +186,7 @@ io.on('connection', (socket) => {
   socket.on("register",(data)=>{
     // data : {pseudo,password}
     const db = new sqlite3.Database("cards_game.sqlite");
-    console.log("ouai ça creer un compte");
+    
 
 
     db.all("SELECT * FROM users WHERE pseudo = ?",[data.pseudo],(err,rows)=>{
@@ -214,6 +214,43 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
+
+  //Création d'une partie
+
+      
+  socket.on("creer partie bataille",data=>{
+    if (!existeId(data.idJoueur)){
+      socket.emit("creer partie bataille",false);console.log((data.idJoueur));return;
+    }
+    var joueursMax = data.joueursMax;
+    if (joueursMax>8){
+      joueursMax=8
+    }
+    let partie = new Bataille(data.idJoueur,joueursMax)
+    partiesOuvertes.push(partie)
+    socket.emit("creer partie bataille",partie.id)
+  })
+  //Sockets de la partie----------------------------------
+
+
+  socket.on("wantCarte",data=>{
+    var main = [];
+    var infosJoueurs = []
+    for (var partie of partiesEnCours){
+      if (partie.id == data.idPartie){
+        for (var joueur in partie.joueurs){//Renvoi de la main du joueur
+          if (partie.joueurs[joueur].idJoueur==data.idJoueur){
+              main = partie.joueurs[joueur].main;
+          }
+          else{
+            infosJoueurs.push({"pseudo":getUserById(joueur.idJoueur),"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length})
+          }
+        }
+      }
+    }
+    socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
+  })
+  
 
 //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
 

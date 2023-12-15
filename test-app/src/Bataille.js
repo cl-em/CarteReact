@@ -76,7 +76,7 @@ export const Bataille = () => {
     infoPartie.joueurs=[];
     
     useEffect(()=>{
-        socket.on("infoLobby", (data) => { //liste de joueurs (liste de json), taille du paquet, liste de cartes, carte avec valeur et couleur comme attribut
+        socket.on("infosLobby", (data) => { //liste de joueurs (liste de json), taille du paquet, liste de cartes, carte avec valeur et couleur comme attribut
             // data {listejoueurs:tableau,nbjoueurs:int,joueursmax:int}
             setInfoPartie(data);
         
@@ -84,9 +84,13 @@ export const Bataille = () => {
     },[infoPartie]);
 
     let [listCarte,setListCarte] = useState([]);
+    let urlP = new URL(document.location).searchParams;
+    console.log(urlP.get("idPartie"));
+
+
+    socket.emit("wantCarte",{"idPartie":urlP.get("idPartie"),"idJoueur":idJoueur});
     useEffect(()=>{
-        socket.emit("wantCarte",idJoueur);
-        socket.on("getCarte",(data)=>{
+        socket.on("getCarte",(data)=>{//Je te le renvoie sous cette forme:socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
             setListCarte(data);
         });
     },[listCarte]);
