@@ -198,7 +198,7 @@ function CreatePartieBataille(){
           console.log(idPartie);
           if (idPartie == false) {
             idJoueur = null;
-            navigate("/login");
+            navigate("/");
           }
           else{
             navigate("/bataille_"+idPartie);

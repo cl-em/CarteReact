@@ -8,7 +8,6 @@ import {
 
 function MyGame(){
   const navigate = useNavigate();
-  // console.log(idJoueur);
 
   return (
 
