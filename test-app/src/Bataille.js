@@ -84,6 +84,14 @@ export const Bataille = () => {
         });
     },[infoPartie]);
 
+    let [listCarte,setListCarte] = useState([]);
+    useEffect(()=>{
+        socket.emit("wantCarte",idJoueur);
+        socket.on("getCarte",(data)=>{
+            setListCarte(data);
+        });
+    },[listCarte]);
+
 
     const playersList = infoPartie.joueurs;
     const listeDeCartes = [{ valeur: '1', couleur: 'coeur' },{ valeur: '2', couleur: 'trefle' }];
