@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 // import { useState } from 'react';
 import md5 from 'md5';
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom'
 // import { useHistory } from 'react-router-dom';
 
 // import {} from Bataille;
@@ -156,7 +157,7 @@ function ListePartiesBataille(){
       socket.on('rejoindre partie bataille', (data) => {
           // console.log(data);
           if (data != false && data == idPartie) {
-              navigate("/bataille_"+idPartie);
+              navigate("/bataille?idPartie="+idPartie);
           }
           else{
             const message = "La partie est pleine ou n'existe pas !";
@@ -198,10 +199,10 @@ function CreatePartieBataille(){
           console.log(idPartie);
           if (idPartie == false) {
             idJoueur = null;
-            navigate("/login");
+            navigate("/");
           }
           else{
-            navigate("/bataille_"+idPartie);
+            navigate("/bataille?idPartie="+idPartie);
           }
       }
       );
@@ -214,19 +215,25 @@ function CreatePartieBataille(){
   )
 }
 
-function Chat(idPartie) {
+function Chat() {
+  if (idJoueur == undefined){
+    navigate("/");
+  }
+  const currentUrl = window.location.href;
+  const urlParts = currentUrl.split('?idPartie=');
+  const idPartie = urlParts[urlParts.length - 1];
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    socket.on('message', (msg) => {
+  useEffect(() => {Chat
+    socket.on('message '.concat(idPartie), (msg) => {
       setMessages((messages) => [...messages, msg]);
     });
     return () => socket.off("message");
   }, []);
 
   const sendMessage = () => {
-    socket.emit('message', message);
+    socket.emit('message', {message, idPartie, idJoueur});
     setMessage('');
   };
 

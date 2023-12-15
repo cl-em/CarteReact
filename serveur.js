@@ -25,17 +25,12 @@ app.get('/fichier/:nomFichier', function(request, response) {
   response.sendFile(request.params.nomFichier, {root: __dirname});
 });
 
-app.get('/carte/:nomFichier', function(request, response) {
-  console.log("renvoi de "+request.params.nomFichier);
-  response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
-});
-
 app.get('/socket.io/', (req, res) => {
   res.send('Server is running.');
 });
 
 //-------------------------------SQL-----------------------------------------------
-const sqlite3 = require('sqlite3').verbose();//Verbose affiche les erreurs
+const sqlite3 = require('sqlite3').verbose();
 
 
 //-------------------------------Login-----------------------------------------------
@@ -109,7 +104,6 @@ const { Joueur } = require('./Joueur.js');
 const { Carte } = require('./Carte.js');
 
 
-
 //-------------------------------Fonctions-----------------------------------------------
 console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
 
@@ -131,26 +125,21 @@ console.log("|------------un tour d'égalité passe--------------|")
 console.log("------------------------------------------------------------------------------------")
 
 const getUserById = (id)=>{
-  let retour;
-
   const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT pseudo FROM users WHERE idU = ?",[id],(err,rows)=>{
     if(rows.length>0){
-      retour =rows.pseudo;
+      return rows.pseudo;
     }else{
-      retour =  null;
+      return null;
     }
   });
-  return retour;
 }
 
 const existeId = (id)=>{
-  let retour
   const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT * FROM users WHERE idU = ?",[id],(err,rows)=>{
-    retour =  (rows.length>=1);
+    return rows.length>=1;
   });
-  return retour;
 }
 
 
@@ -218,30 +207,13 @@ io.on('connection', (socket) => {
   });
 
   socket.on('message', data => {
-    console.log(data)
-    io.emit('message', `${socket.id.substring(0, 5)}: ${data}`)
+    // verif que idJoueur soit dans idPartie et que joueur soit authentifié
+    io.emit('message '.concat(data.idPartie), data.message);
 });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
-
-  //Création d'une partie
-  //socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
-      
-  socket.on("creer partie bataille",data=>{
-    if (!existeId(data.idJoueur)){
-      socket.emit("creer partie bataille",false);console.log(existeId(data.idJoueur));return;
-    }
-    var joueursMax = data.joueursMax;
-    if (joueursMax>8){
-      joueursMax=8
-    }
-    let partie = new Bataille(data.idJoueur,joueursMax)
-    partiesOuvertes.push(partie)
-    socket.emit("creer partie bataille",partie.id)
-  })
-  
 
 //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
 
