@@ -236,14 +236,14 @@ io.on('connection', (socket) => {
       return;
     }
     else{
-    console.log("Création d'une partie par "+data.idJoueur)
-    var joueursMax = data.joueursMax;
-    if (joueursMax>8){
-      joueursMax=8
-    }
-    let partie = new Bataille(data.idJoueur,joueursMax)
-    partiesOuvertes.push(partie)
-    socket.emit("creer partie bataille",partie.id)+" dont l'id sera "+partie.id}
+      var joueursMax = data.joueursMax;
+      if (joueursMax>8){
+        joueursMax=8
+      }
+      let partie = new Bataille(data.idJoueur,joueursMax)
+      partiesOuvertes.push(partie)
+      console.log("Création d'une partie par "+data.idJoueur+" dont l'id sera "+partie.id)
+    socket.emit("creer partie bataille",partie.id)}
     })
   })
   //Sockets de la partie----------------------------------
@@ -273,9 +273,9 @@ io.on('connection', (socket) => {
 socket.on("rejoindre partie bataille", data=>{
 for (var partie of partiesOuvertes){ 
   if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
-    partie.addPlayer(data.idJoueur)
+    if (partie.addPlayer(data.idJoueur!=false)){
     socket.emit("rejoindre partie bataille",partie.id)
-    return;
+    return;}
   }
 }
 

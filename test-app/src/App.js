@@ -165,11 +165,11 @@ function ListePartiesBataille(){
       );
   }
   const rejoindrePartie = (idPartie) => {
+    socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
     console.log(idJoueur);
-      socket.emit('rejoindre partie bataille', {"idPartie":idPartie, "idJoueur":idJoueur});
       console.log(idPartie);
       socket.on('rejoindre partie bataille', (data) => {
-          // console.log(data);
+          
           if (data != false && data == idPartie) {
               navigate("/bataille_"+idPartie);
           }

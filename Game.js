@@ -52,6 +52,11 @@ class Game {
 
 //-----------------------Fonctions gestion joueurs------------------------------------------
 addPlayer(idJoueur){
+    for (var joueur of this.joueurs){
+        if (joueur.idJoueur==idJoueur){
+            return false;
+        }
+    }
     if (this.joueurs.length<this.joueursMax){
     this.joueurs.push(new Joueur(idJoueur,false));return true
 }
