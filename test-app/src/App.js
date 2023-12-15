@@ -140,6 +140,7 @@ function LoginForm() {
 }
 
 function ListePartiesBataille(){
+  
   const navigate = useNavigate();
   const [partiesOuvertes, setPartiesOuvertes] = useState([]);
   useEffect(() => {
@@ -195,7 +196,7 @@ function CreatePartieBataille(){
   const createPartie = () => {
       socket.emit('creer partie bataille', {"idJoueur":idJoueur, "joueursMax":joueursMax});
       socket.on('creer partie bataille', (idPartie) => {
-          console.log(idPartie);
+        console.log(idJoueur);console.log(idPartie);
           if (idPartie == false) {
             idJoueur = null;
             navigate("/");
