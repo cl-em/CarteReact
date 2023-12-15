@@ -2,6 +2,7 @@ import './App.css';
 import {idJoueur} from './App.js';
 import {io} from "socket.io-client";
 
+import images from './images';
 
 import {
     useNavigate
