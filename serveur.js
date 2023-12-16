@@ -266,7 +266,7 @@ io.on('connection', (socket) => {
     }
     else{
       var joueursMax = data.joueursMax;
-      if (!Number.isInteger(joueursMax)||joueursMax>8){
+      if (!Number.isInteger(parseInt(joueursMax))||joueursMax>8){
         joueursMax=8
       }
       let partie = new Bataille(data.idJoueur,joueursMax)
