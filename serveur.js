@@ -333,6 +333,7 @@ socket.on('carteJouée',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){
             socket.emit('carteJouée',true);
 
+<<<<<<< HEAD
               if (partie.égalité==true){//Si on était déjà dans une égalité
                 if (partie.canTourégaltié()){
                   var cartesJouées = [];//Les cartes jouées pendant le tour
@@ -364,6 +365,11 @@ socket.on('carteJouée',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={
 
 
               io.emit('tourPasse',{"idPartie":partie.id,"cartesJouées":cartesJouées,"égalité":égalité,"égalité":partie.égalité})
+=======
+            if (partie.canTour()){
+              partie.tour();
+              io.emit('tourPassé',{"idPartie":partie.id,"égalité":partie.égalité})
+>>>>>>> 8fa177838ee3cbb01f42cdd5fc7526b3f555eef6
 
             }
           }
