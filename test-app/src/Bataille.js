@@ -49,16 +49,21 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
 
     function MainJoueur() {
         const [listeCartes, setListeCartes] = useState([]);
+        const [listeRecu, setListeRecu] = useState(false);
         let urlP = new URL(document.location).searchParams;
-        let idP = urlP.get("idPartie");
     
-        socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
+        useEffect(() => {
+            if (!listeRecu) {
+                socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
     
-        socket.on("getCarte", (data) => {
-            setListeCartes(data.main);
-            console.log(data);
-            console.log(data.infosJoueurs);
-            console.log(data.main);
+                socket.on("getCarte", (data) => {
+                    setListeCartes(data.main);
+                    console.log(data);
+                    console.log(data.infosJoueurs);
+                    console.log(data.main);
+                    setListeRecu(true);
+                });
+            }
         });
     
         const CheminImage = (carte) => {
