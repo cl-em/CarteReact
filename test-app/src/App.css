@@ -211,19 +211,26 @@ body {
   /*transform: translate(-20px, -20px);*/
 }
 
-.divCartes{
+.divCartes {
   margin-top: 4vh;
   display: flex;
   background-color: transparent;
-  height: 13vh;
+  height: 15vh;
   position: absolute;
   overflow-x: auto;
-  left: 50%; 
+  left: 50%;
   transform: translateX(-50%);
 }
 
-.divCartes img{
+.divCartes img {
   margin-left: 2px;
   max-width: 100%;
-  height: auto;
+  height: 90%;
+  transition: transform 0.3s ease-in-out;
+  transform: translateY(0);
+  align-self: flex-end;
+}
+
+.divCartes img:hover {
+  transform: translateY(-10px);
 }

@@ -38,7 +38,7 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
         <div>
             <div className='Table'>
                 {listesjoueurs.map((joueur, index) => (
-                <div className='cercle'>
+                <div className='cercle' id={joueur} key={joueur}>
                     {joueur}
                 </div>
         ))}
@@ -49,7 +49,7 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
 
 function MainJoueur() {
     const [listeCartes, setListeCartes] = useState([]);
-    const [listeRecu, setListeRecu] = useState(false);
+    // const [listeRecu, setListeRecu] = useState(false);
 
     // const [listeCartes, setListeCartes] = useState([]);
     const [listeJoueurs, setListeJoueurs] = useState([]);
@@ -58,7 +58,7 @@ function MainJoueur() {
     let urlP = new URL(document.location).searchParams;
 
     useEffect(() => {
-        if (!listeRecu) {
+        if (!listeCarteRecu && !listeJoueursRecu) {
             socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
 
             socket.on("getCarte", (data) => {
@@ -66,6 +66,8 @@ function MainJoueur() {
                 setListeJoueurs(data.infosJoueurs);
                 setListeCarteRecu(true);
                 setListeJoueursRecu(true);
+
+                //document.getElementById("salut").innerHTML=<p>{CheminImage({valeur:8,couleur:"coeur"})}</p>               
                 // console.log(listeJoueurs);
             });
         }
@@ -91,9 +93,30 @@ function MainJoueur() {
         onlyJoueurs.push(element.pseudo);
     })
 
+
+
+    socket.on("tourPasse",(data)=>{
+        console.log("test")
+        if(urlP.get("idPartie")==data[0].idPartie){
+            onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
+                // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
+                data.map((joueur,index)=>{
+                    if(joueur.pseudo==pseudo){
+                        document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`
+                        document.getElementById(pseudo).innerHTML+=`<img class='divCartes' src=${CheminImage({valeur:8,couleur:'coeur'})} />`
+                    }
+                });
+                
+            })
+        }
+    })
+
     return (
         <div>
             <Lobby  listesjoueurs={onlyJoueurs}/>
+
+            <button
+            onClick={affC}>salut</button>
             <div className='divCartes'>
                 {listeCartes.map((carte, index) => (
                     <img key={index} id={index + 1} 
