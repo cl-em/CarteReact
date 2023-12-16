@@ -47,7 +47,7 @@ app.post('/login', (req, res) => {
 
   const { id, password } = req.body;
 
-  // row c'est un tableau de réponse
+  // row c'est un tableau de reponse
   db.all('SELECT * FROM users WHERE  = ? AND password = ?', [id, password], (err, rows) => {
     if (err) {
         throw err;
@@ -66,7 +66,7 @@ db.close((err) => {
   if (err) {
       console.error(err.message);
   }
-  console.log('Connexion à la base de données SQLite fermée.');
+  console.log('Connexion à la base de donnees SQLite fermee.');
 });
 });
 
@@ -126,7 +126,7 @@ const getpseudos = () => {
   getpseudos();
   console.log(pseudos)
 
-//Démarrage d'une partie
+//Demarrage d'une partie
 
 function lancerPartie(idPartie){
   for (var partie in partiesOuvertes){
@@ -153,7 +153,7 @@ partiesOuvertes.push(game);
 partiesOuvertes.push(game3);
 
 
-console.log("|------------un tour d'égalité passe--------------|")
+console.log("|------------un tour d'egalite passe--------------|")
 /*ça a l'air fonctionnel :)*/
 console.log("------------------------------------------------------------------------------------")
 
@@ -243,7 +243,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('message', data => {
-    // verif que idJoueur soit dans idPartie et que joueur soit authentifié
+    // verif que idJoueur soit dans idPartie et que joueur soit authentifie
     console.log(data);
     io.emit('message '.concat(data.idPartie), (data.idJoueur).toString().concat(" : ").concat(data.message));
 });
@@ -252,7 +252,7 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 
-  //Création d'une partie
+  //Creation d'une partie
 
       
   socket.on("creer partie bataille",data=>{
@@ -271,7 +271,7 @@ io.on('connection', (socket) => {
       }
       let partie = new Bataille(data.idJoueur,joueursMax)
       partiesOuvertes.push(partie)
-      console.log("Création d'une partie par "+data.idJoueur+" dont l'id sera "+partie.id)
+      console.log("Creation d'une partie par "+data.idJoueur+" dont l'id sera "+partie.id)
     socket.emit("creer partie bataille",partie.id)}
     })
   })
@@ -324,24 +324,51 @@ for (var partie of partiesOuvertes){
 //-----------------------------------------JOUER UNE CARTE-----------------------
 
 socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
-  console.log(data);
+  
   for (var partie of partiesEnCours){
     if (partie.id==data.idPartie){
       for (var joueur of partie.joueurs){
         if (joueur.idJoueur==partie){
 //PAS FINI A FINIR
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){
-            socket.emit('carteJouée',true);
+            socket.emit('carteJouee',true);
 
-            if (partie.canTour()){
-              partie.tour();
-              io.emit('tourPassé',{"idPartie":partie.id,"égalité":partie.égalité})
+              if (partie.egalite==true){//Si on etait dejà dans une egalite
+                if (partie.canTouregaltie()){
+                  var cartesJouees = [];//Les cartes jouees pendant le tour
+                  for (var joueur of partie.joueursegalite){cartesJouees.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
+
+                  var winner = partie.canTouregalite();
+                  
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"egalite":partie.egalite})
+
+
+                }
+              }
+              else{
+             if (partie.canTour()){
+              // me dit si tous les joueurs on fait leur choix
+
+                var cartesJouees = [];//Les cartes jouees pendant le tour
+                  for (var joueur of partie.joueurs){cartesJouees.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
+
+                var winner = partie.tour();
+             
+                    
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"egalite":partie.egalite})
+             }
+                  
+                //Construction de ce que je renvoie à CLEM
+
+
+
+
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"egalite":egalite,"egalite":partie.egalite})
 
             }
-
           }
           else{
-            socket.emit('carteJouée',false)
+            socket.emit('carteJouee',false)
           }
 
 
@@ -362,7 +389,7 @@ socket.on('infosLobby',data=>{
   console.log("reçuinfoslobby")
   var retour = []; 
 
-  for (var partie of partiesOuvertes){//On sélectionne la bonne partie
+  for (var partie of partiesOuvertes){//On selectionne la bonne partie
 
     if (partie.id==data.idPartie){
 
