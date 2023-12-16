@@ -153,7 +153,7 @@ partiesOuvertes.push(game);
 partiesOuvertes.push(game3);
 
 
-console.log("|------------un tour d'egalite passe--------------|")
+console.log("|------------un tour d'égalité passe--------------|")
 /*ça a l'air fonctionnel :)*/
 console.log("------------------------------------------------------------------------------------")
 
@@ -324,24 +324,23 @@ for (var partie of partiesOuvertes){
 //-----------------------------------------JOUER UNE CARTE-----------------------
 
 socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
-  console.log(data);
+
 
   for (var partie of partiesEnCours){
     if (partie.id==data.idPartie){
       for (var joueur of partie.joueurs){
-        if (joueur.idJoueur==partie){
-//PAS FINI A FINIR
-          if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){
+        if (joueur.idJoueur==data.idJoueur){
+          if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){  
             socket.emit('carteJouee',true);
 
-              if (partie.egalite==true){//Si on etait dejà dans une egalite
-                if (partie.canTouregaltie()){
+              if (partie.égalité==true){//Si on etait dejà dans une égalité
+                if (partie.canTourégalité()){
                   var cartesJouees = [];//Les cartes jouees pendant le tour
-                  for (var joueur of partie.joueursegalite){cartesJouees.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
+                  for (var joueur of partie.joueurségalite){cartesJouees.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
 
-                  var winner = partie.canTouregalite();
+                  var winner = partie.canTourégalite();
                   
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"egalite":partie.egalite})
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":partie.égalite})
 
 
                 }
@@ -356,7 +355,7 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
                 var winner = partie.tour();
              
                     
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"egalite":partie.egalite})
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":partie.égalité})
              }
                   
                 //Construction de ce que je renvoie à CLEM
@@ -364,7 +363,7 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
 
 
 
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"egalite":egalite,"egalite":partie.egalite})
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"égalite":partie.égalité})
 
             }
           }
