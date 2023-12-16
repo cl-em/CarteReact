@@ -266,7 +266,7 @@ io.on('connection', (socket) => {
     }
     else{
       var joueursMax = data.joueursMax;
-      if (!Number.isInteger(joueursMax)||joueursMax>8){
+      if (!Number.isInteger(parseInt(joueursMax))||joueursMax>8||joueursMax<2){
         joueursMax=8
       }
       let partie = new Bataille(data.idJoueur,joueursMax)
@@ -296,7 +296,7 @@ io.on('connection', (socket) => {
         }
       }
     }
-    console.log(main)
+    // console.log(main)
     socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
   })
   
@@ -324,7 +324,8 @@ for (var partie of partiesOuvertes){
 //-----------------------------------------JOUER UNE CARTE-----------------------
 
 socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
-  
+  console.log(data);
+
   for (var partie of partiesEnCours){
     if (partie.id==data.idPartie){
       for (var joueur of partie.joueurs){

@@ -3,7 +3,6 @@ import {idJoueur} from './App.js';
 import {io} from "socket.io-client";
 import React, { useEffect, useState } from 'react';
 
-
 import {
     useNavigate
 } from "react-router-dom";
@@ -50,27 +49,39 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
 function MainJoueur() {
     const [listeCartes, setListeCartes] = useState([]);
     // const [listeRecu, setListeRecu] = useState(false);
-
     // const [listeCartes, setListeCartes] = useState([]);
+    
     const [listeJoueurs, setListeJoueurs] = useState([]);
     const [listeCarteRecu, setListeCarteRecu] = useState(false);
     const [listeJoueursRecu, setListeJoueursRecu] = useState(false);
     let urlP = new URL(document.location).searchParams;
 
-    useEffect(() => {
-        if (!listeCarteRecu && !listeJoueursRecu) {
-            socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
+    let isEgalite=false;
+    let gagnant=false;
 
-            socket.on("getCarte", (data) => {
-                setListeCartes(data.main);
-                setListeJoueurs(data.infosJoueurs);
-                setListeCarteRecu(true);
-                setListeJoueursRecu(true);
-
-                //document.getElementById("salut").innerHTML=<p>{CheminImage({valeur:8,couleur:"coeur"})}</p>               
-                // console.log(listeJoueurs);
-            });
+    let gameStart=false;
+    socket.on("gameStarting",(data)=>{
+        if(data){
+            gameStart=true;
         }
+    });
+
+    useEffect(() => {
+        // if(gameStart){
+            // if (!listeCarteRecu || !listeJoueursRecu || isEgalite || gagnant ) {
+                socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
+
+                socket.on("getCarte", (data) => {
+                    setListeCartes(data.main);
+                    setListeJoueurs(data.infosJoueurs);
+                    setListeCarteRecu(true);
+                    setListeJoueursRecu(true);
+
+                    //document.getElementById("salut").innerHTML=<p>{CheminImage({valeur:8,couleur:"coeur"})}</p>               
+                    // console.log(listeJoueurs);
+                });
+            // }
+       
     });
 
     const CheminImage = (carte) => {
@@ -93,24 +104,44 @@ function MainJoueur() {
         onlyJoueurs.push(element.pseudo);
     })
 
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }    
 
-
-    socket.on("tourPasse",(data)=>{
-        console.log("test")
+    socket.on("tourPasse", (data)=>{
+        console.log("test");
         if(urlP.get("idPartie")==data[0].idPartie){
             onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
                 // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
                 data.map((joueur,index)=>{
                     if(joueur.pseudo==pseudo){
-                        document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`
-                        document.getElementById(pseudo).innerHTML+=`<img class='divCartes' src=${CheminImage({valeur:8,couleur:'coeur'})} />`
+                        document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`;
+                        document.getElementById(pseudo).innerHTML+=`<img class='hop' src=${CheminImage(data.choix)} />`;
+
+                        // sleep(2000);
+                        document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`;
                     }
                 });
                 
             })
         }
+        isEgalite=data.egalite;
+        gagnant=data.winner;
+        document.getElementsByClassName("Table").innerHTML+=`<p>Le gagnant est ${gagnant}</p>`
+        
     })
 
+    function affC(){
+        onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
+            // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
+        
+                    document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`
+                    document.getElementById(pseudo).innerHTML+=`<img class='hop' src=${CheminImage({valeur:8,couleur:'coeur'})} />`
+                
+        
+            
+        })
+    }
     return (
         <div>
             <Lobby  listesjoueurs={onlyJoueurs}/>
