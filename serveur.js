@@ -333,39 +333,12 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){
             socket.emit('carteJouée',true);
 
-              if (partie.égalité==true){//Si on était déjà dans une égalité
-                if (partie.canTourégaltié()){
-                  var cartesJouées = [];//Les cartes jouées pendant le tour
-                  for (var joueur of partie.joueurségalité){cartesJouées.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
-
-                  var winner = partie.canTourégalité();
-                  
-                  io.emit('tourPasse',{"idPartie":partie.id,"cartesJouées":cartesJouées,"winner":winner,"égalité":partie.égalité})
-
-
-                }
-              }
-              else{
-             if (partie.canTour()){
-              // me dit si tous les joueurs on fait leur choix
-
-                var cartesJouées = [];//Les cartes jouées pendant le tour
-                  for (var joueur of partie.joueurs){cartesJouées.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
-
-                var winner = partie.tour();
-             
-                    
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouées":cartesJouées,"winner":winner,"égalité":partie.égalité})
-             }
-                  
-                //Construction de ce que je renvoie à CLEM
-
-
-
-
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouées":cartesJouées,"égalité":égalité,"égalité":partie.égalité})
+            if (partie.canTour()){
+              partie.tour();
+              io.emit('tourPassé',{"idPartie":partie.id,"égalité":partie.égalité})
 
             }
+
           }
           else{
             socket.emit('carteJouée',false)

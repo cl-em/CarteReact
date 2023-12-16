@@ -174,6 +174,13 @@ canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait u
     return true
 }
 
+canTourégalité(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait un choix
+
+    for (var joueur of this.joueurségalité){
+        if (joueur.éliminé==false && joueur.choix==null&&this.joueurs.includes(joueur)){return false}
+    }
+    return true
+}
 
 tourégalité(){
     var égalitédouble = false;//teste si l'égalité est une égalité
