@@ -57,7 +57,7 @@ function MainJoueur({listeCartes}){
     
     return (
         <div className='divCartes'>
-            {listeCartes.map((carte, index) => (
+            {listeCartes.forEach((carte, index) => (
             <img key={index} id={index + 1} src={CheminImage(carte)} alt={`Carte ${carte.valeur} ${carte.couleur}`} />
             ))}
         </div>
@@ -76,30 +76,31 @@ let infosJoueurs;
 
 export const Bataille = () => {
     let urlP = new URL(document.location).searchParams;
-let idP = urlP.get("idPartie")
+    let idP = urlP.get("idPartie")
     console.log(idP)
     //const playersList = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8', 'Player 9', 'Player10'];
     socket.emit("infosLobby", {"idPartie":idP});
 
     socket.on("infosLobby", (data) => { //liste de joueurs (liste de json), taille du paquet, liste de cartes, carte avec valeur et couleur comme attribut
     // data {listejoueurs:tableau,nbjoueurs:int,joueursmax:int}
-        listeJoueurs = data.listesjoueurs;
-        // console.log(listeJoueurs);
+        listeJoueurs = data.joueurs;
+        // console.log(data);
     });
 
    
     //console.log(urlP.get("idPartie"));
 
-
     socket.emit("wantCarte",{"idPartie":urlP.get("idPartie"),"idJoueur":idJoueur});
         socket.on("getCarte",(data)=>{
            listeCartes = data.main;
+           console.log(listeCartes);
+            console.log(data);
            //console.log(listeCartes)
             //infosJoueurs = data.infosJoueurs;
         });
 
 
-    listeCartes = [{valeur: '1', couleur: 'coeur' },{ valeur: '2', couleur: 'trefle' }];
+    //listeCartes = [{valeur: '1', couleur: 'coeur' },{ valeur: '2', couleur: 'trefle' }];
     listeJoueurs = ["salut","kyky","zizi"]
 
     return ( 
