@@ -106,7 +106,7 @@ export const Bataille = () => {
     return ( 
         <div>
             {/* <Lobby listesjoueurs={listeJoueurs} nbjoueurs={9} joueursmax={10} /> */}
-            <MainJoueur listeCartes={listeCartes} />
+            <MainJoueur listeCartes={listeCartes} />*
         </div>
     );
 };
