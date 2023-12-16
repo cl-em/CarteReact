@@ -110,7 +110,8 @@ function MainJoueur() {
 
     socket.on("tourPasse", (data)=>{
         console.log("test");
-        if(urlP.get("idPartie")==data[0].idPartie){
+        console.log(data)
+        if(urlP.get("idPartie")==data.idPartie){
             onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
                 // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
                 data.map((joueur,index)=>{
