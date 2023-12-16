@@ -110,7 +110,7 @@ function MainJoueur() {
 
 //<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
 
-let playersList = ['Player1'];
+// let playersList = ['Player1'];
 // socket.emit("infosLobby",data.)
 
 
