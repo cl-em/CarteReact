@@ -99,6 +99,13 @@ body {
   box-shadow: 0 0 10px rgb(0, 0, 0); 
 }
 
+.choix{
+  left:30%;
+  top:75%;
+  
+  
+}
+
 .lien {
   color: aliceblue; /* Couleur du texte du lien */
   font-weight: bold;

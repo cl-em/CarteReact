@@ -26,7 +26,7 @@ app.get('/fichier/:nomFichier', function(request, response) {
 });
 
 app.get('/carte/:nomFichier', function(request, response) {
-  console.log("renvoi de "+request.params.nomFichier);
+  
   response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
 });
 
@@ -331,17 +331,23 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
       for (var joueur of partie.joueurs){
         if (joueur.idJoueur==data.idJoueur){
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){  
-            socket.emit('carteJouee',true);
-
+            socket.emit('carteJouee',{'valeur':data.choix.valeur,'couleur':data.choix.couleur});
+          }
+          else{
+            socket.emit('carteJouee',false)
+          }
+        }
+      }
               if (partie.égalité==true){//Si on etait dejà dans une égalité
                 if (partie.canTourégalité()){
                   var cartesJouees = [];//Les cartes jouees pendant le tour
-                  for (var joueur of partie.joueurségalite){cartesJouees.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
+                  for (var joueur of partie.joueurségalite){cartesJouees.push[{"idJoueur":joueur.id,"pseudo":pseudos[joueur.id],"choix":joueur.choix}];}
 
                   var winner = partie.canTourégalite();
                   
               io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":partie.égalite})
 
+              return
 
                 }
               }
@@ -350,33 +356,21 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
               // me dit si tous les joueurs on fait leur choix
 
                 var cartesJouees = [];//Les cartes jouees pendant le tour
-                  for (var joueur of partie.joueurs){cartesJouees.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
-
+                  for (var joueur of partie.joueurs){cartesJouees.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur],"choix":joueur.choix});}
+                      
                 var winner = partie.tour();
              
+                
                     
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":partie.égalité})
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":pseudos[winner.idJoueur],"égalité":partie.égalité})
+              return;
              }
-                  
-                //Construction de ce que je renvoie à CLEM
-
-
-
-
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"égalite":partie.égalité})
 
             }
           }
-          else{
-            socket.emit('carteJouee',false)
-          }
 
 
-
-
-        }
-      }
-    }
+    
   }
 
 }

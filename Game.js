@@ -69,6 +69,7 @@ removePlayer(idJoueur){
     for (var joueur in this.joueurs){
         if (joueurs[joueur].id==idJoueur){
             this.joueurs.splice(joueur)
+            this.paquets.splice(joueur)
         }
     }
 }
@@ -162,6 +163,7 @@ if (this.joueurs[joueur].main.length==0){
     else{this.joueurs[joueur].main = this.paquets[joueur]}
 }
     }
+
 this.emptyChoices();
 return winner;
 }

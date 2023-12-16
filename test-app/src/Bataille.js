@@ -35,11 +35,12 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
 
     return (
         <div>
-            <div className='Table'>
+            <div className='Table' id='Table'>
                 {listesjoueurs.map((joueur, index) => (
                 <div className='cercle' id={joueur} key={joueur}>
                     {joueur}
                 </div>
+                
         ))}
             </div>
         </div>
@@ -76,11 +77,9 @@ function MainJoueur() {
                     setListeJoueurs(data.infosJoueurs);
                     setListeCarteRecu(true);
                     setListeJoueursRecu(true);
-
-                    //document.getElementById("salut").innerHTML=<p>{CheminImage({valeur:8,couleur:"coeur"})}</p>               
-                    // console.log(listeJoueurs);
                 });
-            // }
+                
+     
        
     });
 
@@ -108,27 +107,34 @@ function MainJoueur() {
         return new Promise(resolve => setTimeout(resolve, ms));
     }    
 
+
+
     socket.on("tourPasse", (data)=>{
-        console.log("test");
-        if(urlP.get("idPartie")==data[0].idPartie){
+        if(urlP.get("idPartie")==data.idPartie){
+   
             onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
                 // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
-                data.map((joueur,index)=>{
-                    if(joueur.pseudo==pseudo){
+                for (var player of data.cartesJouees){
+                    if(player.pseudo==pseudo){
                         document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`;
-                        document.getElementById(pseudo).innerHTML+=`<img class='hop' src=${CheminImage(data.choix)} />`;
+                        document.getElementById(pseudo).innerHTML+=`<img class='hop' src="http://localhost:8888/carte/`+player.choix.valeur+`_`+player.choix.couleur+`.png")} />`;
+                        setTimeout(() => {
+                            document.getElementById(pseudo).innerHTML = `<p>${pseudo}</p>`;
+                          }, 5000);
 
-                        // sleep(2000);
-                        document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`;
                     }
-                });
+                };
                 
             })
         }
         isEgalite=data.egalite;
         gagnant=data.winner;
-        document.getElementsByClassName("Table").innerHTML+=`<p>Le gagnant est ${gagnant}</p>`
-        
+        document.getElementById("Table").innerHTML+=`<p>Le gagnant est ${gagnant}</p>`
+        setTimeout(() => {
+            document.getElementById("Table").innerHTML="";
+          }, 5000);
+          
+           
     })
 
     function affC(){
