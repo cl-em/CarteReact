@@ -287,11 +287,11 @@ io.on('connection', (socket) => {
         for (var joueur in partie.joueurs){//Renvoi de la main du joueur
           if (partie.joueurs[joueur].idJoueur==data.idJoueur){
               main = partie.joueurs[joueur].main;
-              infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length})
+              infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length,"isLocalPlayer":true})
         
           }
           else{
-            infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length})
+            infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length,"isLocalPlayer":false})
           }
         }
       }
@@ -310,7 +310,7 @@ for (var partie of partiesOuvertes){
     socket.emit("rejoindre partie bataille",partie.id);
     if (partie.joueurs.length==partie.joueursMax){
       lancerPartie(partie.id)
-      socket.emit("gameStarting",{"idPartie":data.idPartie})
+      io.emit("gameStarting",{"idPartie":data.idPartie})
     }
     return;}
   }
@@ -363,11 +363,22 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
 //Demande d'actualisation des infos bataille
 
   socket.on('infosLobby',data=>{
-
+  console.log("reçuinfoslobby")
+  var retour = []; 
 
     for (var partie of partiesOuvertes){//On sélectionne la bonne partie
 
-      if (partie.id==data.idPartie){ 
+    if (partie.id==data.idPartie){
+
+  for (var j of partie.joueurs){//On renvoie la liste des joueurs
+    
+    retour.push(pseudos[j.idJoueur]);
+  }
+  socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
+  return
+}
+}
+})
 
     var retour = []; 
     for (var j of partie.joueurs){//On renvoie la liste des joueurs
