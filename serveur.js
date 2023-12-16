@@ -150,7 +150,6 @@ var game3 = new Bataille(1,5);
 
 
 partiesOuvertes.push(game);
-partiesOuvertes.push(game2);
 partiesOuvertes.push(game3);
 
 
@@ -333,9 +332,9 @@ socket.on('carteJouée',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={
 //PAS FINI A FINIR
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){
             socket.emit('carteJouée',true);
+
             if (partie.canTour()){
               partie.tour();
-
               io.emit('tourPassé',{"idPartie":partie.id,"égalité":partie.égalité})
 
             }
