@@ -21,12 +21,12 @@ server.listen(PORT, () => {
 });
 
 app.get('/fichier/:nomFichier', function(request, response) {
-  //console.log("renvoi de "+request.params.nomFichier);
+  console.log("renvoi de "+request.params.nomFichier);
   response.sendFile(request.params.nomFichier, {root: __dirname});
 });
 
 app.get('/carte/:nomFichier', function(request, response) {
-  //console.log("renvoi de "+request.params.nomFichier);
+  console.log("renvoi de "+request.params.nomFichier);
   response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
 });
 
@@ -296,7 +296,7 @@ io.on('connection', (socket) => {
         }
       }
     }
-    // console.log(main)
+    console.log(main)
     socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
   })
   
@@ -323,28 +323,52 @@ for (var partie of partiesOuvertes){
 })
 //-----------------------------------------JOUER UNE CARTE-----------------------
 
-socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
-    console.log(data);
-
+socket.on('carteJouée',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
+  
   for (var partie of partiesEnCours){
     if (partie.id==data.idPartie){
       for (var joueur of partie.joueurs){
         if (joueur.idJoueur==partie){
 //PAS FINI A FINIR
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){
-            // renvoie true si la carte à bien été joué
-            socket.emit('carteJouee',true);
+            socket.emit('carteJouée',true);
 
-            if (partie.canTour()){
+              if (partie.égalité==true){//Si on était déjà dans une égalité
+                if (partie.canTourégaltié()){
+                  var cartesJouées = [];//Les cartes jouées pendant le tour
+                  for (var joueur of partie.joueurségalité){cartesJouées.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
+
+                  var winner = partie.canTourégalité();
+                  
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouées":cartesJouées,"winner":winner,"égalité":partie.égalité})
+
+
+                }
+              }
+              else{
+             if (partie.canTour()){
               // me dit si tous les joueurs on fait leur choix
-              partie.tour();
-              io.emit('tourPasse',{"idPartie":partie.id,"égalité":partie.égalité})
+
+                var cartesJouées = [];//Les cartes jouées pendant le tour
+                  for (var joueur of partie.joueurs){cartesJouées.push[{"idJoueur":joueur.id,"pseudo":pseudos(joueur.id),"choix":joueur.choix}];}
+
+                var winner = partie.tour();
+             
+                    
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouées":cartesJouées,"winner":winner,"égalité":partie.égalité})
+             }
+                  
+                //Construction de ce que je renvoie à CLEM
+
+
+
+
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouées":cartesJouées,"égalité":égalité,"égalité":partie.égalité})
 
             }
-
           }
           else{
-            socket.emit('carteJouee',false)
+            socket.emit('carteJouée',false)
           }
 
 
@@ -362,11 +386,11 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
 
 //Demande d'actualisation des infos bataille
 
-  socket.on('infosLobby',data=>{
+socket.on('infosLobby',data=>{
   console.log("reçuinfoslobby")
   var retour = []; 
 
-    for (var partie of partiesOuvertes){//On sélectionne la bonne partie
+  for (var partie of partiesOuvertes){//On sélectionne la bonne partie
 
     if (partie.id==data.idPartie){
 
@@ -380,15 +404,5 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
 }
 })
 
-    var retour = []; 
-    for (var j of partie.joueurs){//On renvoie la liste des joueurs
-      
-      retour.push(pseudos[j.idJoueur])
-    }
-    socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
-    return
-      }
-    }
-  });
 
 });
