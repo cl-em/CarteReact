@@ -21,12 +21,12 @@ server.listen(PORT, () => {
 });
 
 app.get('/fichier/:nomFichier', function(request, response) {
-  console.log("renvoi de "+request.params.nomFichier);
+  //console.log("renvoi de "+request.params.nomFichier);
   response.sendFile(request.params.nomFichier, {root: __dirname});
 });
 
 app.get('/carte/:nomFichier', function(request, response) {
-  
+  console.log("renvoi de "+request.params.nomFichier);
   response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
 });
 
