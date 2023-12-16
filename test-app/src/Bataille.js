@@ -14,7 +14,7 @@ const socket = io('http://localhost:8888');
 
 
 
-socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
+// socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
 
 export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
     // listesjoueurs : liste de string,
@@ -47,66 +47,79 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
         );
     }
 
-function MainJoueur({listeCartes}){
-    
+function MainJoueur() {
+    const [listeCartes, setListeCartes] = useState([]);
+    const [listeRecu, setListeRecu] = useState(false);
+
+    // const [listeCartes, setListeCartes] = useState([]);
+    const [listeJoueurs, setListeJoueurs] = useState([]);
+    const [listeCarteRecu, setListeCarteRecu] = useState(false);
+    const [listeJoueursRecu, setListeJoueursRecu] = useState(false);
+    let urlP = new URL(document.location).searchParams;
+
+    useEffect(() => {
+        if (!listeRecu) {
+            socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
+
+            socket.on("getCarte", (data) => {
+                setListeCartes(data.main);
+                setListeJoueurs(data.infosJoueurs);
+                setListeCarteRecu(true);
+                setListeJoueursRecu(true);
+                // console.log(listeJoueurs);
+            });
+        }
+    });
+
     const CheminImage = (carte) => {
         const { valeur, couleur } = carte;
-        const nomImage = `${valeur}_${couleur}.png`;    
-        return `http://localhost:8888/carte/${nomImage}`; //foutre chemin des cartes
+        const nomImage = `${valeur}_${couleur}.png`;
+        return `http://localhost:8888/carte/${nomImage}`;
     };
+
     
+
+    function carteJouee(carte){
+        // carte {couleur:string,valeur:string}
+        socket.emit("carteJouee",carte)
+        // console.log(carte);
+        // alert(`${carte.couleur} ${carte.valeur}`);
+    }
+
+    let onlyJoueurs=[];
+    listeJoueurs.map((element,index)=>{
+        onlyJoueurs.push(element.pseudo);
+    })
+
     return (
-        <div className='divCartes'>
-            {listeCartes.forEach((carte, index) => (
-            <img key={index} id={index + 1} src={CheminImage(carte)} alt={`Carte ${carte.valeur} ${carte.couleur}`} />
-            ))}
+        <div>
+            <Lobby  listesjoueurs={onlyJoueurs}/>
+            <div className='divCartes'>
+                {listeCartes.map((carte, index) => (
+                    <img key={index} id={index + 1} 
+                        src={CheminImage(carte)} 
+                        alt={`Carte ${carte.valeur} ${carte.couleur}`}
+                        onClick={()=>carteJouee({"idJoueur":idJoueur,"idPartie":urlP.get("idPartie"),"choix":{couleur:carte.couleur,valeur:carte.valeur}})} 
+                    />
+                ))}
+            </div>
         </div>
     );
 }
-
-//a mettre dans export const bataille pour récupérer la liste des joueurs
-
-
+    
 
 //<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
-let listeCartes;
-let listeJoueurs;
-let infosJoueurs;
+
+let playersList = ['Player1'];
+// socket.emit("infosLobby",data.)
+
 
 
 export const Bataille = () => {
-    let urlP = new URL(document.location).searchParams;
-    let idP = urlP.get("idPartie")
-    console.log(idP)
-    //const playersList = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8', 'Player 9', 'Player10'];
-    socket.emit("infosLobby", {"idPartie":idP});
-
-    socket.on("infosLobby", (data) => { //liste de joueurs (liste de json), taille du paquet, liste de cartes, carte avec valeur et couleur comme attribut
-    // data {listejoueurs:tableau,nbjoueurs:int,joueursmax:int}
-        listeJoueurs = data.joueurs;
-        // console.log(data);
-    });
-
-   
-    //console.log(urlP.get("idPartie"));
-
-    socket.emit("wantCarte",{"idPartie":urlP.get("idPartie"),"idJoueur":idJoueur});
-        socket.on("getCarte",(data)=>{
-           listeCartes = data.main;
-           console.log(listeCartes);
-            console.log(data);
-           //console.log(listeCartes)
-            //infosJoueurs = data.infosJoueurs;
-        });
-
-
-    //listeCartes = [{valeur: '1', couleur: 'coeur' },{ valeur: '2', couleur: 'trefle' }];
-    listeJoueurs = ["salut","kyky","zizi"]
-
-    return ( 
+    return (
         <div>
-            {/* <Lobby listesjoueurs={listeJoueurs} nbjoueurs={9} joueursmax={10} /> */}
-            <MainJoueur listeCartes={listeCartes} />*
+            {/* <Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} /> */}
+            <MainJoueur/>
         </div>
     );
 };

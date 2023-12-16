@@ -21,12 +21,12 @@ server.listen(PORT, () => {
 });
 
 app.get('/fichier/:nomFichier', function(request, response) {
-  console.log("renvoi de "+request.params.nomFichier);
+  //console.log("renvoi de "+request.params.nomFichier);
   response.sendFile(request.params.nomFichier, {root: __dirname});
 });
 
 app.get('/carte/:nomFichier', function(request, response) {
-  console.log("renvoi de "+request.params.nomFichier);
+  //console.log("renvoi de "+request.params.nomFichier);
   response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
 });
 
@@ -296,7 +296,7 @@ io.on('connection', (socket) => {
         }
       }
     }
-    console.log(main)
+    // console.log(main)
     socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
   })
   
@@ -323,25 +323,28 @@ for (var partie of partiesOuvertes){
 })
 //-----------------------------------------JOUER UNE CARTE-----------------------
 
-socket.on('carteJouée',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
-  
+socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
+    console.log(data);
+
   for (var partie of partiesEnCours){
     if (partie.id==data.idPartie){
       for (var joueur of partie.joueurs){
         if (joueur.idJoueur==partie){
 //PAS FINI A FINIR
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){
-            socket.emit('carteJouée',true);
+            // renvoie true si la carte à bien été joué
+            socket.emit('carteJouee',true);
 
             if (partie.canTour()){
+              // me dit si tous les joueurs on fait leur choix
               partie.tour();
-              io.emit('tourPassé',{"idPartie":partie.id,"égalité":partie.égalité})
+              io.emit('tourPasse',{"idPartie":partie.id,"égalité":partie.égalité})
 
             }
 
           }
           else{
-            socket.emit('carteJouée',false)
+            socket.emit('carteJouee',false)
           }
 
 
@@ -359,23 +362,22 @@ socket.on('carteJouée',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={
 
 //Demande d'actualisation des infos bataille
 
-socket.on('infosLobby',data=>{
+  socket.on('infosLobby',data=>{
 
 
-  for (var partie of partiesOuvertes){//On sélectionne la bonne partie
+    for (var partie of partiesOuvertes){//On sélectionne la bonne partie
 
-    if (partie.id==data.idPartie){ 
+      if (partie.id==data.idPartie){ 
 
-  var retour = []; 
-  for (var j of partie.joueurs){//On renvoie la liste des joueurs
-    
-    retour.push(pseudos[j.idJoueur])
-  }
-  socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
-  return
-}
-}
-})
-
+    var retour = []; 
+    for (var j of partie.joueurs){//On renvoie la liste des joueurs
+      
+      retour.push(pseudos[j.idJoueur])
+    }
+    socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
+    return
+      }
+    }
+  });
 
 });
