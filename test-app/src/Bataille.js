@@ -47,65 +47,45 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
         );
     }
 
-function MainJoueur({listeCartes}){
+    function MainJoueur() {
+        const [listeCartes, setListeCartes] = useState([]);
+        let urlP = new URL(document.location).searchParams;
+        let idP = urlP.get("idPartie");
     
-    const CheminImage = (carte) => {
-        const { valeur, couleur } = carte;
-        const nomImage = `${valeur}_${couleur}.png`;    
-        return `http://localhost:8888/carte/${nomImage}`; //foutre chemin des cartes
-    };
+        socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
     
-    return (
-        <div className='divCartes'>
-            {listeCartes.map((carte, index) => (
-            <img key={index} id={index + 1} src={CheminImage(carte)} alt={`Carte ${carte.valeur} ${carte.couleur}`} />
-            ))}
-        </div>
-    );
-}
-
-//a mettre dans export const bataille pour récupérer la liste des joueurs
-
-
-
-//<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
-let listeCartes;
-let listeJoueurs;
-let infosJoueurs;
-
-
-export const Bataille = () => {
-    let urlP = new URL(document.location).searchParams;
-let idP = urlP.get("idPartie")
-    console.log(idP)
-    //const playersList = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5', 'Player6', 'Player7', 'Player8', 'Player 9', 'Player10'];
-    socket.emit("infosLobby", {"idPartie":idP});
-
-    socket.on("infosLobby", (data) => { //liste de joueurs (liste de json), taille du paquet, liste de cartes, carte avec valeur et couleur comme attribut
-    // data {listejoueurs:tableau,nbjoueurs:int,joueursmax:int}
-        listeJoueurs = data.listesjoueurs;
-        // console.log(listeJoueurs);
-    });
-
-   
-    //console.log(urlP.get("idPartie"));
-
-
-    socket.emit("wantCarte",{"idPartie":urlP.get("idPartie"),"idJoueur":idJoueur});
-        socket.on("getCarte",(data)=>{
-           listeCartes = data.main;
-           //console.log(listeCartes)
-            //infosJoueurs = data.infosJoueurs;
+        socket.on("getCarte", (data) => {
+            setListeCartes(data.main);
+            console.log(data);
+            console.log(data.infosJoueurs);
+            console.log(data.main);
         });
-
-
-    listeCartes = [{valeur: '1', couleur: 'coeur' },{ valeur: '2', couleur: 'trefle' }];
-    listeJoueurs = ["salut","kyky","zizi"]
-
-    return ( 
-        <div>
-            {/* <Lobby listesjoueurs={listeJoueurs} nbjoueurs={9} joueursmax={10} /> */}
-            <MainJoueur listeCartes={listeCartes} />*
-        </div>
-    );
-};
+    
+        const CheminImage = (carte) => {
+            const { valeur, couleur } = carte;
+            const nomImage = `${valeur}_${couleur}.png`;
+            return `http://localhost:8888/carte/${nomImage}`;
+        };
+    
+        return (
+            <div className='divCartes'>
+                {listeCartes.map((carte, index) => (
+                    <img key={index} id={index + 1} src={CheminImage(carte)} alt={`Carte ${carte.valeur} ${carte.couleur}`} />
+                ))}
+            </div>
+        );
+    }
+        
+    
+    //<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
+    
+    let playersList = ['Player1'];
+    
+    export const Bataille = () => {
+        return (
+            <div>
+                <Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
+                <MainJoueur/>
+            </div>
+        );
+    };
