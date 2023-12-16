@@ -310,7 +310,7 @@ for (var partie of partiesOuvertes){
     socket.emit("rejoindre partie bataille",partie.id);
     if (partie.joueurs.length==partie.joueursMax){
       lancerPartie(partie.id)
-      socket.emit("gameStarting",{"idPartie":data.idPartie})
+      io.emit("gameStarting",{"idPartie":data.idPartie})
     }
     return;}
   }
@@ -360,16 +360,16 @@ socket.on('carteJouée',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={
 //Demande d'actualisation des infos bataille
 
 socket.on('infosLobby',data=>{
-
+  console.log("reçuinfoslobby")
+  var retour = []; 
 
   for (var partie of partiesOuvertes){//On sélectionne la bonne partie
 
-    if (partie.id==data.idPartie){ 
+    if (partie.id==data.idPartie){
 
-  var retour = []; 
   for (var j of partie.joueurs){//On renvoie la liste des joueurs
     
-    retour.push(pseudos[j.idJoueur])
+    retour.push(pseudos[j.idJoueur]);
   }
   socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
   return

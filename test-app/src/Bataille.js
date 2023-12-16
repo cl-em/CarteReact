@@ -13,9 +13,6 @@ const socket = io('http://localhost:8888');
 // let IdJoueur;
 
 
-
-socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
-
 export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
     // listesjoueurs : liste de string,
     
@@ -83,7 +80,22 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
         
     
     //<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
+    function ListeJoueursPartie() {
+        let urlP = new URL(document.location).searchParams;
+        const [playersList, setPlayersList] = useState([]);
     
+        useEffect(() => {
+            socket.emit("infosLobby", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
+            socket.on("infosLobby", (data) => {
+            setPlayersList(data.joueurs);
+            console.log(playersList);
+            });
+    
+        });
+    
+        return console.log(playersList);
+    }
+
     let playersList = ['Player1'];
     
     export const Bataille = () => {
@@ -91,6 +103,7 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
             <div>
                 <Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
                 <MainJoueur/>
+                <ListeJoueursPartie/>
             </div>
         );
     };
