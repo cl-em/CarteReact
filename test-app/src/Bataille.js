@@ -48,6 +48,9 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
     }
 
 function MainJoueur() {
+    
+    const navigate = useNavigate();
+    
     const [listeCartes, setListeCartes] = useState([]);
     // const [listeRecu, setListeRecu] = useState(false);
     // const [listeCartes, setListeCartes] = useState([]);
@@ -88,7 +91,6 @@ function MainJoueur() {
             setListeCarteRecu(true);
             setListeJoueursRecu(true);
             setJoueTour(false);
-            setGameStart(true);
     });
 
     return () => {
@@ -192,37 +194,35 @@ function MainJoueur() {
                     
             }else{
                     // cas où il n'y a pas d'égalité
-                    for (var player of data.cartesJouees) {
-                        document.getElementById(player.pseudo).innerHTML = `<p>${player.pseudo}</p>`;
-                        if(player.choix!=null){
-                            document.getElementById(player.pseudo).innerHTML += (`<img class='hop' src="http://localhost:8888/carte/`+player.choix.valeur+`_`+player.choix.couleur+`.png" />`);
-                        }
-                        gagnant = data.winner;
-                        
+                for (var player of data.cartesJouees) {
+                    document.getElementById(player.pseudo).innerHTML = `<p>${player.pseudo}</p>`;
+                    if(player.choix!=null){
+                        document.getElementById(player.pseudo).innerHTML += (`<img class='hop' src="http://localhost:8888/carte/`+player.choix.valeur+`_`+player.choix.couleur+`.png" />`);
                     }
-                    document.getElementById("gagnant").innerHTML += `<p>Le gagnant est ${gagnant}</p>`;
-                    setTimeout(() => {
-                        document.getElementById("gagnant").innerHTML = "";
-                        //elouand c'est les joueurs
-                        for (var elouand of data.cartesJouees) {
-                            // boucle sur les joueurs 
-                            document.getElementById(elouand.pseudo).innerHTML = ""
-                        }
-                    }, 5000);
+                    gagnant = data.winner;
+                    
+                }
+                document.getElementById("gagnant").innerHTML += `<p>Le gagnant est ${gagnant}</p>`;
+                setTimeout(() => {
+                    document.getElementById("gagnant").innerHTML = "";
+                    //elouand c'est les joueurs
+                    for (var elouand of data.cartesJouees) {
+                        // boucle sur les joueurs 
+                        document.getElementById(elouand.pseudo).innerHTML = ""
+                    }
+                }, 5000);
 
-                    }
+            }
                
-                setListeCarteRecu(false);
+            setListeCarteRecu(false);
             
     
             isEgalite = data.egalite;
         }
     };
     
-    // Utiliser un useEffect avec gameStart comme dépendance
     useEffect(() => {
         if (gameStart) {
-            // Ajouter l'écouteur d'événements
             socket.on("tourPasse", TourPasse);
     
             return () => {
@@ -242,20 +242,41 @@ function MainJoueur() {
         });
     },[]);
 
+    
+    useEffect(()=>{
+        socket.on("partieFinie",(data)=>{
+            document.getElementById("gagnant").innerHTML=`Le gagnant de la partie est ${data.gagnant}`;
+
+
+            setTimeout(()=>{//On laisse le temps au joueur de comprendre, puis on retourne à la page de sélection des parties
+                navigate("/bataille");
+            },7000);
+            //
+        });
+    },[]);
+
+    const emitQuitte = () => {
+        socket.emit("joueurQuitte", {"idJoueur":idJoueur, "idPartie":urlP.get("idPartie")});
+    }
+
+    useEffect(()=>{
+        window.addEventListener('beforeunload', emitQuitte);
+    }, []);
+
 
     // function affC(){
     //     onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
     //         // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
         
     //                 document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`
-    //                 document.getElementById(pseudo).innerHTML+=`<img class='hop' src=${CheminImage({valeur:8,couleur:'coeur'})} />`
+    //                 document.getElementById(spseudo).innerHTML+=`<img class='hop' src=${CheminImage({valeur:8,couleur:'coeur'})} />`
                 
         
             
     //     })
     // }
     
-    /*return (
+    return (
         <div>
             <Lobby  listesjoueurs={onlyJoueurs}/>
             <div className='divCartes'>
@@ -268,45 +289,43 @@ function MainJoueur() {
                 ))}
             </div>
         </div>
-    );*/
-
-    return (
-        <div>
-            {gameStart ? (
-                <div>
-                    <Lobby listesjoueurs={onlyJoueurs} />
-                    <div className='divCartes'>
-                        {listeCartes.map((carte, index) => (
-                            <img key={index} id={index + 1}
-                                src={CheminImage(carte)}
-                                alt={`Carte ${carte.valeur} ${carte.couleur}`}
-                                onClick={() => carteJouee({"idJoueur": idJoueur,"idPartie": urlP.get("idPartie"),"choix": { couleur: carte.couleur, valeur: carte.valeur }
-                                })}
-                            />
-                        ))}
-                    </div>
-                </div>
-            ) : (
-                <AvantPartie />
-            )}
-        </div>
     );
+
+//     return (
+//         <div>
+//             {gameStart ? (
+//                 <div>
+//                     <Lobby listesjoueurs={onlyJoueurs} />
+//                     <div className='divCartes'>
+//                         {listeCartes.map((carte, index) => (
+//                             <img key={index} id={index + 1}
+//                                 src={CheminImage(carte)}
+//                                 alt={`Carte ${carte.valeur} ${carte.couleur}`}
+//                                 onClick={() => carteJouee({"idJoueur": idJoueur,"idPartie": urlP.get("idPartie"),"choix": { couleur: carte.couleur, valeur: carte.valeur }
+//                                 })}
+//                             />
+//                         ))}
+//                     </div>
+//                 </div>
+//             ) : (
+//                 <AvantPartie />
+//             )}
+//         </div>
+//     );
 }
 
-function AvantPartie() {
-    return (
-        <div>
-            <p>La partie n'a pas encore démarré.</p>
-        </div>
-    );
-}
+// function AvantPartie() {
+//     return (
+//         <div>
+//             <p>La partie n'a pas encore démarré.</p>
+//         </div>
+//     );
+// }
     
 //<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
 
 // let playersList = ['Player1'];
 // socket.emit("infosLobby",data.)
-
-
 
 export const Bataille = () => {
     return (

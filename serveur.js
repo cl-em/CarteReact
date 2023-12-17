@@ -141,21 +141,6 @@ function lancerPartie(idPartie){
 
 
 
-console.log("-------------------------TESTS DU JEU PAR ELOUAND----------------------------------")
-
-var game = new Bataille(1,2);
-
-var game3 = new Bataille(1,5);
-
-
-
-partiesOuvertes.push(game);
-partiesOuvertes.push(game3);
-
-
-console.log("|------------un tour d'égalité passe--------------|")
-/*ça a l'air fonctionnel :)*/
-console.log("------------------------------------------------------------------------------------")
 
 const getUserById = (id)=>{//FONCTION A NE PAS UTILISER MARCHE PAS MERCI
   let retour;
@@ -341,10 +326,14 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
               if (partie.égalité==true){//Si on etait dejà dans une égalité
                 
                 if (partie.canTourégalité()){
+                  console.log("tour d'égalité youhou")
                   var cartesJouees = [];//Les cartes jouees pendant le tour
                   for (var joueur of partie.joueurségalité){cartesJouees.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur],"choix":joueur.choix});}
 
                   var winner = partie.tourégalité();
+
+                  var finipartie = partie.existeWinner();
+                  if (finipartie!=false){socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]});return}
                   
                     if (winner==false){
                       io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":false});
@@ -373,6 +362,9 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
                       
                 var winner = partie.tour();
 
+                  var finipartie = partie.existeWinner();
+                  if (finipartie!=false){socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]});return}
+                  
                 if (winner==false){
                   winner = []
                   var returnegal = [];
@@ -424,5 +416,31 @@ socket.on('infosLobby',data=>{
 }
 })
 
+
+socket.on("joueurQuitte",data=>{  
+  
+  for (var partie of partiesOuvertes){//enleversi la partie n'a pas commencé
+    if (partie.id==data.idPartie){
+      for (var joueur in partie.joueurs){
+        if (partie.joueurs[joueur].idJoueur==data.idJoueur){
+          partie.joueurs.splice[joueur];
+          return;
+        }
+      }
+    }
+  }
+  
+  for (var partie of partiesEnCours){//Cas où la partie a commencé (plus complexe, heureusement il y a une méthode dans game)
+    if (partie.id==data.idPartie){
+      partie.removePlayer(data.idJoueur);
+      var finipartie = partie.existeWinner();
+      if (finipartie!=false){socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
+      return;
+    }
+  }
+
+
+
+})
 
 });
