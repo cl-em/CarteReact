@@ -21,12 +21,12 @@ server.listen(PORT, () => {
 });
 
 app.get('/fichier/:nomFichier', function(request, response) {
-  //console.log("renvoi de "+request.params.nomFichier);
+  console.log("renvoi de "+request.params.nomFichier);
   response.sendFile(request.params.nomFichier, {root: __dirname});
 });
 
 app.get('/carte/:nomFichier', function(request, response) {
-  console.log("renvoi de "+request.params.nomFichier);
+  //console.log("renvoi de "+request.params.nomFichier);
   response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
 });
 
@@ -344,7 +344,7 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
                   for (var joueur of partie.joueurségalite){cartesJouees.push[{"idJoueur":joueur.id,"pseudo":pseudos[joueur.id],"choix":joueur.choix}];}
 
                   var winner = partie.canTourégalite();
-                  
+              
               io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":partie.égalite})
 
               return
