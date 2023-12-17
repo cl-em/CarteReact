@@ -3,7 +3,7 @@ import './App.css';
 import {io} from "socket.io-client";
 import React, { useEffect, useState } from 'react';
 import SocketContext from './SocketContext';
-
+import Chat from './Chat';
 // import {
 //     useNavigate
 // } from "react-router-dom";
@@ -257,42 +257,43 @@ function MainJoueur() {
     //     })
     // }
     
-    /*return (
+    return (
         <div>
+            <Chat />
             <Lobby  listesjoueurs={onlyJoueurs}/>
             <div className='divCartes'>
                 {listeCartes.map((carte, index) => (
                     <img key={index} id={index + 1} 
                         src={CheminImage(carte)} 
                         alt={`Carte ${carte.valeur} ${carte.couleur}`}
-                        onClick={()=>carteJouee({"idJoueur":idJoueur,"idPartie":urlP.get("idPartie"),"choix":{couleur:carte.couleur,valeur:carte.valeur}})} 
+                        onClick={()=>carteJouee({"idPartie":urlP.get("idPartie"),"choix":{couleur:carte.couleur,valeur:carte.valeur}})} 
                     />
                 ))}
             </div>
         </div>
-    );*/
-
-    return (
-        <div>
-            {gameStart ? (
-                <div>
-                    <Lobby listesjoueurs={onlyJoueurs} />
-                    <div className='divCartes'>
-                        {listeCartes.map((carte, index) => (
-                            <img key={index} id={index + 1}
-                                src={CheminImage(carte)}
-                                alt={`Carte ${carte.valeur} ${carte.couleur}`}
-                                onClick={() => carteJouee({"idPartie": urlP.get("idPartie"),"choix": { couleur: carte.couleur, valeur: carte.valeur }
-                                })}
-                            />
-                        ))}
-                    </div>
-                </div>
-            ) : (
-                <AvantPartie />
-            )}
-        </div>
     );
+
+    // return (
+    //     <div>
+    //         {gameStart ? (
+    //             <div>
+    //                 <Lobby listesjoueurs={onlyJoueurs} />
+    //                 <div className='divCartes'>
+    //                     {listeCartes.map((carte, index) => (
+    //                         <img key={index} id={index + 1}
+    //                             src={CheminImage(carte)}
+    //                             alt={`Carte ${carte.valeur} ${carte.couleur}`}
+    //                             onClick={() => carteJouee({"idPartie": urlP.get("idPartie"),"choix": { couleur: carte.couleur, valeur: carte.valeur }
+    //                             })}
+    //                         />
+    //                     ))}
+    //                 </div>
+    //             </div>
+    //         ) : (
+    //             <AvantPartie />
+    //         )}
+    //     </div>
+    // );
 }
 
 function AvantPartie() {

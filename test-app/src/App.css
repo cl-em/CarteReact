@@ -245,3 +245,19 @@ body {
 .hop{
   height: 100%;
 }
+
+
+.chat{
+  position: absolute;
+  color: aliceblue;
+  bottom: 0;
+  right: 0;
+  width: 10%;
+  height: 30%;
+  background-color: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.295);
+  backdrop-filter: blur(5px);
+  border-radius: 3%;
+  box-shadow: 0 0 10px rgb(0, 0, 0);
+  overflow-x: auto;
+}

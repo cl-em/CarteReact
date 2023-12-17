@@ -37,7 +37,7 @@ function Chat() {
   };
 
   return (
-    <div>
+    <div class="chat">
       <ul>
         {messages.map((msg, index) => (
           <li key={index}>{msg}</li>
