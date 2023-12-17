@@ -76,7 +76,7 @@ function MainJoueur() {
         return () => {
             socket.off("gameStarting");//Anti memory leak
         };
-    }, [urlP.get("idPartie")]);
+    },[urlP.get("idPartie")]);
 
     useEffect(() => {
         
@@ -91,6 +91,7 @@ function MainJoueur() {
             setListeCarteRecu(true);
             setListeJoueursRecu(true);
             setJoueTour(false);
+            setGameStart(true);
     });
 
     return () => {
@@ -166,7 +167,7 @@ function MainJoueur() {
             if(!data.winner){
                 document.getElementById("gagnant").innerHTML="Les joueurs n'ont pas pu être départagé";
                 setTimeout(()=>{
-                    document.getElementById(elouand.pseudo).innerHTML = "";
+                    document.getElementById("gagnant").innerHTML = "";
                 },5000);
 
             }else if(data.égalité ){
@@ -195,13 +196,15 @@ function MainJoueur() {
                     // cas où il n'y a pas d'égalité
                     for (var player of data.cartesJouees) {
                         document.getElementById(player.pseudo).innerHTML = `<p>${player.pseudo}</p>`;
-                        document.getElementById(player.pseudo).innerHTML += (`<img class='hop' src="http://localhost:8888/carte/`+player.choix.valeur+`_`+player.choix.couleur+`.png" />`);
-                        
+                        if(player.choix!=null){
+                            document.getElementById(player.pseudo).innerHTML += (`<img class='hop' src="http://localhost:8888/carte/`+player.choix.valeur+`_`+player.choix.couleur+`.png" />`);
+                        }
                         gagnant = data.winner;
-                        document.getElementById("gagnant").innerHTML += `<p>Le gagnant est ${gagnant}</p>`;
                         
                     }
+                    document.getElementById("gagnant").innerHTML += `<p>Le gagnant est ${gagnant}</p>`;
                     setTimeout(() => {
+                        document.getElementById("gagnant").innerHTML = "";
                         //elouand c'est les joueurs
                         for (var elouand of data.cartesJouees) {
                             // boucle sur les joueurs 

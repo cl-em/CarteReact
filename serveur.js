@@ -457,6 +457,7 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
                     }
 
                     io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":true});
+                    partie.égalité = true
                     return;
                   }
                 else{
