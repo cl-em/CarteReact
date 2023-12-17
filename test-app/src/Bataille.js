@@ -1,13 +1,14 @@
 import './App.css';
-import {idJoueur} from './App.js';
+// import {idJoueur} from './App.js';
 import {io} from "socket.io-client";
 import React, { useEffect, useState } from 'react';
+import SocketContext from './SocketContext';
 
-import {
-    useNavigate
-} from "react-router-dom";
+// import {
+//     useNavigate
+// } from "react-router-dom";
 
-const socket = io('http://localhost:8888');
+// const socket = io('http://localhost:8888');
 
 // let IdJoueur;
 
@@ -16,6 +17,7 @@ const socket = io('http://localhost:8888');
 // socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
 
 export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
+    const socket = React.useContext(SocketContext);
     // listesjoueurs : liste de string,
     
     function posCercles(element, theta) {
@@ -48,6 +50,7 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
     }
 
 function MainJoueur() {
+    const socket = React.useContext(SocketContext);
     const [listeCartes, setListeCartes] = useState([]);
     // const [listeRecu, setListeRecu] = useState(false);
     // const [listeCartes, setListeCartes] = useState([]);
@@ -80,7 +83,7 @@ function MainJoueur() {
         //if(gameStart){
     if (!listeCarteRecu || !listeJoueursRecu || isEgalite || gagnant || gameStart || joueTour) {
 
-        socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
+        socket.emit("wantCarte", { "idPartie": urlP.get("idPartie")});
 
         socket.on("getCarte", (data) => {
             setListeCartes(data.main);
@@ -156,7 +159,6 @@ function MainJoueur() {
     });*/
 
     const TourPasse = (data) => {
-
         // test si c'est la bonne partie 
         if (urlP.get("idPartie") == data.idPartie) {
             // tout ça se passe après que tous les joueurs aient envoyé leur carte que le résultat du tour soit calculé
@@ -277,7 +279,7 @@ function MainJoueur() {
                             <img key={index} id={index + 1}
                                 src={CheminImage(carte)}
                                 alt={`Carte ${carte.valeur} ${carte.couleur}`}
-                                onClick={() => carteJouee({"idJoueur": idJoueur,"idPartie": urlP.get("idPartie"),"choix": { couleur: carte.couleur, valeur: carte.valeur }
+                                onClick={() => carteJouee({"idPartie": urlP.get("idPartie"),"choix": { couleur: carte.couleur, valeur: carte.valeur }
                                 })}
                             />
                         ))}
