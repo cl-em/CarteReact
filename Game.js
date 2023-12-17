@@ -65,11 +65,14 @@ addPlayer(idJoueur){
 }
 else{return false;}
 }
+
 removePlayer(idJoueur){
     for (var joueur in this.joueurs){
-        if (joueurs[joueur].id==idJoueur){
+        if (this.joueurs[joueur].idJoueur==idJoueur){
+            this.goal-=(this.joueurs[joueur].main.length+this.paquets[joueur].length)
             this.joueurs.splice(joueur)
             this.paquets.splice(joueur)
+        
         }
     }
 }
@@ -97,6 +100,7 @@ class Bataille extends Game{
 
     constructor(host,nbJoueurs){
         super(["coeur","pique","trefle","carreau"],13,host,nbJoueurs);
+        this.goal = 0;
         this.createDeck();
         this.paquets = [];
         this.type="Bataille"
@@ -115,6 +119,7 @@ initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nom
 while (this.deck.length>=this.joueurs.length){//Distribution équitable des cartes
         for (var joueur of this.joueurs){
             joueur.main.push(this.drawCarte());
+            this.goal++;
         }
     }
 
@@ -143,7 +148,9 @@ tour(){
         if (this.joueurs[joueur].éliminé==false&&(winner.choix==null||(this.joueurs[joueur].choix.valeur>winner.choix.valeur))){winner=this.joueurs[joueur];this.joueurségalité = [this.joueurs[joueur]];this.égalité=false;}//Cas d'égalité, il sera pris en charge par serveur.js selon le retour de cette fonction
         else{if (this.joueurs[joueur].éliminé==false&&this.joueurs[joueur].choix.valeur==winner.choix.valeur&&(joueur!=0)){
             this.joueurségalité.push(this.joueurs[joueur]); 
+            console.log("y'a égalité")
             this.égalité=true;}}
+
     }   
 
     if (this.égalité==true){this.pactoleAttente = pactole;this.emptyChoices();
@@ -202,7 +209,7 @@ tourégalité(){
 for (var joueur in this.joueurségalité){
     for (var i of this.joueurs){
         if (i.éliminé!=false&&joueur.idJoueur==i.idJoueur){this.pactoleAttente.push(i.choix);}
-        if (this.joueurségalité[joueur].idJoueur==i.idJoueur && i.choix.valeur>winner.choix.valeur){winner = i;winners = [winner];égalitédouble=false}
+        if (this.joueurségalité[joueur].idJoueur==i.idJoueur && (winner.choix==null||(i.choix.valeur>winner.choix.valeur))){winner = i;winners = [winner];égalitédouble=false}
         else if (this.joueurségalité[joueur].idJoueur==i.idJoueur && i.choix.valeur==winner.choix.valeur&&(joueur!=0)){égalitédouble=true;winners.push(i);}
     }
 }
@@ -222,7 +229,7 @@ this.pactoleAttente = null;
 this.joueurségalité = null;
 this.égalitédouble = false;
 this.shufflePaquets();
-    this.emptyChoices();
+this.emptyChoices();
 
     for (var joueur in this.joueurs){
         if (this.joueurs[joueur].main.length==0){
@@ -264,7 +271,9 @@ return winner;
 
 existeWinner(){//Renvoie false si aucun gagnant, true si une personne a gagné
     for (var joueur in this.joueurs){
-        if (this.joueurs[joueur].main.length+this.paquets[joueur]==(this.couleurs.length*this.nbvaleurs)){return this.joueurs[joueur]}
+     
+        if (this.joueurs[joueur].main.length+this.paquets[joueur].length>=(this.goal)){
+            return this.joueurs[joueur]}
     }
 return false;
 }
