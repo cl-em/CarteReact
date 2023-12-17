@@ -137,16 +137,23 @@ tour(){
      
     var pactole=[];//Cartes en jeu
     var winner=this.joueurs[0];
-    this.joueurségalité = [];
+    this.joueurségalité = [this.joueurs[0]];
     for (var joueur in this.joueurs){
-        pactole.push(this.joueurs[joueur].choix);
-        if (this.joueurs[joueur].choix.valeur>winner.choix.valeur){winner=this.joueurs[joueur];this.joueurségalité = [this.joueurs[joueur]];this.égalité=false;}//Cas d'égalité, il sera pris en charge par serveur.js selon le retour de cette fonction
-        else{if (this.joueurs[joueur].choix.valeur==winner.choix.valeur&&(joueur!=0)){
+        if (this.joueurs[joueur].choix!=null){pactole.push(this.joueurs[joueur].choix)};
+        if (this.joueurs[joueur].éliminé==false&&(winner.choix==null||(this.joueurs[joueur].choix.valeur>winner.choix.valeur))){winner=this.joueurs[joueur];this.joueurségalité = [this.joueurs[joueur]];this.égalité=false;}//Cas d'égalité, il sera pris en charge par serveur.js selon le retour de cette fonction
+        else{if (this.joueurs[joueur].éliminé==false&&this.joueurs[joueur].choix.valeur==winner.choix.valeur&&(joueur!=0)){
             this.joueurségalité.push(this.joueurs[joueur]); 
             this.égalité=true;}}
     }   
 
-    if (this.égalité==true){this.pactoleAttente = pactole;this.emptyChoices();return false;}//On stoppe car il faut refaire un pli.
+    if (this.égalité==true){this.pactoleAttente = pactole;this.emptyChoices();
+        for (var joueur in this.joueurs){
+            if (this.joueurs[joueur].main.length==0){
+                if (this.paquets[joueur].length==0){this.joueurs[joueur].éliminé=true;}//éliminé s'il n'a ni main, ni paquet
+                else{this.joueurs[joueur].main = this.paquets[joueur]}
+            }
+                }
+                return false;}//On stoppe car il faut refaire un pli.
 
 
 
@@ -160,7 +167,6 @@ tour(){
 
 
     //On remet les paquets dans la main de chaque joueur
-    this.shufflePaquets();
     for (var joueur in this.joueurs){
 if (this.joueurs[joueur].main.length==0){
     if (this.paquets[joueur].length==0){this.joueurs[joueur].éliminé=true;}//éliminé s'il n'a ni main, ni paquet
@@ -185,6 +191,7 @@ canTourégalité(){//Teste si le tour peut démarrer, donc si tous les joueurs o
     for (var joueur of this.joueurségalité){
         if (joueur.éliminé==false && joueur.choix==null&&this.joueurs.includes(joueur)){return false}
     }
+    
     return true
 }
 
@@ -194,7 +201,7 @@ tourégalité(){
     var winners = []
 for (var joueur in this.joueurségalité){
     for (var i of this.joueurs){
-        if (joueur.idJoueur==i.idJoueur){this.pactoleAttente.push(i.choix);}
+        if (i.éliminé!=false&&joueur.idJoueur==i.idJoueur){this.pactoleAttente.push(i.choix);}
         if (this.joueurségalité[joueur].idJoueur==i.idJoueur && i.choix.valeur>winner.choix.valeur){winner = i;winners = [winner];égalitédouble=false}
         else if (this.joueurségalité[joueur].idJoueur==i.idJoueur && i.choix.valeur==winner.choix.valeur&&(joueur!=0)){égalitédouble=true;winners.push(i);}
     }
@@ -216,6 +223,14 @@ this.joueurségalité = null;
 this.égalitédouble = false;
 this.shufflePaquets();
     this.emptyChoices();
+
+    for (var joueur in this.joueurs){
+        if (this.joueurs[joueur].main.length==0){
+            if (this.paquets[joueur].length==0){this.joueurs[joueur].éliminé=true;}//éliminé s'il n'a ni main, ni paquet
+            else{this.joueurs[joueur].main = this.paquets[joueur]}
+        }
+            }
+
     return false;
 }
 
@@ -234,6 +249,14 @@ this.shufflePaquets();
     this.égalitédouble = false;
     this.shufflePaquets();
     this.emptyChoices();
+
+    for (var joueur in this.joueurs){
+        if (this.joueurs[joueur].main.length==0){
+            if (this.paquets[joueur].length==0){this.joueurs[joueur].éliminé=true;}//éliminé s'il n'a ni main, ni paquet
+            else{this.joueurs[joueur].main = this.paquets[joueur]}
+        }
+            }
+
 return winner;
 }//On prépare pour poursuivre
 
