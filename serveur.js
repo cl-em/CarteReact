@@ -331,7 +331,7 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
       for (var joueur of partie.joueurs){
         if (joueur.idJoueur==data.idJoueur){
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){  
-            socket.emit('carteJouee',{'valeur':data.choix.valeur,'couleur':data.choix.couleur});
+            socket.emit('carteJouee',{'valeur':data.choix.valeur,'couleur':data.choix.couleur,'pseudo':pseudos[data.idJoueur]});
           }
           else{
             socket.emit('carteJouee',false)
@@ -339,31 +339,57 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
         }
       }
               if (partie.égalité==true){//Si on etait dejà dans une égalité
+                
                 if (partie.canTourégalité()){
                   var cartesJouees = [];//Les cartes jouees pendant le tour
-                  for (var joueur of partie.joueurségalite){cartesJouees.push[{"idJoueur":joueur.id,"pseudo":pseudos[joueur.id],"choix":joueur.choix}];}
+                  for (var joueur of partie.joueurségalité){cartesJouees.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur],"choix":joueur.choix});}
 
-                  var winner = partie.canTourégalite();
-              
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":partie.égalite})
+                  var winner = partie.tourégalité();
+                  
+                    if (winner==false){
+                      io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":false});
+                      partie.égalité = false;
+                      return
+                    }
+                    else{
 
-              return
+                     
+                      io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":pseudos[winner.idJoueur],"égalité":false})
+                      partie.égalité = false;
+                      return
+                    }
 
                 }
               }
               else{
-             if (partie.canTour()){
+
+
+             if (partie.canTour()){//Cas où il n'y a pas eu d'égalité au tour précédent
               // me dit si tous les joueurs on fait leur choix
+
 
                 var cartesJouees = [];//Les cartes jouees pendant le tour
                   for (var joueur of partie.joueurs){cartesJouees.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur],"choix":joueur.choix});}
                       
                 var winner = partie.tour();
-             
-                
-                    
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":pseudos[winner.idJoueur],"égalité":partie.égalité})
+
+                if (winner==false){
+                  winner = []
+                  var returnegal = [];
+                    for (var joueur of partie.joueurségalité){
+                      winner.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur]})
+                    }
+
+                    io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":true});
+                    return;
+                  }
+                else{
+              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":pseudos[winner.idJoueur],"égalité":false})
+              partie.égalité = false;
+              //égalité : bool
+
               return;
+                }
              }
 
             }

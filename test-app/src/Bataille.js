@@ -54,13 +54,12 @@ function MainJoueur() {
     const [listeJoueurs, setListeJoueurs] = useState([]);
     const [listeCarteRecu, setListeCarteRecu] = useState(false);
     const [listeJoueursRecu, setListeJoueursRecu] = useState(false);
-
+    const [joueTour, setJoueTour] = useState(false);
 
     
     let urlP = new URL(document.location).searchParams;
     let isEgalite=false;
     let gagnant=false;
-    let afficheCond = false;
     
     const [gameStart, setGameStart]= useState(false);
 
@@ -76,28 +75,27 @@ function MainJoueur() {
         };
     }, [urlP.get("idPartie")]);
 
-    
     useEffect(() => {
         
-            //if(gameStart){
-        if (!listeCarteRecu || !listeJoueursRecu || isEgalite || gagnant || gameStart) {
+        //if(gameStart){
+    if (!listeCarteRecu || !listeJoueursRecu || isEgalite || gagnant || gameStart || joueTour) {
 
-            socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
+        socket.emit("wantCarte", { "idPartie": urlP.get("idPartie"), "idJoueur": idJoueur });
 
-            socket.on("getCarte", (data) => {
-                setListeCartes(data.main);
-                setListeJoueurs(data.infosJoueurs);
-                setListeCarteRecu(true);
-                setListeJoueursRecu(true);
-        });
-
-        return () => {
-            socket.off("getCarte");
-        }
-        }
-
+        socket.on("getCarte", (data) => {
+            setListeCartes(data.main);
+            setListeJoueurs(data.infosJoueurs);
+            setListeCarteRecu(true);
+            setListeJoueursRecu(true);
+            setJoueTour(false);
     });
 
+    return () => {
+        socket.off("getCarte");
+    }
+    }
+
+});
 
     const CheminImage = (carte) => {
         const { valeur, couleur } = carte;
@@ -108,6 +106,7 @@ function MainJoueur() {
     function carteJouee(carte){
         // carte {couleur:string,valeur:string}
         socket.emit("carteJouee",carte)
+        setJoueTour(true);
         // console.log(carte);
         // alert(`${carte.couleur} ${carte.valeur}`);
     }
@@ -156,30 +155,64 @@ function MainJoueur() {
     }
     });*/
 
-    // Définir la fonction handleTourPasse à l'extérieur du composant
     const TourPasse = (data) => {
+
+        // test si c'est la bonne partie 
         if (urlP.get("idPartie") == data.idPartie) {
+            // tout ça se passe après que tous les joueurs aient envoyé leur carte que le résultat du tour soit calculé
+            // dans le cas où ils n'y a pas de gagnat le tour s'arrête
+            if(!data.winner){
+                document.getElementById("gagnant").innerHTML="Les joueurs n'ont pas pu être départagé";
+                setTimeout(()=>{
+                    document.getElementById(elouand.pseudo).innerHTML = "";
+                },5000);
+
+            }else if(data.égalité ){
+                // en cas d'égalité
+                // les cartes restent affichées
+                // et on fait rejouer les joueurs qui sont dans l'égalité
+                for (var elouand of data.cartesJouees) {
+                    // boucle sur les joueurs 
+                    document.getElementById(elouand.pseudo).innerHTML = `<p>${elouand.pseudo}</p>`;
+                }
+                
+                let tousLesJoueursEgalite ="";
+                // liste de textuel des joueurs qui sont dans l'égalité
+                data.winner.forEach((joueur,index)=>{
+                        // recupération des pseudos des joueurs qui ont pratiqué l'égalité constitutionnel du jeu de la bataille ouverte qui est une variante du jeu de la bataille qui je joue avec un paquet de 54 cartes
+                        tousLesJoueursEgalite+=`${joueur.pseudo} `;
+                });
+                    // affichage des noms des joueurs qui doivent reposer une carte du paquet de 54 cartes pendant cinq secondes 
+                    document.getElementById("gagnant").innerHTML+=`<p> ÉGALITÉE \n${tousLesJoueursEgalite} doivent rejouer`;
+                    setTimeout(()=>{
+                        document.getElementById("gagnant").innerHTML=""
+                        
+                    },5000);
+                    
+            }else{
+                    // cas où il n'y a pas d'égalité
                     for (var player of data.cartesJouees) {
-                            document.getElementById(player.pseudo).innerHTML = `<p>${player.pseudo}</p>`;
-                            document.getElementById(player.pseudo).innerHTML += (`<img class='hop' src="http://localhost:8888/carte/`+player.choix.valeur+`_`+player.choix.couleur+`.png" />`);
-                            setTimeout(() => {
-                                
-                                for (var elouand of data.cartesJouees) {
-                                document.getElementById(elouand.pseudo).innerHTML = `<p>${elouand.pseudo}</p>`;
-                                }
-                            }, 5000);
+                        document.getElementById(player.pseudo).innerHTML = `<p>${player.pseudo}</p>`;
+                        document.getElementById(player.pseudo).innerHTML += (`<img class='hop' src="http://localhost:8888/carte/`+player.choix.valeur+`_`+player.choix.couleur+`.png" />`);
+                        
+                        gagnant = data.winner;
+                        document.getElementById("gagnant").innerHTML += `<p>Le gagnant est ${gagnant}</p>`;
+                        
+                    }
+                    setTimeout(() => {
+                        //elouand c'est les joueurs
+                        for (var elouand of data.cartesJouees) {
+                            // boucle sur les joueurs 
+                            document.getElementById(elouand.pseudo).innerHTML = ""
+                        }
+                    }, 5000);
+
                     }
                
                 setListeCarteRecu(false);
             
     
             isEgalite = data.egalite;
-            gagnant = data.winner;
-            document.getElementById("Table").innerHTML += `<p>Le gagnant est ${gagnant}</p>`;
-            
-            // setTimeout(() => {
-            //     document.getElementById("Table").innerHTML = "";
-            // }, 5000);
         }
     };
     
@@ -195,23 +228,33 @@ function MainJoueur() {
         }
     }, [gameStart]);
 
+    useEffect(()=>{
+        socket.on("carteJouee",(data)=>{//Affichage de la carte qui est entrain d'être jouée SI ET SEULEMENT SI ON PEUT LA JOUER
+            if (data==false){return}
+            //Sinon c'est comme une carte, il y a data.choix et data.valeur et data.pseudo -Elouand & kyky (merci a lui pour les use effect)
+            // unsigned clement
+            document.getElementById(data.pseudo).innerHTML = `<p>${data.pseudo}</p>`
+            document.getElementById(data.pseudo).innerHTML+=`<img class='hop' src=http://localhost:8888/carte/`+data.valeur+`_`+data.couleur +`.png/>`
+            
+        });
+    },[]);
 
-    function affC(){
-        onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
-            // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
+
+    // function affC(){
+    //     onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
+    //         // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
         
-                    document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`
-                    document.getElementById(pseudo).innerHTML+=`<img class='hop' src=${CheminImage({valeur:8,couleur:'coeur'})} />`
+    //                 document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`
+    //                 document.getElementById(pseudo).innerHTML+=`<img class='hop' src=${CheminImage({valeur:8,couleur:'coeur'})} />`
                 
         
             
-        })
-    }
-    return (
+    //     })
+    // }
+    
+    /*return (
         <div>
             <Lobby  listesjoueurs={onlyJoueurs}/>
-            <button
-            onClick={affC}>salut</button>
             <div className='divCartes'>
                 {listeCartes.map((carte, index) => (
                     <img key={index} id={index + 1} 
@@ -222,10 +265,39 @@ function MainJoueur() {
                 ))}
             </div>
         </div>
+    );*/
+
+    return (
+        <div>
+            {gameStart ? (
+                <div>
+                    <Lobby listesjoueurs={onlyJoueurs} />
+                    <div className='divCartes'>
+                        {listeCartes.map((carte, index) => (
+                            <img key={index} id={index + 1}
+                                src={CheminImage(carte)}
+                                alt={`Carte ${carte.valeur} ${carte.couleur}`}
+                                onClick={() => carteJouee({"idJoueur": idJoueur,"idPartie": urlP.get("idPartie"),"choix": { couleur: carte.couleur, valeur: carte.valeur }
+                                })}
+                            />
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                <AvantPartie />
+            )}
+        </div>
+    );
+}
+
+function AvantPartie() {
+    return (
+        <div>
+            <p>La partie n'a pas encore démarré.</p>
+        </div>
     );
 }
     
-
 //<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
 
 // let playersList = ['Player1'];
@@ -236,6 +308,9 @@ function MainJoueur() {
 export const Bataille = () => {
     return (
         <div>
+            <div id='gagnant'>
+
+            </div>
             {/* <Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} /> */}
             <MainJoueur/>
         </div>

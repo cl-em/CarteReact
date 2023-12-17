@@ -124,7 +124,7 @@ this.hasStarted = true;
 }
 
 canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait un choix
-
+    
     for (var joueur of this.joueurs){
         if (joueur.éliminé==false && joueur.choix==null){return false}
     }
@@ -132,14 +132,18 @@ canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait u
 }
 
 tour(){
+    this.égalité = false;
     this.tourCourant++;
      
     var pactole=[];//Cartes en jeu
     var winner=this.joueurs[0];
+    this.joueurségalité = [];
     for (var joueur in this.joueurs){
         pactole.push(this.joueurs[joueur].choix);
-        if (this.joueurs[joueur].choix.valeur>winner.choix.valeur){winner=this.joueurs[joueur];this.égalité=false;}//Cas d'égalité, il sera pris en charge par serveur.js selon le retour de cette fonction
-        else{if (this.joueurs[joueur].choix.valeur==winner.choix.valeur&&this.joueurs[joueur]!=winner){this.joueurségalité=[winner,this.joueurs[joueur]];this.égalité=true;}}
+        if (this.joueurs[joueur].choix.valeur>winner.choix.valeur){winner=this.joueurs[joueur];this.joueurségalité = [this.joueurs[joueur]];this.égalité=false;}//Cas d'égalité, il sera pris en charge par serveur.js selon le retour de cette fonction
+        else{if (this.joueurs[joueur].choix.valeur==winner.choix.valeur&&(joueur!=0)){
+            this.joueurségalité.push(this.joueurs[joueur]); 
+            this.égalité=true;}}
     }   
 
     if (this.égalité==true){this.pactoleAttente = pactole;this.emptyChoices();return false;}//On stoppe car il faut refaire un pli.
@@ -188,14 +192,13 @@ tourégalité(){
     var égalitédouble = false;//teste si l'égalité est une égalité
     var winner = this.joueurségalité[0];
     var winners = []
-for (var joueur of this.joueurségalité){
+for (var joueur in this.joueurségalité){
     for (var i of this.joueurs){
         if (joueur.idJoueur==i.idJoueur){this.pactoleAttente.push(i.choix);}
-        if (joueur.idJoueur==i.idJoueur && i.choix.valeur>winner.choix.valeur){winner = i;winners = [winner];égalitédouble=false}
-        else if (joueur.idJoueur==i.idJoueur && i.choix.valeur==winner.choix.valeur){égalitédouble=true;winners.push(i);}
+        if (this.joueurségalité[joueur].idJoueur==i.idJoueur && i.choix.valeur>winner.choix.valeur){winner = i;winners = [winner];égalitédouble=false}
+        else if (this.joueurségalité[joueur].idJoueur==i.idJoueur && i.choix.valeur==winner.choix.valeur&&(joueur!=0)){égalitédouble=true;winners.push(i);}
     }
 }
-
 
 if (égalitédouble){//On distribue les cartes équitablement entre membres du tour d'égalité
     while (this.pactoleAttente.length>0){
@@ -207,6 +210,13 @@ if (égalitédouble){//On distribue les cartes équitablement entre membres du t
             }            
         }
     }
+this.égalité=false;
+this.pactoleAttente = null;
+this.joueurségalité = null;
+this.égalitédouble = false;
+this.shufflePaquets();
+    this.emptyChoices();
+    return false;
 }
 
     else {//Le gagnant de l'égalité récolte tout 
@@ -218,14 +228,15 @@ if (égalitédouble){//On distribue les cartes équitablement entre membres du t
                 }
         }
     }
-
-
+    this.égalité=false;
+    this.pactoleAttente = null;
+    this.joueurségalité = null;
+    this.égalitédouble = false;
+    this.shufflePaquets();
+    this.emptyChoices();
+return winner;
 }//On prépare pour poursuivre
-this.égalité=false;
-this.pactoleAttente = null;
-this.joueurségalité = null;
-this.égalitédouble = false;
-this.shufflePaquets();
+
 }
 
 existeWinner(){//Renvoie false si aucun gagnant, true si une personne a gagné
