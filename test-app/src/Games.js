@@ -14,14 +14,14 @@ function MyGame(){
     <div className='jeu'>
 
     <div className='jeu1' onClick={()=>navigate("/bataille")}>
-      <p>Belote</p>
+      {/* <p>bataille</p> */}
     </div>
 
-    <div className='jeu2' onClick={()=>navigate("/belote")}>
-    </div>
+    {/* <div className='jeu2' onClick={()=>navigate("/belote")}> */}
+    {/* </div> */}
 
-    <div className='jeu3' onClick={()=>navigate("/poker")}>
-    </div>
+    {/* <div className='jeu3' onClick={()=>navigate("/poker")}> */}
+    {/* </div> */}
 
     </div>
 
