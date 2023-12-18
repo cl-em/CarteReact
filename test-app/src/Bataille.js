@@ -220,13 +220,13 @@ function MainJoueur() {
     };
     
     useEffect(() => {
-        if (gameStart) {
+        // if (gameStart) {
             socket.on("tourPasse", TourPasse);
             // return () => {
             //     socket.off("tourPasse", TourPasse);
             // };
-        }
-    }, [gameStart]);
+        // }
+    }, [/*gameStart*/]);
 
     useEffect(()=>{
         socket.on("carteJouee",(data)=>{//Affichage de la carte qui est entrain d'être jouée SI ET SEULEMENT SI ON PEUT LA JOUER
