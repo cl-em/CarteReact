@@ -203,8 +203,8 @@ body {
   background-color: transparent;
 }
 
-.cercle{
-  font-size: larger;
+.pos{
+  font-size: 2vh;
   align-items: center;
   background-color: transparent;
   color: aliceblue;
@@ -260,4 +260,13 @@ body {
   border-radius: 3%;
   box-shadow: 0 0 10px rgb(0, 0, 0);
   overflow-x: auto;
+}
+
+#gagnant{
+  color: rgb(240, 18, 3);
+  font-size: 2vh;
+}
+
+.joinPartieId, .createPartie{
+  
 }

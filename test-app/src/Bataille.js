@@ -9,28 +9,23 @@ import {
 } from "react-router-dom";
 
 // const socket = io('http://localhost:8888');
-
-// let IdJoueur;
-
-
-
 // socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
 
 export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
     // const socket = React.useContext(SocketContext);
     // listesjoueurs : liste de string,
     
-    function posCercles(element, theta) {
-      element.style.left = 50 + 50 * Math.cos(theta) + '%';
-      element.style.top = 50 + 50 * Math.sin(theta) + '%';
+    function Emplacement(element, a) {
+      element.style.left = 50 + 50 * Math.cos(a) + '%';
+      element.style.top = 50 + 50 * Math.sin(a) + '%';
     }
     
     useEffect(() => {
-        const cercles = document.querySelectorAll('.cercle');
+        const pos = document.querySelectorAll('.pos');
     
-        cercles.forEach((cercle, index) => {
-        let angle = (Math.PI * 2 * index) / cercles.length;
-        posCercles(cercle, angle);
+        pos.forEach((cercle, index) => {
+        let angle = (Math.PI * 2 * index) / pos.length;
+        Emplacement(cercle, angle);
         });
     }, [listesjoueurs]); //chaque changement de listesjoueurs
 
@@ -39,7 +34,7 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
         <div>
             <div className='Table' id='Table'>
                 {listesjoueurs.map((joueur, index) => (
-                <div className='cercle' id={joueur} key={joueur}>
+                <div className='pos' id={joueur} key={joueur}>
                     {joueur}
                 </div>
                 
@@ -77,7 +72,7 @@ function MainJoueur() {
         });
 
         return () => {
-            socket.off("gameStarting");//Anti memory leak
+            socket.off("gameStarting"); //Pour la mémoire
         };
     },[urlP.get("idPartie")]);
 
@@ -263,21 +258,8 @@ function MainJoueur() {
     }
 
     useEffect(()=>{
-        window.addEventListener('beforeunload', emitQuitte);
+        window.addEventListener('beforeunload', emitQuitte); //si abandon volontaire ou involontaire
     }, []);
-
-
-    // function affC(){
-    //     onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
-    //         // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
-        
-    //                 document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`
-    //                 document.getElementById(spseudo).innerHTML+=`<img class='hop' src=${CheminImage({valeur:8,couleur:'coeur'})} />`
-                
-        
-            
-    //     })
-    // }
     
     return (
         <div>
@@ -328,8 +310,6 @@ function MainJoueur() {
 // }
     
 //<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
-
-// let playersList = ['Player1'];
 // socket.emit("infosLobby",data.)
 
 export const Bataille = () => {
