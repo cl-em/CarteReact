@@ -99,7 +99,7 @@ message(origine,message){
 class Bataille extends Game{
 
     constructor(host,nbJoueurs){
-        super(["coeur","pique","trefle","carreau"],13,host,nbJoueurs);
+        super(["coeur","pique"],3,host,nbJoueurs);
         this.goal = 0;
         this.createDeck();
         this.paquets = [];
@@ -157,7 +157,7 @@ tour(){
         for (var joueur in this.joueurs){
             if (this.joueurs[joueur].main.length==0){
                 if (this.paquets[joueur].length==0){this.joueurs[joueur].éliminé=true;}//éliminé s'il n'a ni main, ni paquet
-                else{this.joueurs[joueur].main = this.paquets[joueur]}
+                else{this.joueurs[joueur].main = this.paquets[joueur];this.paquets[joueur]=[];}
             }
                 }
                 return false;}//On stoppe car il faut refaire un pli.
@@ -177,7 +177,7 @@ tour(){
     for (var joueur in this.joueurs){
 if (this.joueurs[joueur].main.length==0){
     if (this.paquets[joueur].length==0){this.joueurs[joueur].éliminé=true;}//éliminé s'il n'a ni main, ni paquet
-    else{this.joueurs[joueur].main = this.paquets[joueur]}
+    else{this.joueurs[joueur].main = this.paquets[joueur];this.paquets[joueur]=[];}
 }
     }
 
@@ -234,7 +234,7 @@ this.emptyChoices();
     for (var joueur in this.joueurs){
         if (this.joueurs[joueur].main.length==0){
             if (this.paquets[joueur].length==0){this.joueurs[joueur].éliminé=true;}//éliminé s'il n'a ni main, ni paquet
-            else{this.joueurs[joueur].main = this.paquets[joueur]}
+            else{this.joueurs[joueur].main = this.paquets[joueur];this.paquets[joueur]=[];}
         }
             }
 
@@ -260,7 +260,7 @@ this.emptyChoices();
     for (var joueur in this.joueurs){
         if (this.joueurs[joueur].main.length==0){
             if (this.paquets[joueur].length==0){this.joueurs[joueur].éliminé=true;}//éliminé s'il n'a ni main, ni paquet
-            else{this.joueurs[joueur].main = this.paquets[joueur]}
+            else{this.joueurs[joueur].main = this.paquets[joueur];this.paquets[joueur]=[];}
         }
             }
 
@@ -271,8 +271,10 @@ return winner;
 
 existeWinner(){//Renvoie false si aucun gagnant, true si une personne a gagné
     for (var joueur in this.joueurs){
-     
+        console.log(this.joueurs[joueur].main)
+        console.log(this.paquets[joueur])
         if (this.joueurs[joueur].main.length+this.paquets[joueur].length>=(this.goal)){
+            console.log("partie gagnée")
             return this.joueurs[joueur]}
     }
 return false;

@@ -309,10 +309,11 @@ for (var partie of partiesOuvertes){
 //-----------------------------------------JOUER UNE CARTE-----------------------
 
 socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
-
+  
 
   for (var partie of partiesEnCours){
     if (partie.id==data.idPartie){
+      console.log(partie)
       for (var joueur of partie.joueurs){
         if (joueur.idJoueur==data.idJoueur){
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){  
