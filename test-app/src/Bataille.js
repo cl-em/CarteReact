@@ -172,7 +172,8 @@ function MainJoueur() {
                     document.getElementById("gagnant").innerHTML = "";
                 },5000);
 
-            }else if(data.égalité ){
+            }
+            else if(data.égalité ){
                 // en cas d'égalité
                 // les cartes restent affichées
                 // et on fait rejouer les joueurs qui sont dans l'égalité
@@ -210,7 +211,7 @@ function MainJoueur() {
                     //elouand c'est les joueurs
                     for (var elouand of data.cartesJouees) {
                         // boucle sur les joueurs 
-                        document.getElementById(elouand.pseudo).innerHTML = ""
+                        document.getElementById(elouand.pseudo).innerHTML = `<p>${elouand.pseudo}</p>`
                     }
                 }, 5000);
 
