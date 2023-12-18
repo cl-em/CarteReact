@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
+const cors = require('cors');
 const io = require('socket.io')(server, {
   cors: {
       origin: "http://localhost:3000",
@@ -11,6 +12,11 @@ const io = require('socket.io')(server, {
   },
   allowEIO3: true
 });
+app.use(cors({
+  origin: "http://localhost:3000",
+  methods: ["GET", "POST"],
+  credentials: true
+}));
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -261,7 +267,7 @@ io.on('connection', (socket) => {
 
   socket.on("login",(data)=>{
     // data : {id,password}
-    const db = new sqlite3.Database('cards_game.sqlite');
+    // const db = new sqlite3.Database('cards_game.sqlite');
 
     db.all('SELECT * FROM users WHERE pseudo = ? AND password = ?', [data.pseudo,data.password], (err, rows) => {
       // console.log(rows.idU);
@@ -298,7 +304,7 @@ io.on('connection', (socket) => {
         socket.emit("creerCompte",true);
       }
     });
-    db.close();
+    // db.close();
     
   });
 
@@ -385,8 +391,6 @@ for (var partie of partiesOuvertes){
 //-----------------------------------------JOUER UNE CARTE-----------------------
 
 socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
-
-
   for (var partie of partiesEnCours){
     if (partie.id==data.idPartie){
       for (var joueur of partie.joueurs){
@@ -498,7 +502,7 @@ socket.on("joueurQuitte",data=>{
   for (var partie of partiesOuvertes){//enleversi la partie n'a pas commencé
     if (partie.id==data.idPartie){
       for (var joueur in partie.joueurs){
-        if (partie.joueurs[joueur].idJoueur==data.idJoueur){
+        if (partie.joueurs[joueur].idJoueur==socket.data.userId){
           partie.joueurs.splice[joueur];
           return;
         }
@@ -508,7 +512,7 @@ socket.on("joueurQuitte",data=>{
   
   for (var partie of partiesEnCours){//Cas où la partie a commencé (plus complexe, heureusement il y a une méthode dans game)
     if (partie.id==data.idPartie){
-      partie.removePlayer(data.idJoueur);
+      partie.removePlayer(socket.data.userId);
       var finipartie = partie.existeWinner();
       if (finipartie!=false){socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
       return;
@@ -545,17 +549,6 @@ socket.on("joueurQuitte",data=>{
 
 })
 
-});
-
-
-process.on('SIGINT', () => {
-  db.close((err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log('Connexion à la base de données SQLite fermée.');
-    process.exit();
-  });
 });
 
 

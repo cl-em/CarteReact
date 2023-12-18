@@ -1,12 +1,12 @@
 import './App.css';
 // import {idJoueur} from './App.js';
-import {io} from "socket.io-client";
+// import {io} from "socket.io-client";
 import React, { useEffect, useState } from 'react';
 import SocketContext from './SocketContext';
 import Chat from './Chat';
-// import {
-//     useNavigate
-// } from "react-router-dom";
+import {
+    useNavigate
+} from "react-router-dom";
 
 // const socket = io('http://localhost:8888');
 
@@ -17,7 +17,7 @@ import Chat from './Chat';
 // socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
 
 export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
-    const socket = React.useContext(SocketContext);
+    // const socket = React.useContext(SocketContext);
     // listesjoueurs : liste de string,
     
     function posCercles(element, theta) {
@@ -71,7 +71,7 @@ function MainJoueur() {
 
     useEffect(() => {
         socket.on("gameStarting", (data) => {
-            if (data.idPartie == urlP.get("idPartie")) {
+            if (data.idPartie === urlP.get("idPartie")) {
                 setGameStart(true);
             }
         });
@@ -163,7 +163,7 @@ function MainJoueur() {
 
     const TourPasse = (data) => {
         // test si c'est la bonne partie 
-        if (urlP.get("idPartie") == data.idPartie) {
+        if (urlP.get("idPartie") === data.idPartie) {
             // tout ça se passe après que tous les joueurs aient envoyé leur carte que le résultat du tour soit calculé
             // dans le cas où ils n'y a pas de gagnat le tour s'arrête
             if(!data.winner){
@@ -227,15 +227,15 @@ function MainJoueur() {
         if (gameStart) {
             socket.on("tourPasse", TourPasse);
     
-            return () => {
-                socket.off("tourPasse", TourPasse);
-            };
+            // return () => {
+            //     socket.off("tourPasse", TourPasse);
+            // };
         }
     }, [gameStart]);
 
     useEffect(()=>{
         socket.on("carteJouee",(data)=>{//Affichage de la carte qui est entrain d'être jouée SI ET SEULEMENT SI ON PEUT LA JOUER
-            if (data==false){return}
+            if (data===false){return}
             //Sinon c'est comme une carte, il y a data.choix et data.valeur et data.pseudo -Elouand & kyky (merci a lui pour les use effect)
             // unsigned clement
             document.getElementById(data.pseudo).innerHTML = `<p>${data.pseudo}</p>`
@@ -258,7 +258,7 @@ function MainJoueur() {
     },[]);
 
     const emitQuitte = () => {
-        socket.emit("joueurQuitte", {"idJoueur":idJoueur, "idPartie":urlP.get("idPartie")});
+        socket.emit("joueurQuitte", {"idPartie":urlP.get("idPartie")});
     }
 
     useEffect(()=>{
@@ -293,6 +293,7 @@ function MainJoueur() {
             </div>
         </div>
     );
+
 
 //     return (
 //         <div>
