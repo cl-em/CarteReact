@@ -220,12 +220,12 @@ function MainJoueur() {
     };
     
     useEffect(() => {
-        // if (gameStart) {
+        //if (gameStart) {
             socket.on("tourPasse", TourPasse);
-            // return () => {
-            //     socket.off("tourPasse", TourPasse);
-            // };
-        // }
+            return () => {
+                 socket.off("tourPasse", TourPasse);
+             };
+        //}
     }, [/*gameStart*/]);
 
     useEffect(()=>{
