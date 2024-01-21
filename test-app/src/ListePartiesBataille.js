@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import SocketContext from './SocketContext';
+import Leaderboard from "./Leaderboard";
 
 
 function ListePartiesBataille(){
@@ -52,6 +53,9 @@ function ListePartiesBataille(){
         <input type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input>
         <button onClick={createPartie}>Créer !</button>
       </div>
+    
+
+      {/*  c'est la liste de toutes les partie  */}
       <div className="listeParties">
         {/* input text de l'id de la partie */}
         {partiesOuvertes.map((partie,index)=>{
@@ -66,6 +70,11 @@ function ListePartiesBataille(){
           )
         })}
       </div>
+      {/* importer la leaderboard  faut ajouter le css*/}
+      <div  className="listeParties" > 
+        <Leaderboard/>
+      </div>
+
     </div>
   
     )

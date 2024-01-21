@@ -44,6 +44,7 @@ app.get('/socket.io/', (req, res) => {
   res.send('Server is running.');
 });
 
+
 //-------------------------------Login-----------------------------------------------
 app.use(express.json());
 app.use(cookieParser());
@@ -253,9 +254,25 @@ io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
 
-  // socket.on("salut",()=>{
-  //   console.log("salut");
-  // });
+//-------------------------------Leaderboard-----------------------------------------
+
+socket.on('leaderboard',data=>{
+//{"joueursTop":joueursTop,"joueurLocal":localplayer}
+//joueursTop: tableau d'objets de type {pseudo,scorebataille,classement}
+//joueurLocal: un seul objet
+  let joueursTop;
+  let localplayer;
+  let typeJeu = data;
+  let idJoueur = socket.data.userId;
+
+  
+  db.all('SELECT pseudo, score' + typeJeu+', classement FROM (SELECT pseudo, score'+typeJeu+', row_number() OVER (ORDER BY score'+ typeJeu+' DESC) AS classement FROM users ) WHERE classement < 20 ORDER BY classement', (err, rows) => {
+    socket.emit("leaderboard",{"joueursTop":rows,"joueurLocal":localplayer});
+  })  
+
+})
+
+
 
   socket.on('demandepartiesouvertes',data=>{
     var retour = []
@@ -333,8 +350,8 @@ io.on('connection', (socket) => {
     }
     else{
       var joueursMax = data.joueursMax;
-      if (!Number.isInteger(parseInt(joueursMax))||joueursMax>8){
-        joueursMax=8
+      if (!Number.isInteger(parseInt(joueursMax))||joueursMax>10||joueursMax<2){
+        joueursMax=10
       }
       let partie = new Bataille(socket.data.userId,joueursMax)
       partiesOuvertes.push(partie)

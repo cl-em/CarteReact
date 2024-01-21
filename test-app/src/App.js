@@ -5,7 +5,6 @@ import './App.css';
 // import md5 from 'md5';
 import React from 'react';
 // import { useHistory } from 'react-router-dom';
-
 // import {} from Bataille;
 
 import {Games} from "./Games";
@@ -39,6 +38,7 @@ function MyApp() {
           <Route path="/games" element={<SocketProvider><Games/></SocketProvider>} />
           <Route path="/bataille" element={<SocketProvider><ListePartiesBataille/></SocketProvider>} />
           <Route path='/batailleJeu'element={<SocketProvider><Bataille/></SocketProvider>}/>
+          {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           {/* <Route path="/chat" element={<SocketProvider><Chat/></SocketProvider>} /> */}
         </Routes>
       </Router>
