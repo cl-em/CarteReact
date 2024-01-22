@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import CarteJeu from './boeuf';
 import { Lobby } from './Bataille';
-
+import Boeuf from "./Boeuf.jsx"
 
 
 function Main6QuiPrend({ listeNombre }) {
@@ -48,7 +48,7 @@ export const SixQuiPrend = () => {
         <div>
             <AfficherLigne listeLignes={AAA}/>
             <Main6QuiPrend listeNombre={[5,11,20,35,2,5,89,57,35,2]}/>
-            
+            <Boeuf width="25%"/>
         </div>
     );
 };
