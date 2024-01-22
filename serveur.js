@@ -267,8 +267,6 @@ socket.on('leaderboard',data=>{
   let localplayer;
   let typeJeu = data;
   let idJoueur = socket.data.userId;
-
-  
   db.all('SELECT pseudo, score' + typeJeu+', classement FROM (SELECT pseudo, score'+typeJeu+', row_number() OVER (ORDER BY score'+ typeJeu+' DESC) AS classement FROM users ) WHERE classement < 20 ORDER BY classement', (err, rows) => {
     socket.emit("leaderboard",{"joueursTop":rows,"joueurLocal":localplayer});
   })  
@@ -421,7 +419,7 @@ for (var partie of partiesOuvertes){
 })
 //-----------------------------------------JOUER UNE CARTE-----------------------
 
-socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
+socket.on('carteJoueeBataille',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
 
 
   for (var partie of partiesEnCours){
@@ -447,7 +445,9 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
                   var winner = partie.tourégalité();
 
                   var finipartie = partie.existeWinner();
-                  if (finipartie!=false){socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]});return}
+                  if (finipartie!=false){
+                    db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur )
+                    socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]});return}
                   
                     if (winner==false){
                       io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":false});
@@ -477,7 +477,9 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
                 var winner = partie.tour();
 
                   var finipartie = partie.existeWinner();
-                  if (finipartie!=false){socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]});return}
+                  if (finipartie!=false){
+                    db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur );
+                    socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]});return}
                   
                 if (winner==false){
                   winner = []
@@ -551,7 +553,7 @@ socket.on("joueurQuitte",data=>{
 
       if (finipartie!=false){
         
-        
+        db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur )
         
         socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
       return;
@@ -579,7 +581,8 @@ socket.on("joueurQuitte",data=>{
     if (partie.id==data.idPartie){
       partie.removePlayer(socket.data.userId);
       var finipartie = partie.existeWinner();
-      if (finipartie!=false){socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
+      if (finipartie!=false){ db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur );
+      socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
       return;
     }
   }

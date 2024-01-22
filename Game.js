@@ -292,6 +292,7 @@ class sixquiprend extends Game{
        for (let i = 0;i<10;i++){//Distribution équitable des cartes
                 for (var joueur of this.joueurs){
                     joueur.main.push(this.drawCarte());
+                    joueur.choixligne;
                 }
             }
         

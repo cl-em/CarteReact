@@ -5,20 +5,20 @@ import './boeuf.css';
 const CarteJeu = ({ numeroCarte }) => {
   // Calcul du score en fonction des règles
   let score = 1;
-  let color = "white";
+  let color = "aliceblue";
   if (numeroCarte % 11 === 0) {
     score = 5;
-    color = "red";
+    color = "crimson";
     if (numeroCarte % 10 === 5) {
       score = 7;
       color = "Indigo"
     }
   } else if (numeroCarte % 10 === 0) {
     score = 3;
-    color = "green";
+    color = "greenyellow";
   } else if (numeroCarte % 10 === 5) {
     score = 2;
-    color = "blue";
+    color = "darkcyan";
   }
   return (
     
@@ -28,7 +28,7 @@ const CarteJeu = ({ numeroCarte }) => {
 
       </div>
       <div id='boeufscore'>
-        <Boeuf width="50%"/>
+        <Boeuf width="70%"/>
       </div>      
 
       <div id='numcarte1' >{numeroCarte}</div>

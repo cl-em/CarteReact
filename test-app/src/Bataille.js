@@ -90,7 +90,7 @@ function MainJoueur() {
             setListeJoueursRecu(true);
             setJoueTour(false);
     });
-
+    
     return () => {
         socket.off("getCarte");
     }
@@ -106,7 +106,7 @@ function MainJoueur() {
 
     function carteJouee(carte){
         // carte {couleur:string,valeur:string}
-        socket.emit("carteJouee",carte)
+        socket.emit("carteJoueeBataille",carte)
         setJoueTour(true);
         // console.log(carte);
         // alert(`${carte.couleur} ${carte.valeur}`);

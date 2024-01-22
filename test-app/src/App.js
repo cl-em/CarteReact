@@ -29,6 +29,8 @@ import {
 import { Bataille } from './Bataille';
 import Leaderboard from './Leaderboard';
 
+import { SixQuiPrend } from './6quiprend';
+
 
 //Defini toutes tes pages ici
 function MyApp() {
@@ -44,6 +46,7 @@ function MyApp() {
           <Route path="/bataille" element={<SocketProvider><ListePartiesBataille/></SocketProvider>} />
           <Route path="/6quiprend" element={<SocketProvider><ListeParties6quiprend/></SocketProvider>} />
           <Route path='/batailleJeu'element={<SocketProvider><Bataille/></SocketProvider>}/>
+          <Route path="/6quiprendJeu" element={<SocketProvider><SixQuiPrend/></SocketProvider>}/>
           <Route path='/leaderboardbataille' element={<SocketProvider><Leaderboard typeDeJeu={"Bataille"}/></SocketProvider>}/>
           <Route path='/leaderboard6quiprend' element={<SocketProvider><Leaderboard typeDeJeu={"6quiprend"}/></SocketProvider>}/>
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}

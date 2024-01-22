@@ -30,7 +30,7 @@ function ListeParties6quiprend(){
         );
     }
     const rejoindrePartie = (idPartie) => {
-        socket.emit('rejoindrePaèèrtie', {"idPartie":idPartie, "type":"6quiprend"});
+        socket.emit('rejoindrePartie', {"idPartie":idPartie, "type":"6quiprend"});
         console.log(idPartie);
         socket.on('rejoindrePartie', (data) => {
             // console.log(data);
