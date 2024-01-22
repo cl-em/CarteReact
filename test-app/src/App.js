@@ -14,6 +14,7 @@ import RegisterForm from './RegisterForm';
 import RegisterConfirm from './RegisterConfirm';
 import LoginForm from './LoginForm';
 import ListePartiesBataille from './ListePartiesBataille';
+import ListeParties6quiprend from './ListeParties6quiprend';
 // import Chat from './Chat';
 
 import {
@@ -38,8 +39,10 @@ function MyApp() {
           <Route path="/registerConfirm" element={<RegisterConfirm />} />
           <Route path="/games" element={<SocketProvider><Games/></SocketProvider>} />
           <Route path="/bataille" element={<SocketProvider><ListePartiesBataille/></SocketProvider>} />
+          <Route path="/6quiprend" element={<SocketProvider><ListeParties6quiprend/></SocketProvider>} />
           <Route path='/batailleJeu'element={<SocketProvider><Bataille/></SocketProvider>}/>
-          <Route path='/leaderboardbataille' element={<SocketProvider><Leaderboard/></SocketProvider>}/>
+          <Route path='/leaderboardbataille' element={<SocketProvider><Leaderboard typeDeJeu={"Bataille"}/></SocketProvider>}/>
+          <Route path='/leaderboard6quiprend' element={<SocketProvider><Leaderboard typeDeJeu={"6quiprend"}/></SocketProvider>}/>
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           {/* <Route path="/chat" element={<SocketProvider><Chat/></SocketProvider>} /> */}
         </Routes>

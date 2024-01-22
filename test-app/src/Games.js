@@ -17,8 +17,8 @@ function MyGame(){
       {/* <p>bataille</p> */}
     </div>
 
-    {/* <div className='jeu2' onClick={()=>navigate("/belote")}> */}
-    {/* </div> */}
+    <div className='jeu2' onClick={()=>navigate("/6quiprend")}>
+    </div>
 
     {/* <div className='jeu3' onClick={()=>navigate("/poker")}> */}
     {/* </div> */}

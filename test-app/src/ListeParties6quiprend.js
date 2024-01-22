@@ -4,12 +4,12 @@ import SocketContext from './SocketContext';
 import Leaderboard from "./Leaderboard";
 
 
-function ListePartiesBataille(){
+function ListeParties6quiprend(){
     const navigate = useNavigate();
     const socket = useContext(SocketContext);
     const [partiesOuvertes, setPartiesOuvertes] = useState([]);
     useEffect(() => {
-        socket.emit('demandepartiesouvertes', 'Bataille');
+        socket.emit('demandepartiesouvertes', '6quiprend');
         socket.on('partiesOuvertes', (data) => {
             // console.log('Liste mise à jour : ', data);
             setPartiesOuvertes(data);
@@ -17,25 +17,25 @@ function ListePartiesBataille(){
     }, [partiesOuvertes]);
     const [joueursMax, setJoueursMax] = useState(2);
     const createPartie = () => {
-        socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"Bataille"});
+        socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"6quiprend"});
         socket.on('creerPartie', (idPartie) => {
             console.log(idPartie);
             if (idPartie == false) {
               navigate("/");
             }
             else{
-              navigate("/batailleJeu?idPartie="+idPartie);
+              navigate("/6quiprendJeu?idPartie="+idPartie);
             }
         }
         );
     }
     const rejoindrePartie = (idPartie) => {
-        socket.emit('rejoindrePartie', {"idPartie":idPartie, "type":"Bataille"});
+        socket.emit('rejoindrePaèèrtie', {"idPartie":idPartie, "type":"6quiprend"});
         console.log(idPartie);
         socket.on('rejoindrePartie', (data) => {
             // console.log(data);
             if (data != false && data == idPartie) {
-                navigate("/batailleJeu?idPartie="+idPartie);
+                navigate("/6quiprendJeu?idPartie="+idPartie);
             }
             else{
               const message = "La partie est pleine ou n'existe pas !";
@@ -45,7 +45,8 @@ function ListePartiesBataille(){
     }
     return (
     <div className='main'>
-      <button  onClick={()=>navigate("/leaderboardbataille")}>Afficher le leaderboard</button> <br></br> <br></br>
+        
+      <button  onClick={()=>navigate("/leaderboard6quiprend")}>Afficher le leaderboard</button> <br></br> <br></br>
       <div className='joinPartieId'>
         <input type="text" placeholder="Id de la partie" id="idPartie"></input>
         <button onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button>
@@ -64,8 +65,8 @@ function ListePartiesBataille(){
             <div className={"test".concat(index%2)} key={index}>
               <p>{partie.id}</p>
               <p>{partie.joueursActuels}/{partie.joueursMax}</p>
-              <p>Bataille</p>
-              {/* <button onClick={()=>navigate("/bataille")}>Rejoindre !</button> */}
+              <p>6quiprend</p>
+              {/* <button onClick={()=>navigate("/6quiprend")}>Rejoindre !</button> */}
               <button onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
             </div>
           )
@@ -82,4 +83,4 @@ function ListePartiesBataille(){
   
   }
 
-export default ListePartiesBataille;
+export default ListeParties6quiprend;
