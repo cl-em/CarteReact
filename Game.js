@@ -282,4 +282,27 @@ return false;
 
 }
 
-module.exports = { Game,Bataille };
+class sixquiprend extends Game{
+    constructor(host,nbJoueurs){
+        super([""],104,host,nbJoueurs);
+        this.createDeck();
+        this.paquets = [];
+        this.type="6quiprend"
+    }
+
+    initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
+
+        while (this.deck.length>=this.joueurs.length){//Distribution équitable des cartes
+                for (var joueur of this.joueurs){
+                    joueur.main.push(this.drawCarte());
+                    this.goal++;
+                }
+            }
+        
+            for (var joueur of this.joueurs){this.paquets.push([])}
+        this.hasStarted = true;
+        
+        }
+
+}
+module.exports = { Game,Bataille,sixquiprend };

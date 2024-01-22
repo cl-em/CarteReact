@@ -3,11 +3,12 @@ import SocketContext from './SocketContext';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
-function Leaderboard(){
+function Leaderboard({typeDeJeu}){
+  // le type c'est : Bataille ou 6quiprend
     const navigate = useNavigate();
     const socket = React.useContext(SocketContext);
     useEffect(()=>{
-        socket.emit("leaderboard","Bataille");
+        socket.emit("leaderboard",typeDeJeu);
     },[]);
 
     const [leaderboardData, setLeaderboardData] = useState(null);
@@ -32,12 +33,12 @@ function Leaderboard(){
           {leaderboardData && (
             <div>
               {leaderboardData.joueursTop.map((player, index) => (
-                <div key={index} className="statsjoueur">
+                <div key={index} className={"statsjoueur".concat(index%2)}>
                   <div>
                     <strong>Pseudo:</strong> {player.pseudo}
                   </div>
                   <div>
-                    <strong>Score Bataille:</strong> {player.scoreBataille}
+                    <strong>Score {typeDeJeu}:</strong> {player["score"+typeDeJeu]}
                   </div>
                   <div>
                     <strong>Classement:</strong> {player.classement}

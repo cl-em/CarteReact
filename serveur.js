@@ -50,7 +50,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.post('/login', (req, res) => {
   console.log("login");
-  console.log(req.body);
   const { username, password } = req.body;
   if (!username || !password) {
     res.send({ validation: false });
@@ -87,7 +86,6 @@ app.post('/login', (req, res) => {
 //-------------------------------Register-----------------------------------------------
 app.post('/register', (req, res) => {
   console.log("register");
-  console.log(req.body);
   const { username, password } = req.body;
   if (!username || !password) {
     res.send({ validation: false });
@@ -155,9 +153,8 @@ var pseudos = {};
 
 
 
-
 //-------------------------------Classes-----------------------------------------------
-const { Game,Bataille } = require('./Game.js');
+const { Game,Bataille,sixquiprend } = require('./Game.js');
 const { Joueur } = require('./Joueur.js');
 const { Carte } = require('./Carte.js');
 
@@ -182,6 +179,14 @@ const getpseudos = () => {
   getpseudos();
   console.log(pseudos)
 
+
+//-------------------------------Tests Elouand-----------------------------------------------
+var partie = new sixquiprend(1,7);
+partiesOuvertes.push(partie);
+console.log(partie)
+
+
+
 //Demarrage d'une partie
 
 function lancerPartie(idPartie){
@@ -194,8 +199,6 @@ function lancerPartie(idPartie){
     }
   }
 }
-
-
 
 
 const getUserById = (id)=>{//FONCTION A NE PAS UTILISER MARCHE PAS MERCI
@@ -274,12 +277,12 @@ socket.on('leaderboard',data=>{
 
 
 
-  socket.on('demandepartiesouvertes',data=>{
+  socket.on('demandepartiesouvertes',data=>{console.log(data)
     var retour = []
     for (var partie of partiesOuvertes){
       if (partie.type==data){retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax})}
     }
-    socket.emit('parties ouvertes bataille', retour);
+    socket.emit('partiesOuvertes', retour);
   });
 
   socket.on("login",(data)=>{
@@ -287,8 +290,6 @@ socket.on('leaderboard',data=>{
     // const db = new sqlite3.Database('cards_game.sqlite');
 
     db.all('SELECT * FROM users WHERE pseudo = ? AND password = ?', [data.pseudo,data.password], (err, rows) => {
-      // console.log(rows.idU);
-      console.log(rows);
         if(rows.length==1){
           // si l'id et le mdp sont bon alors j'envoie true
           socket.emit("login",rows[0].idU);
@@ -327,8 +328,7 @@ socket.on('leaderboard',data=>{
 
   socket.on('message', data => {
     // verif que idJoueur soit dans idPartie et que joueur soit authentifié
-    console.log(data);
-    console.log(socket.data.pseudo);
+
     io.emit('message '.concat(data.idPartie), (socket.data.pseudo).toString().concat(" : ").concat(data.message));
 });
 
@@ -339,25 +339,39 @@ socket.on('leaderboard',data=>{
   //Creation d'une partie
 
       
-  socket.on("creer partie bataille",data=>{
+  socket.on("creerPartie",data=>{
     
-    // const db = new sqlite3.Database("cards_game.sqlite");
+    // cas où l'utilisateur n'est pas connecté
     db.all("SELECT * FROM users WHERE idU = ?",[socket.data.userId],(err,rows)=>{
     
     if (rows.length<1){
       socket.emit("creer partie bataille",false);
       return;
     }
-    else{
+    //Cas où la partie est une bataille
+    if (data.type=="Bataille"){
       var joueursMax = data.joueursMax;
       if (!Number.isInteger(parseInt(joueursMax))||joueursMax>10||joueursMax<2){
         joueursMax=10
       }
       let partie = new Bataille(socket.data.userId,joueursMax)
       partiesOuvertes.push(partie)
-      console.log("Creation d'une partie par "+socket.data.userId+" dont l'id sera "+partie.id)
-    socket.emit("creer partie bataille",partie.id)}
-    })
+      console.log("Creation d'une partie de Bataille par "+socket.data.userId+" dont l'id sera "+partie.id)
+    socket.emit("creerPartie",partie.id)
+    return}
+
+    if (data.type=="6quiprend"){
+      var joueursMax = data.joueursMax;
+      if (!Number.isInteger(parseInt(joueursMax))||joueursMax>10||joueursMax<2){
+        joueursMax=10
+      }
+      let partie = new sixquiprend(socket.data.userId,joueursMax)
+      partiesOuvertes.push(partie)
+      console.log("Creation d'une partie de 6quiprend par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
+    socket.emit("creerPartie",partie.id)}
+    }
+    
+    )
   })
   //Sockets de la partie----------------------------------
 
@@ -380,18 +394,18 @@ socket.on('leaderboard',data=>{
         }
       }
     }
-    // console.log(main)
+   
     socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
   })
   
   
   //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
   
-socket.on("rejoindre partie bataille", data=>{
+socket.on("rejoindrePartie", data=>{
 for (var partie of partiesOuvertes){ 
   if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
     if (partie.addPlayer(socket.data.userId)!=false){
-    socket.emit("rejoindre partie bataille",partie.id);
+    socket.emit("rejoindrePartie",partie.id);
     if (partie.joueurs.length==partie.joueursMax){
       lancerPartie(partie.id)
       io.emit("gameStarting",{"idPartie":data.idPartie})
@@ -412,7 +426,7 @@ socket.on('carteJouee',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={v
 
   for (var partie of partiesEnCours){
     if (partie.id==data.idPartie){
-      console.log(partie)
+     
       for (var joueur of partie.joueurs){
         if (joueur.idJoueur==socket.data.userId){
           if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){  
