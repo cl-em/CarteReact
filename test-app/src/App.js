@@ -16,6 +16,8 @@ import LoginForm from './LoginForm';
 import ListePartiesBataille from './ListePartiesBataille';
 // import Chat from './Chat';
 
+import CarteJeu from './boeuf';
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -31,6 +33,7 @@ import Leaderboard from './Leaderboard';
 function MyApp() {
   return (
     <div>
+      {/* <CarteJeu numeroCarte={20}/> */}
       <Router>
         <Routes>
           <Route path="/" element={<LoginForm />} /> 

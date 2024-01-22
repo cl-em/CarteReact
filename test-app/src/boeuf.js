@@ -1,33 +1,42 @@
 import React from 'react';
 import Boeuf from "./Boeuf.jsx"
+import './boeuf.css';
 
 const CarteJeu = ({ numeroCarte }) => {
   // Calcul du score en fonction des règles
   let score = 1;
+  let color = "white";
   if (numeroCarte % 11 === 0) {
     score = 5;
+    color = "red";
     if (numeroCarte % 10 === 5) {
       score = 7;
+      color = "Indigo"
     }
   } else if (numeroCarte % 10 === 0) {
     score = 3;
+    color = "green";
   } else if (numeroCarte % 10 === 5) {
     score = 2;
+    color = "blue";
   }
-
   return (
-    <div style={{ position: 'relative', width: '200px', height: '300px', background: 'white' }}>
+    
+    <div className='carte'>
+      <div id='boeuf' style={{backgroundColor:color}}>
+        <Boeuf width="100%"/>
 
-      <Boeuf width="100%"/>
-      <Boeuf width="25%"/>
-      
+      </div>
+      <div id='boeufscore'>
+        <Boeuf width="50%"/>
+      </div>      
 
-      <div style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '12px', color:"black" }}>{numeroCarte}</div>
-      <div style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '12px', color:"black" }}>{numeroCarte}</div>
-      <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '12px', color:"black" }}>{numeroCarte}</div>
-      <div style={{ position: 'absolute', bottom: '10px', right: '10px', fontSize: '12px', color:"black" }}>{numeroCarte}</div>
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '48px'}}>{numeroCarte}</div>
-      <div style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', fontSize: '24px', color:"black" }}>{score}</div>
+      <div id='numcarte1' >{numeroCarte}</div>
+      <div id='numcarte2' >{numeroCarte}</div>
+      <div id='numcarte3' >{numeroCarte}</div>
+      <div id='numcarte4' >{numeroCarte}</div>
+      <div id='numcarte5' >{numeroCarte}</div>
+      <div id='score' >{score}</div>
     </div>
   );
 };
