@@ -11,7 +11,6 @@ import CarteJeu from './boeuf';
 import { Lobby } from './Bataille';
 import Boeuf from "./Boeuf.jsx"
 
-
 function Main6QuiPrend({ listeNombre }) {
     return (
       <div className='divSVG'>
@@ -39,6 +38,19 @@ function AfficherLigne({listeLignes}){
   )
 }
 
+function Jouer(){
+  // useState 
+  //socket  
+
+  
+
+
+  return(
+    <div>
+    </div>  
+  )
+}
+
 let AAA = [[67,79,89],[9,6,104,98],[76,45,35,92, 20],[77,31,94,51]]
 //let onlyJoueurs = ["Joueur1", "Joueur2"];
 
@@ -48,7 +60,7 @@ export const SixQuiPrend = () => {
         <div>
             <AfficherLigne listeLignes={AAA}/>
             <Main6QuiPrend listeNombre={[5,11,20,35,2,5,89,57,35,2]}/>
-            <Boeuf width="25%"/>
+            <Boeuf width="25%"/>Score
         </div>
     );
 };
