@@ -45,6 +45,7 @@ function ListePartiesBataille(){
     }
     return (
     <div className='main'>
+      <button  onClick={()=>navigate("/leaderboardbataille")}>Afficher le leaderboard</button> <br></br> <br></br>
       <div className='joinPartieId'>
         <input type="text" placeholder="Id de la partie" id="idPartie"></input>
         <button onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button>
@@ -70,10 +71,10 @@ function ListePartiesBataille(){
           )
         })}
       </div>
-      {/* importer la leaderboard  faut ajouter le css*/}
-      <div  className="listeParties" > 
+      {/* importer la leaderboard  faut ajouter le css
+      <div className='Leaderboard'> 
         <Leaderboard/>
-      </div>
+      </div> */}
 
     </div>
   

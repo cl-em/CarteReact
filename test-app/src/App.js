@@ -24,6 +24,7 @@ import {
   // useNavigate
 } from "react-router-dom";
 import { Bataille } from './Bataille';
+import Leaderboard from './Leaderboard';
 
 
 //Defini toutes tes pages ici
@@ -38,6 +39,7 @@ function MyApp() {
           <Route path="/games" element={<SocketProvider><Games/></SocketProvider>} />
           <Route path="/bataille" element={<SocketProvider><ListePartiesBataille/></SocketProvider>} />
           <Route path='/batailleJeu'element={<SocketProvider><Bataille/></SocketProvider>}/>
+          <Route path='/leaderboardbataille' element={<SocketProvider><Leaderboard/></SocketProvider>}/>
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           {/* <Route path="/chat" element={<SocketProvider><Chat/></SocketProvider>} /> */}
         </Routes>

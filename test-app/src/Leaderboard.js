@@ -1,8 +1,10 @@
 import axios from "axios";
 import SocketContext from './SocketContext';
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 function Leaderboard(){
+    const navigate = useNavigate();
     const socket = React.useContext(SocketContext);
     useEffect(()=>{
         socket.emit("leaderboard","Bataille");
@@ -25,20 +27,31 @@ function Leaderboard(){
   
     return (
       <div>
-        <h1>Leaderboard</h1>
-        {leaderboardData && (
-          <div>
-            {leaderboardData.joueursTop.map((player, index) => (
-              <div key={index}>
-                <p>{player.pseudo}</p>
-                <p>{player.scorebataille}</p>
-                <p>{player.classement}</p>
-              </div>
-            ))}
-          </div>
-        )}
+        <center><h1 style={{ color: 'aliceblue' }}>Classement de la bataille :</h1></center> <br></br>
+        <div className="leaderboard">
+          {leaderboardData && (
+            <div>
+              {leaderboardData.joueursTop.map((player, index) => (
+                <div key={index} className="statsjoueur">
+                  <div>
+                    <strong>Pseudo:</strong> {player.pseudo}
+                  </div>
+                  <div>
+                    <strong>Score Bataille:</strong> {player.scoreBataille}
+                  </div>
+                  <div>
+                    <strong>Classement:</strong> {player.classement}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <br></br>
+        <button onClick={()=>navigate("/bataille")}>Revenir à la liste des parties</button>
       </div>
-    );
+    );    
+    
 /*[
   {
     pseudo: 'elouand',scoreBataille: 10000000000000000,classement: 1},
