@@ -548,7 +548,12 @@ socket.on("joueurQuitte",data=>{
     if (partie.id==data.idPartie){
       partie.removePlayer(socket.data.userId);
       var finipartie = partie.existeWinner();
-      if (finipartie!=false){socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
+
+      if (finipartie!=false){
+        
+        
+        
+        socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
       return;
     }
   }

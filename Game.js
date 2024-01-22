@@ -17,9 +17,6 @@ class Game {
         this.joueursMax = joueursMax;
         this.hasStarted = false;
         this.chat = [];
-
-
-
     }
 //-----------------------Fonctions gestion cartes------------------------------------------
     shuffleDeck(){
@@ -148,7 +145,7 @@ tour(){
         if (this.joueurs[joueur].éliminé==false&&(winner.choix==null||(this.joueurs[joueur].choix.valeur>winner.choix.valeur))){winner=this.joueurs[joueur];this.joueurségalité = [this.joueurs[joueur]];this.égalité=false;}//Cas d'égalité, il sera pris en charge par serveur.js selon le retour de cette fonction
         else{if (this.joueurs[joueur].éliminé==false&&this.joueurs[joueur].choix.valeur==winner.choix.valeur&&(joueur!=0)){
             this.joueurségalité.push(this.joueurs[joueur]); 
-            console.log("y'a égalité")
+          
             this.égalité=true;}}
 
     }   
@@ -271,10 +268,9 @@ return winner;
 
 existeWinner(){//Renvoie false si aucun gagnant, true si une personne a gagné
     for (var joueur in this.joueurs){
-        console.log(this.joueurs[joueur].main)
-        console.log(this.paquets[joueur])
+
         if (this.joueurs[joueur].main.length+this.paquets[joueur].length>=(this.goal)){
-            console.log("partie gagnée")
+            
             return this.joueurs[joueur]}
     }
 return false;
@@ -288,21 +284,26 @@ class sixquiprend extends Game{
         this.createDeck();
         this.paquets = [];
         this.type="6quiprend"
+        this.lignes = [[],[],[],[]]
     }
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
 
-        while (this.deck.length>=this.joueurs.length){//Distribution équitable des cartes
+       for (let i = 0;i<10;i++){//Distribution équitable des cartes
                 for (var joueur of this.joueurs){
                     joueur.main.push(this.drawCarte());
-                    this.goal++;
                 }
             }
         
-            for (var joueur of this.joueurs){this.paquets.push([])}
+            for (let i=0;i<4;i++){
+                this.lignes[i].push(this.drawCarte())
+            }
+           
         this.hasStarted = true;
         
         }
+
+
 
 }
 module.exports = { Game,Bataille,sixquiprend };
