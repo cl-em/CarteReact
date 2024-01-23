@@ -5,10 +5,10 @@ const server = http.createServer(app);
 const cors = require('cors');
 const io = require('socket.io')(server, {
   cors: {
-      origin: "http://localhost:3000",
-      methods: ["GET", "POST"],
-      transports: ['websocket', 'polling'],
-      credentials: true
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+    transports: ['websocket', 'polling'],
+    credentials: true
   },
   allowEIO3: true
 });
@@ -162,20 +162,20 @@ const { Carte } = require('./Carte.js');
 //-------------------------------Fonctions-----------------------------------------------
 //Obtension de la liste des pseudos des joueurs
 const getpseudos = () => {
-    // const db = new sqlite3.Database("cards_game.sqlite");
-    db.all("SELECT idU, pseudo FROM users", (err, rows) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      rows.forEach((row) => {
-        pseudos[row.idU] = row.pseudo;       
-      });
+  // const db = new sqlite3.Database("cards_game.sqlite");
+  db.all("SELECT idU, pseudo FROM users", (err, rows) => {
+    if (err) {
+      reject(err);
+      return;
+    }
+    rows.forEach((row) => {
+      pseudos[row.idU] = row.pseudo;       
     });
-  }
-  
-  
-  getpseudos();
+  });
+}
+
+
+getpseudos();
 
 
 
@@ -203,7 +203,7 @@ function lancerPartie(idPartie){
 
 const getUserById = (id)=>{//FONCTION A NE PAS UTILISER MARCHE PAS MERCI
   let retour;
-
+  
   // const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT pseudo FROM users WHERE idU = ?",[id],(err,rows)=>{
     if(rows.length>0){
@@ -212,7 +212,7 @@ const getUserById = (id)=>{//FONCTION A NE PAS UTILISER MARCHE PAS MERCI
       retour =  false;
     }
   });
-
+  
   return retour;
 }
 
@@ -233,17 +233,17 @@ io.use((socket, next) => {
   if (!authToken) {
     return next(new Error('Authentication error')); // S'il n'y a pas de token, génère une erreur d'authentification
   }
-
+  
   jwt.verify(authToken, 'secret', (err, decoded) => {
     if (err) {
       return next(new Error('Authentication error')); // En cas d'erreur de vérification du token, génère une erreur d'authentification
     }
-
+    
     const userId = decoded.idJoueur; // Supposons que le nom décodé soit l'identifiant de l'utilisateur
     socket.data = { "userId": userId, "pseudo" : pseudos[userId] };
     console.log(socket.data);
     const tokenExists = tokenStore[userId] && tokenStore[userId].includes(authToken);
-
+    
     if (tokenExists) {
       console.log('User already connected')
       return next(); // Le token est valide pour cet utilisateur, passe à la connexion Socket.IO suivante
@@ -255,26 +255,34 @@ io.use((socket, next) => {
 });
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
-
-
-//-------------------------------Leaderboard-----------------------------------------
-
-socket.on('leaderboard',data=>{
-//{"joueursTop":joueursTop,"joueurLocal":localplayer}
-//joueursTop: tableau d'objets de type {pseudo,scorebataille,classement}
-//joueurLocal: un seul objet
-  let joueursTop;
-  let localplayer;
-  let typeJeu = data;
-  let idJoueur = socket.data.userId;
-  db.all('SELECT pseudo, score' + typeJeu+', classement FROM (SELECT pseudo, score'+typeJeu+', row_number() OVER (ORDER BY score'+ typeJeu+' DESC) AS classement FROM users ) WHERE classement < 20 ORDER BY classement', (err, rows) => {
-    socket.emit("leaderboard",{"joueursTop":rows,"joueurLocal":localplayer});
-  })  
-
-})
-
-
-
+  
+  
+  //-------------------------------Leaderboard-----------------------------------------
+  
+  socket.on('leaderboard',data=>{
+    //{"joueursTop":joueursTop,"joueurLocal":localplayer}
+    //joueursTop: tableau d'objets de type {pseudo,scorebataille,classement}
+    //joueurLocal: un seul objet
+    let joueursTop;
+    let localplayer;
+    let typeJeu = data;
+    let idJoueur = socket.data.userId;
+    db.all('SELECT pseudo, score' + typeJeu+', classement FROM (SELECT pseudo, score'+typeJeu+', row_number() OVER (ORDER BY score'+ typeJeu+' DESC) AS classement FROM users ) WHERE classement < 20 ORDER BY classement', (err, rows) => {
+      socket.emit("leaderboard",{"joueursTop":rows,"joueurLocal":localplayer});
+    })  
+    
+  })
+  socket.on('leaderboard6',data=>{
+    let joueursTop;
+    let localplayer;
+    let typeJeu = data;
+    let idJoueur = socket.data.userId;
+    db.all('SELECT pseudo, score' + typeJeu+', classement FROM (SELECT pseudo, score'+typeJeu+', row_number() OVER (ORDER BY score'+ typeJeu+' DESC) AS classement FROM users ) WHERE classement < 20 ORDER BY classement', (err, rows) => {
+      socket.emit("leaderboard",{"joueursTop":rows,"joueurLocal":localplayer});
+    })  
+  })
+  
+  
   socket.on('demandepartiesouvertes',data=>{
     var retour = []
     for (var partie of partiesOuvertes){
@@ -282,36 +290,36 @@ socket.on('leaderboard',data=>{
     }
     socket.emit('partiesOuvertes', retour);
   });
-
+  
   socket.on("login",(data)=>{
     // data : {id,password}
     // const db = new sqlite3.Database('cards_game.sqlite');
-
+    
     db.all('SELECT * FROM users WHERE pseudo = ? AND password = ?', [data.pseudo,data.password], (err, rows) => {
-        if(rows.length==1){
-          // si l'id et le mdp sont bon alors j'envoie true
-          socket.emit("login",rows[0].idU);
-        }else {
-          socket.emit("login",false);
-        }
+      if(rows.length==1){
+        // si l'id et le mdp sont bon alors j'envoie true
+        socket.emit("login",rows[0].idU);
+      }else {
+        socket.emit("login",false);
+      }
     });
-
+    
     // db.close();
-
+    
     getpseudos();
   });
-
+  
   socket.on("register",(data)=>{
     // data : {pseudo,password}
     // const db = new sqlite3.Database("cards_game.sqlite");
     
-
-
+    
+    
     db.all("SELECT * FROM users WHERE pseudo = ?",[data.pseudo],(err,rows)=>{
       if(rows.length >0) socket.emit("creerCompte",false);
       
       else{
-
+        
         let id = parseInt(Math.random()*10**8);
         // db.prepare("INSERT INTO users VALUES(?,?,?)").run([id,data.pseudo,data.password]).finalize();
         db.run("INSERT INTO users(idU,pseudo,password) VALUES(?,?,?)",[id,data.pseudo,data.password],(err)=>{
@@ -323,308 +331,361 @@ socket.on('leaderboard',data=>{
     // db.close();
     
   });
-
+  
   socket.on('message', data => {
     // verif que idJoueur soit dans idPartie et que joueur soit authentifié
-
+    
     io.emit('message '.concat(data.idPartie), (socket.data.pseudo).toString().concat(" : ").concat(data.message));
-});
-
+  });
+  
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
-
+  
   //Creation d'une partie
-
-      
+  
+  
   socket.on("creerPartie",data=>{
     
     // cas où l'utilisateur n'est pas connecté
     db.all("SELECT * FROM users WHERE idU = ?",[socket.data.userId],(err,rows)=>{
-    
-    if (rows.length<1){
-      socket.emit("creer partie bataille",false);
-      return;
-    }
-    //Cas où la partie est une bataille
-    if (data.type=="Bataille"){
-      var joueursMax = data.joueursMax;
-      if (!Number.isInteger(parseInt(joueursMax))||joueursMax>10||joueursMax<2){
-        joueursMax=10
+      
+      if (rows.length<1){
+        socket.emit("creer partie bataille",false);
+        return;
       }
-      let partie = new Bataille(socket.data.userId,joueursMax)
-      partiesOuvertes.push(partie)
-      console.log("| Creation d'une partie de Bataille par "+socket.data.userId+" dont l'id sera "+partie.id)
-    socket.emit("creerPartie",partie.id)
-    return}
-
-    if (data.type=="6quiprend"){
-      var joueursMax = data.joueursMax;
-      if (!Number.isInteger(parseInt(joueursMax))||joueursMax>10||joueursMax<2){
-        joueursMax=10
-      }
-      let partie = new sixquiprend(socket.data.userId,joueursMax)
-      partiesOuvertes.push(partie)
-      console.log("| Creation d'une partie de 6quiprend par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
-    socket.emit("creerPartie",partie.id)}
-    }
-    
-    )
-  })
-  //Sockets de la partie----------------------------------
-
-
-  socket.on("wantCarte",data=>{
-
-    var main = [];
-    var infosJoueurs = []
-    for (var partie of partiesEnCours){
-      if (partie.id == data.idPartie){
-
-        if (partie.type=="Bataille"){
-
-
-        //Cas d'une bataille
-        for (var joueur in partie.joueurs){//Renvoi de la main du joueur
-          if (partie.joueurs[joueur].idJoueur==socket.data.userId){
-              main = partie.joueurs[joueur].main;
-              infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length,"isLocalPlayer":true})
-          }
-          else{
-            infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length,"isLocalPlayer":false})
-          }
+      //Cas où la partie est une bataille
+      if (data.type=="Bataille"){
+        var joueursMax = data.joueursMax;
+        if (!Number.isInteger(parseInt(joueursMax))||joueursMax>10||joueursMax<2){
+          joueursMax=10
         }
-      }
-    }
-    
-    if (partie.type=="6quiprend"){
-
-
-      //Cas d'une bataille
-      for (var joueur in partie.joueurs){//Renvoi de la main du joueur
-        if (partie.joueurs[joueur].idJoueur==socket.data.userId){
-            main = partie.joueurs[joueur].main;
-            infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":true})
-        }
-        else{
-          infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":false})
-        }
-      }
-    }
-    }
-
-    socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
-  })
-  
-  
-  //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
-  
-socket.on("rejoindrePartie", data=>{
-  console.log("| Le joueur "+socket.data.userId+"("+pseudos[socket.data.userId]+" a rejoint la partie "+data.idPartie)
-for (var partie of partiesOuvertes){ 
-  if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
-    
-    if (partie.addPlayer(socket.data.userId)!=false){
-    socket.emit("rejoindrePartie",partie.id);
-    if (partie.joueurs.length==partie.joueursMax){
-      lancerPartie(partie.id);
-      //Renvoi de choses différentes selon le type de partie
-      if (partie.type=="Bataille"){io.emit("gameStarting",{"idPartie":data.idPartie})}
-      if (partie.type=="6quiprend"){io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes})}
-
-    }
-    return;}
-  }
-}
-
-  socket.emit("rejoindre partie bataille",false);
-  return;
-
-
-})
-//-----------------------------------------JOUER UNE CARTE-----------------------
-
-socket.on('carteJoueeBataille',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
-
-
-  for (var partie of partiesEnCours){
-    if (partie.id==data.idPartie){
-     
-      for (var joueur of partie.joueurs){
-        if (joueur.idJoueur==socket.data.userId){
-          if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){  
-            socket.emit('carteJouee',{'valeur':data.choix.valeur,'couleur':data.choix.couleur,'pseudo':pseudos[socket.data.userId]});
+        let partie = new Bataille(socket.data.userId,joueursMax)
+        partiesOuvertes.push(partie)
+        console.log("| Creation d'une partie de Bataille par "+socket.data.userId+" dont l'id sera "+partie.id)
+        socket.emit("creerPartie",partie.id)
+        return}
+        
+        if (data.type=="6quiprend"){
+          var joueursMax = data.joueursMax;
+          if (!Number.isInteger(parseInt(joueursMax))||joueursMax>10||joueursMax<2){
+            joueursMax=10
           }
-          else{
-            socket.emit('carteJouee',false)
+          let partie = new sixquiprend(socket.data.userId,joueursMax)
+          partiesOuvertes.push(partie)
+          console.log("| Creation d'une partie de 6quiprend par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
+          socket.emit("creerPartie",partie.id)}
+        }
+        
+        )
+      })
+      //Sockets de la partie----------------------------------
+      
+      
+      socket.on("wantCarte",data=>{
+        
+        var main = [];
+        var infosJoueurs = []
+        for (var partie of partiesEnCours){
+          if (partie.id == data.idPartie){
+            
+            if (partie.type=="Bataille"){
+              
+              
+              //Cas d'une bataille
+              for (var joueur in partie.joueurs){//Renvoi de la main du joueur
+                if (partie.joueurs[joueur].idJoueur==socket.data.userId){
+                  main = partie.joueurs[joueur].main;
+                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length,"isLocalPlayer":true})
+                }
+                else{
+                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length,"isLocalPlayer":false})
+                }
+              }
+              socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
+            }
+            
+            
+            if (partie.type=="6quiprend"){
+              var tete = 0;
+              
+              //Cas d'un 6quiprend
+              for (var joueur in partie.joueurs){//Renvoi de la main du joueur
+                if (partie.joueurs[joueur].idJoueur==socket.data.userId){
+                  main = partie.joueurs[joueur].main;
+                  tete = partie.joueurs[joueur].score;
+                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":true})
+                }
+                else{
+                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":false})
+                }
+              }
+              console.log(main)
+              socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs,"tete":tete})
+            }
           }
         }
-      }
+        
+        
+      })
+      
+      
+      //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
+      
+      socket.on("rejoindrePartie", data=>{
+        console.log("| Le joueur "+socket.data.userId+"("+pseudos[socket.data.userId]+" a rejoint la partie "+data.idPartie)
+        for (var partie of partiesOuvertes){ 
+          if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
+            
+            if (partie.addPlayer(socket.data.userId)!=false){
+              socket.emit("rejoindrePartie",partie.id);
+              if (partie.joueurs.length==partie.joueursMax){
+                lancerPartie(partie.id);
+                //Renvoi de choses différentes selon le type de partie
+                setTimeout(() => {
+                if (partie.type=="Bataille"){io.emit("gameStarting",{"idPartie":data.idPartie})}
+                if (partie.type=="6quiprend"){io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes})}
+                }, 2000);
+                
+                
+              }
+              return;}
+            }
+          }
+          
+          socket.emit("rejoindrePartie",false);
+          return;
+          
+          
+        })
+        //-----------------------------------------JOUER UNE CARTE-----------------------
+        
+        socket.on('carteJoueeBataille',data=>{//Je veux recevoir {idPartie,idJoueur, et choix={valeur,couleur}}
+          
+          
+          for (var partie of partiesEnCours){
+            if (partie.id==data.idPartie){
+              
+              for (var joueur of partie.joueurs){
+                if (joueur.idJoueur==socket.data.userId){
+                  if (joueur.setChoice(data.choix.valeur,data.choix.couleur)==true){  
+                    socket.emit('carteJouee',{'valeur':data.choix.valeur,'couleur':data.choix.couleur,'pseudo':pseudos[socket.data.userId]});
+                  }
+                  else{
+                    socket.emit('carteJouee',false)
+                  }
+                }
+              }
               if (partie.égalité==true){//Si on etait dejà dans une égalité
                 
                 if (partie.canTourégalité()){
                   console.log("tour d'égalité youhou")
                   var cartesJouees = [];//Les cartes jouees pendant le tour
                   for (var joueur of partie.joueurségalité){cartesJouees.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur],"choix":joueur.choix});}
-
+                  
                   var winner = partie.tourégalité();
-
+                  
                   var finipartie = partie.existeWinner();
                   if (finipartie!=false){
                     db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur )
                     socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]});return}
-                  
+                    
                     if (winner==false){
                       io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":false});
                       partie.égalité = false;
                       return
                     }
                     else{
-
-                     
+                      
+                      
                       io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":pseudos[winner.idJoueur],"égalité":false})
                       partie.égalité = false;
                       return
                     }
-
+                    
+                  }
+                }
+                else{
+                  
+                  
+                  if (partie.canTour()){//Cas où il n'y a pas eu d'égalité au tour précédent
+                    // me dit si tous les joueurs on fait leur choix
+                    
+                    
+                    var cartesJouees = [];//Les cartes jouees pendant le tour
+                    for (var joueur of partie.joueurs){cartesJouees.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur],"choix":joueur.choix});}
+                    
+                    var winner = partie.tour();
+                    
+                    var finipartie = partie.existeWinner();
+                    if (finipartie!=false){
+                      db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur );
+                      socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]});return}
+                      
+                      if (winner==false){
+                        winner = []
+                        var returnegal = [];
+                        for (var joueur of partie.joueurségalité){
+                          winner.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur]})
+                        }
+                        
+                        io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":true});
+                        partie.égalité = true
+                        return;
+                      }
+                      else{
+                        io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":pseudos[winner.idJoueur],"égalité":false})
+                        partie.égalité = false;
+                        //égalité : bool
+                        
+                        return;
+                      }
+                    }
+                    
+                  }
+                }
+                
+                
+                
+              }
+              
+            }
+            )
+            
+            
+            //Demande d'actualisation des infos bataille
+            
+            socket.on('infosLobby',data=>{
+              console.log("reçuinfoslobby")
+              var retour = []; 
+              
+              for (var partie of partiesOuvertes){//On selectionne la bonne partie
+                
+                if (partie.id==data.idPartie){
+                  
+                  for (var j of partie.joueurs){//On renvoie la liste des joueurs
+                    
+                    retour.push(pseudos[j.idJoueur]);
+                  }
+                  socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
+                  return
                 }
               }
-              else{
-
-
-             if (partie.canTour()){//Cas où il n'y a pas eu d'égalité au tour précédent
-              // me dit si tous les joueurs on fait leur choix
-
-
-                var cartesJouees = [];//Les cartes jouees pendant le tour
-                  for (var joueur of partie.joueurs){cartesJouees.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur],"choix":joueur.choix});}
-                      
-                var winner = partie.tour();
-
-                  var finipartie = partie.existeWinner();
-                  if (finipartie!=false){
-                    db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur );
-                    socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]});return}
-                  
-                if (winner==false){
-                  winner = []
-                  var returnegal = [];
-                    for (var joueur of partie.joueurségalité){
-                      winner.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur]})
+            })
+            
+            
+            socket.on("joueurQuitte",data=>{  
+              
+              for (var partie of partiesOuvertes){//enleversi la partie n'a pas commencé
+                if (partie.id==data.idPartie){
+                  for (var joueur in partie.joueurs){
+                    if (partie.joueurs[joueur].idJoueur==socket.data.userId){
+                      partie.joueurs.splice[joueur];
+                      return;
                     }
-
-                    io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":winner,"égalité":true});
-                    partie.égalité = true
+                  }
+                }
+              }
+              
+              for (var partie of partiesEnCours){//Cas où la partie a commencé (plus complexe, heureusement il y a une méthode dans game)
+                if (partie.id==data.idPartie){
+                  partie.removePlayer(socket.data.userId);
+                  var finipartie = partie.existeWinner();
+                  
+                  if (finipartie!=false){
+                    
+                    db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur )
+                    
+                    socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
                     return;
                   }
-                else{
-              io.emit('tourPasse',{"idPartie":partie.id,"cartesJouees":cartesJouees,"winner":pseudos[winner.idJoueur],"égalité":false})
-              partie.égalité = false;
-              //égalité : bool
-
-              return;
                 }
-             }
+                
+                
+                
+              })
+              
+              socket.on("joueurQuitte",data=>{  
+                
+                for (var partie of partiesOuvertes){//enleversi la partie n'a pas commencé
+                  if (partie.id==data.idPartie){
+                    for (var joueur in partie.joueurs){
+                      if (partie.joueurs[joueur].idJoueur==socket.data.userId){
+                        partie.joueurs.splice[joueur];
+                        return;
+                      }
+                    }
+                  }
+                }
+                
+                for (var partie of partiesEnCours){//Cas où la partie a commencé (plus complexe, heureusement il y a une méthode dans game)
+                  if (partie.id==data.idPartie){
+                    partie.removePlayer(socket.data.userId);
+                    var finipartie = partie.existeWinner();
+                    if (finipartie!=false){ db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur );
+                    socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
+                    return;
+                  }
+                }
+                
+                
+                
+              })
+              
 
-            }
-          }
+              //------------------------------FONCTIONS POUR LE 6QUIPREND--------------------------------------------------
 
+              socket.on("choixcarte",data=>{
 
-    
-  }
+                for (var partie of partiesEnCours){
+                  if (partie.id == data.idPartie){
+                    if (partie.type=="6quiprend"){
+                      for (var joueur of partie.joueurs){//Renvoi de la main du joueur
+                        if (partie.joueurs[joueur].idJoueur==socket.data.userId){
 
-}
-)
-
-
-//Demande d'actualisation des infos bataille
-
-socket.on('infosLobby',data=>{
-  console.log("reçuinfoslobby")
-  var retour = []; 
-
-  for (var partie of partiesOuvertes){//On selectionne la bonne partie
-
-    if (partie.id==data.idPartie){
-
-  for (var j of partie.joueurs){//On renvoie la liste des joueurs
-    
-    retour.push(pseudos[j.idJoueur]);
-  }
-  socket.emit('infosLobby',{'joueurs':retour,'nbJoueurs':partie.joueurs.length,'joueursMax':partie.joueursMax,'host':partie.hosts})
-  return
-}
-}
-})
-
-
-socket.on("joueurQuitte",data=>{  
-  
-  for (var partie of partiesOuvertes){//enleversi la partie n'a pas commencé
-    if (partie.id==data.idPartie){
-      for (var joueur in partie.joueurs){
-        if (partie.joueurs[joueur].idJoueur==socket.data.userId){
-          partie.joueurs.splice[joueur];
-          return;
-        }
-      }
-    }
-  }
-  
-  for (var partie of partiesEnCours){//Cas où la partie a commencé (plus complexe, heureusement il y a une méthode dans game)
-    if (partie.id==data.idPartie){
-      partie.removePlayer(socket.data.userId);
-      var finipartie = partie.existeWinner();
-
-      if (finipartie!=false){
-        
-        db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur )
-        
-        socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
-      return;
-    }
-  }
+                          if (joueur.setChoice(new Carte(data.idCarte,""))!=false){
+                            socket.emit("choixcarte",true);
+                          }
+                          else{socket.emit("choixcarte",true);}
 
 
+                            if (partie.canTour()){
 
-})
+                          //ICI faire le calcul du tour
 
-socket.on("joueurQuitte",data=>{  
-  
-  for (var partie of partiesOuvertes){//enleversi la partie n'a pas commencé
-    if (partie.id==data.idPartie){
-      for (var joueur in partie.joueurs){
-        if (partie.joueurs[joueur].idJoueur==socket.data.userId){
-          partie.joueurs.splice[joueur];
-          return;
-        }
-      }
-    }
-  }
-  
-  for (var partie of partiesEnCours){//Cas où la partie a commencé (plus complexe, heureusement il y a une méthode dans game)
-    if (partie.id==data.idPartie){
-      partie.removePlayer(socket.data.userId);
-      var finipartie = partie.existeWinner();
-      if (finipartie!=false){ db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur );
-      socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
-      return;
-    }
-  }
+
+                            }
+
+
+                        }}}}}
+              })
 
 
 
-})
 
-});
+              socket.on("choixLigne",data=>{
+
+                let ligne = data.idLigne;
+                
+                for (var partie of partiesEnCours){
+                  if (partie.id == data.idPartie){
+                    if (partie.type=="6quiprend"){
+                      for (var joueur of partie.joueurs){//Renvoi de la main du joueur
+                        if (partie.joueurs[joueur].idJoueur==socket.data.userId){
+                            partie.prendreLigne(socket.data.idJoueur,idLigne)
+                            //FONCTION A FAIRE
 
 
-process.on('SIGINT', () => {
-  db.close((err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log('Connexion à la base de données SQLite fermée.');
-    process.exit();
-  });
-});
+              }}}}}})
+            });
+            
+            
+            process.on('SIGINT', () => {
+              db.close((err) => {
+                if (err) {
+                  console.error(err.message);
+                }
+                console.log('Connexion à la base de données SQLite fermée.');
+                process.exit();
+              });
+            });

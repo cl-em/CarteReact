@@ -15,7 +15,7 @@ constructor(id,isHost){
 
 
 setChoice(valeur,couleur){//Pour sauvegarder la carte utilisée et la retirer de la main
-    if (this.choix!=null){console.log("le joueur a déjà un choix");return false;}
+    if (this.choix!=null){return false;}
     for (var carte in this.main){
         if (this.main[carte].valeur==valeur && this.main[carte].couleur==couleur){
             this.choix = this.main[carte];

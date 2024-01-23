@@ -279,6 +279,9 @@ return false;
 
 }
 
+
+//----------------------------Classe utilisée pour le jeu du 6quiprend-----------------------------
+
 class sixquiprend extends Game{
     constructor(host,nbJoueurs){
         super([""],104,host,nbJoueurs);
@@ -289,10 +292,12 @@ class sixquiprend extends Game{
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
 
-       for (let i = 0;i<10;i++){//Distribution équitable des cartes
-                for (var joueur of this.joueurs){
+        for (var joueur of this.joueurs){
+            joueur.score = 0;
+            joueur.choixligne = -1;
+            for (let i = 0;i<10;i++){//Distribution équitable des cartes
                     joueur.main.push(this.drawCarte());
-                    joueur.choixligne;
+
                 }
             }
         
@@ -301,10 +306,16 @@ class sixquiprend extends Game{
             }
            
         this.hasStarted = true;
-        
+        this.isOver = false;
         }
 
-
+        canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait un choix
+    
+            for (var joueur of this.joueurs){
+                if (joueur.choix==null){return false}
+            }
+            return true
+        }
 
 }
 module.exports = { Game,Bataille,sixquiprend };

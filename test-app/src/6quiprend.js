@@ -10,36 +10,67 @@ import { Lobby } from './Bataille';
 import Boeuf from "./Boeuf.jsx"
 
 
+
+
 function Main6QuiPrend({ listeNombre }) { //Pour afficher la main (prend en param une liste d'int)
+
+  const socket = React.useContext(SocketContext);
+
+  let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+  let idPartie =  urlP.get("idPartie");
+
     return (
       <div className='divSVG'>
         {listeNombre.map((numCarte, index) => (
-          <CarteJeu key={index} numeroCarte={numCarte} />
+          <div key={index} onClick={()=>{
+            // console.log("envoie carte");
+            socket.emit("choixCarte",{idPartie:idPartie,idCarte:numCarte});
+            // console.log("carte envoyée");
+          }}>
+            <CarteJeu  numeroCarte={numCarte} />
+          </div>
         ))}
       </div>
     );
 }
 
 function AfficherLigne({listeLignes}){ //Pour afficher les 4 lignes du jeu (prend en param une liste de listes)
+
+  const socket = React.useContext(SocketContext);
+
+  let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+  let idPartie =  urlP.get("idPartie");
+
   return (
     <div className='lignesTable'>
     <table>
       {listeLignes.map((ligne,index)=>(
-        <tr>
-          {ligne.map((numCarte,idx)=>(
-            <td><CarteJeu key={idx} numeroCarte={numCarte}/></td>
-          ))}
-        </tr>
+
+          <tr onClick={()=>{
+            console.log("ligne"+ index);
+            socket.emit("choixLigne",{idPartie:idPartie,idLigne:index});
+          }}>
+            {ligne.map((numCarte,idx)=>(
+              <td><CarteJeu key={idx} numeroCarte={numCarte}/></td>
+            ))}
+          </tr>
+     
       ))}
     </table>
     </div>
   )
 }
 
+
 function Jouer(){
 
   const socket = React.useContext(SocketContext); //Pour les sockets
 
+  let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+  let idPartie =  urlP.get("idPartie");
+
+
+  // INFO RECU PAR LE SERVEUR
   //Recuperation avec les socket
   const [listeCartes, setListeCartes] = useState([]); //Création de la variable listeCartes ainsi que de son setter.
   const [listeLignes, setListeLignes] = useState([]);  //Création de la variable recevant les lignes ainsi que son setter. Tableau de tableau
@@ -49,20 +80,35 @@ function Jouer(){
   const [nouvelleListeLignes,setNouvelleListeLignes] = useState([]);
 
 
-  let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
-
   useEffect(()=>{
     
     socket.on("gameStarting", (data) => { //Faire pareil avec tourpasse (!=gamestarting)
-      if (data.idPartie === urlP.get("idPartie")) {
-
+      console.log("la partie a commencé")
+      console.log(data.idPartie)
+      console.log(idPartie)
+      if (data.idPartie == idPartie) {
+        console.log("la partie a commencé ET C EST LA MIENNE")
         setListeLignes(data.lignes); //Liste de listes de Carte [{valeur}]
+
+        console.log("ouai je demande les cartes");
+
         socket.emit("wantCarte", { "idPartie": urlP.get("idPartie")}); //Demande de la main. 
         socket.on("getCarte", (data) => { //Récupération des cartes (de la main)
-
+          console.log("ouai j'ai les cartes");
           setListeCartes(data.main); //Set la main (liste de cartes) [{valeur}]
         });
       }  
+    });
+
+    socket.on("wantCarte",data=>{
+      if (data==true){
+        //AFFICHAGE DU FAIT DE POSER UNE CARTE
+      }
+
+    });
+
+    socket.on("x",(data)=>{
+
     });
 
     return () => {
@@ -101,13 +147,9 @@ function Jouer(){
   },[listeLignes]); //S'effectue a chaque chanement de listeLignes
 
 
+  // INFO ENVOYEES AU SERVEUR
 
-  // demande carte
-  // recupère les cartese
-
-  // attribut lignes dans datas
-  // socket.on("gamestarting") 
-
+  
 
   return(
     <div>
