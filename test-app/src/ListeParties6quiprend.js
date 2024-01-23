@@ -20,7 +20,7 @@ function ListeParties6quiprend(){
         socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"6quiprend"});
         socket.on('creerPartie', (idPartie) => {
             console.log(idPartie);
-            if (idPartie == false) {
+            if (idPartie === false) {
               navigate("/");
             }
             else{
@@ -34,7 +34,7 @@ function ListeParties6quiprend(){
         console.log(idPartie);
         socket.on('rejoindrePartie', (data) => {
             // console.log(data);
-            if (data != false && data == idPartie) {
+            if (data !== false && data === idPartie) {
                 navigate("/6quiprendJeu?idPartie="+idPartie);
             }
             else{

@@ -169,15 +169,15 @@ const getpseudos = () => {
         return;
       }
       rows.forEach((row) => {
-        pseudos[row.idU] = row.pseudo;
+        pseudos[row.idU] = row.pseudo;       
       });
     });
-    // db.close(); 
   }
-
-
+  
+  
   getpseudos();
-  console.log(pseudos)
+
+
 
 
 //-------------------------------Tests Elouand-----------------------------------------------
@@ -275,7 +275,7 @@ socket.on('leaderboard',data=>{
 
 
 
-  socket.on('demandepartiesouvertes',data=>{console.log(data)
+  socket.on('demandepartiesouvertes',data=>{
     var retour = []
     for (var partie of partiesOuvertes){
       if (partie.type==data){retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax})}
@@ -354,7 +354,7 @@ socket.on('leaderboard',data=>{
       }
       let partie = new Bataille(socket.data.userId,joueursMax)
       partiesOuvertes.push(partie)
-      console.log("Creation d'une partie de Bataille par "+socket.data.userId+" dont l'id sera "+partie.id)
+      console.log("| Creation d'une partie de Bataille par "+socket.data.userId+" dont l'id sera "+partie.id)
     socket.emit("creerPartie",partie.id)
     return}
 
@@ -365,7 +365,7 @@ socket.on('leaderboard',data=>{
       }
       let partie = new sixquiprend(socket.data.userId,joueursMax)
       partiesOuvertes.push(partie)
-      console.log("Creation d'une partie de 6quiprend par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
+      console.log("| Creation d'une partie de 6quiprend par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
     socket.emit("creerPartie",partie.id)}
     }
     
@@ -380,11 +380,15 @@ socket.on('leaderboard',data=>{
     var infosJoueurs = []
     for (var partie of partiesEnCours){
       if (partie.id == data.idPartie){
+
+        if (partie.type=="Bataille"){
+
+
+        //Cas d'une bataille
         for (var joueur in partie.joueurs){//Renvoi de la main du joueur
           if (partie.joueurs[joueur].idJoueur==socket.data.userId){
               main = partie.joueurs[joueur].main;
               infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length,"isLocalPlayer":true})
-        
           }
           else{
             infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length,"isLocalPlayer":false})
@@ -392,7 +396,23 @@ socket.on('leaderboard',data=>{
         }
       }
     }
-   
+    
+    if (partie.type=="6quiprend"){
+
+
+      //Cas d'une bataille
+      for (var joueur in partie.joueurs){//Renvoi de la main du joueur
+        if (partie.joueurs[joueur].idJoueur==socket.data.userId){
+            main = partie.joueurs[joueur].main;
+            infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":true})
+        }
+        else{
+          infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":false})
+        }
+      }
+    }
+    }
+
     socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
   })
   
@@ -400,12 +420,14 @@ socket.on('leaderboard',data=>{
   //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
   
 socket.on("rejoindrePartie", data=>{
+  console.log("| Le joueur "+socket.data.userId+"("+pseudos[socket.data.userId]+" a rejoint la partie "+data.idPartie)
 for (var partie of partiesOuvertes){ 
   if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
+    
     if (partie.addPlayer(socket.data.userId)!=false){
     socket.emit("rejoindrePartie",partie.id);
     if (partie.joueurs.length==partie.joueursMax){
-      lancerPartie(partie.id)
+      lancerPartie(partie.id);
       //Renvoi de choses différentes selon le type de partie
       if (partie.type=="Bataille"){io.emit("gameStarting",{"idPartie":data.idPartie})}
       if (partie.type=="6quiprend"){io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes})}

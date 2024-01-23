@@ -17,6 +17,7 @@ class Game {
         this.joueursMax = joueursMax;
         this.hasStarted = false;
         this.chat = [];
+
     }
 //-----------------------Fonctions gestion cartes------------------------------------------
     shuffleDeck(){
@@ -99,8 +100,8 @@ class Bataille extends Game{
         super(["coeur","pique","trefle","carreau"],13,host,nbJoueurs);
         this.goal = 0;
         this.createDeck();
-        this.paquets = [];
         this.type="Bataille"
+        this.paquets = [];
 
     }
 
@@ -282,7 +283,6 @@ class sixquiprend extends Game{
     constructor(host,nbJoueurs){
         super([""],104,host,nbJoueurs);
         this.createDeck();
-        this.paquets = [];
         this.type="6quiprend"
         this.lignes = [[],[],[],[]]
     }

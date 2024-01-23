@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Cookies from "universal-cookie";
 
+// import singe from "https://media.tenor.com/Jfvooie8DbAAAAAi/monkey-cymbals.gif";
+
 const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
@@ -25,7 +27,12 @@ const SocketProvider = ({ children }) => {
         return () => newSocket.close();
     }, []);
     if (!isConnected) {
-        return <div>Chargement...</div>;
+        // return <div>Chargement...</div>;
+        return (
+            <div>
+                <img src="https://media.tenor.com/Jfvooie8DbAAAAAi/monkey-cymbals.gif" alt="Chargement..."/>
+            </div>
+        )
     }
     return (
         <SocketContext.Provider value={socket}>
