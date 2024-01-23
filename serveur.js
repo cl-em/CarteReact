@@ -406,7 +406,10 @@ for (var partie of partiesOuvertes){
     socket.emit("rejoindrePartie",partie.id);
     if (partie.joueurs.length==partie.joueursMax){
       lancerPartie(partie.id)
-      io.emit("gameStarting",{"idPartie":data.idPartie})
+      //Renvoi de choses différentes selon le type de partie
+      if (partie.type=="Bataille"){io.emit("gameStarting",{"idPartie":data.idPartie})}
+      if (partie.type=="6quiprend"){io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes})}
+
     }
     return;}
   }
