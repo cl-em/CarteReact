@@ -654,13 +654,13 @@ io.on('connection', (socket) => {
                       setTimeout(() => {poursuivreTour(partie)},1300)
                       return;}
                     else{//Cas où la carte a été placée, aucun problème, on envoie le prochain joueur évalué
-                      socket.emit("tourPasse",{"carteEval":partie.joueurMin().choix,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
+                      socket.emit("tourPasse",{"carteEval":partie.joueurMin().choix.valeur,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
                     setTimeout(() => {poursuivreTour(partie)},1300)
                     return;}
                   }
 
                   else{//Cas où un choix de ligne est nécessaire
-                    socket.emit("tourPasse",{"carteEval":joueur.choix.valeur,"joueurEval":false,"choixNecessaire":true,"lignes":partie.lignes})
+                    socket.emit("tourPasse",{"carteEval":joueur.choix.valeur,"joueurEval":pseudos[joueur.idJoueur],"choixNecessaire":true,"lignes":partie.lignes})
                     return;
                   }
                 }
@@ -710,12 +710,9 @@ io.on('connection', (socket) => {
                 for (var partie of partiesEnCours){
                   if (partie.id == data.idPartie){
                     if (partie.type=="6quiprend"){
-                      
-                       
-                            partie.prendreLigne(socket.data.idJoueur,ligne)
-                            
-
-
+                            if (partie.prendreLigne(socket.data.idJoueur,ligne)){
+                              poursuivreTour(partie)
+                            }
               }}}})
             });
             
