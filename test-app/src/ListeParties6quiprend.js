@@ -19,7 +19,7 @@ function ListeParties6quiprend(){
     const createPartie = () => {
         socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"6quiprend"});
         socket.on('creerPartie', (idPartie) => {
-            console.log(idPartie);
+            // console.log(idPartie);
             if (idPartie === false) {
               navigate("/");
             }
