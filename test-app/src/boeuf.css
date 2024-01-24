@@ -65,10 +65,14 @@
 .carte #boeufscore{
     grid-row: 3;
     grid-column: 2;
+
+    
     
 }
 .carte #score{
     grid-row: 3;
     grid-column: 2;
-    -webkit-text-stroke: 1.1px goldenrod
+    color:goldenrod;
+    font-weight: bold;
+    
 }

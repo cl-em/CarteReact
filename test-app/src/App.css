@@ -199,7 +199,7 @@ body {
 .Table{
   position: relative;
   height: 60vh;
-  width: 60vh;
+  width: 50vw;
   background-color: transparent;
 
 }
@@ -239,8 +239,10 @@ body {
   align-self: flex-end;
 }
 
-.divCartes img:hover, .divSVG .carte:hover {
-  transform: translateY(-10px);
+.divCartes img:hover {
+  
+  transform: translateY(-4px);
+
 }
 
 .hop{
@@ -253,6 +255,7 @@ body {
   color: aliceblue;
   bottom: 0;
   right: 0;
+  flex-direction: column-reverse;
   width: 10%;
   height: 30%;
   background-color: transparent;
@@ -269,6 +272,7 @@ body {
 }
 
 .leaderboard{
+  color:aliceblue;
   max-height: 500px;
   background-color: transparent;
   border: 2px solid rgba(255, 255, 255, 0.295);
@@ -303,16 +307,19 @@ body {
 }
 
 .divSVG {
+  margin-left: -2.5vw;
   display: flex;
-  bottom: -0.4vh;
+  bottom: 0;
   background-color: transparent;
-  width: 140vh;
+  width: 80vw;
   height: 160px;
   position: absolute;
   overflow-x: auto;
   left: 52.5%;
   transform: translateX(-50%);
-  background: url("http://localhost:8888/fichier/carpet.jpg") center/cover no-repeat;
+  background: url("http://localhost:8888/fichier/carpet.jpg") center/cover repeat;
+
+  background-size: 20%;
   border: 5px goldenrod solid;
   border-radius: 10px;
   justify-content: center;
@@ -322,21 +329,40 @@ body {
   bottom:0;
   margin-top:10px;
   margin-left: 2px;
-  margin-right: 2px;
+  margin-right: 2easepx;
   min-width: 100px;
   max-width:100px;
   min-height:140px;
   max-height:140px;
-  transition: transform 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
   transform: translateY(0);
   align-self: flex-end;
   user-select: none;
+  
 
+}
+.divSVG .carte:hover{
+  transform: translateY(-8px);
 }
 
 .lignesTable{
 position:fixed;
 left: 0;
 top:0;
+}
+
+.Lobby6qui{
+  display:flex;
+  color: aliceblue;
+  margin-left:42vw;
+  margin-top: -24vh;
+
+}
+
+.Table6qui{
+  position: relative;
+  height: 65vh;
+  width: 45vw;
+  background-color: transparent;
 
 }

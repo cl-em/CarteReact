@@ -33,7 +33,7 @@ function Leaderboard({typeDeJeu}){
           {leaderboardData && (
             <div>
               {leaderboardData.joueursTop.map((player, index) => (
-                <div key={index} className={"statsjoueur".concat(index%2)}>
+                <div className={"statsjoueur1"} key={index}>
                   <div>
                     <strong>Pseudo:</strong> {player.pseudo}
                   </div>

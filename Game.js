@@ -30,7 +30,6 @@ class Game {
                 this.deck.push(new Carte(i,couleur));
             }
         }
-        this.shuffleDeck();
     }
 
     shuffleDeck(){//Mélange le deck
@@ -100,6 +99,7 @@ class Bataille extends Game{
         super(["coeur","pique","trefle","carreau"],13,host,nbJoueurs);
         this.goal = 0;
         this.createDeck();
+        this.shuffleDeck();
         this.type="Bataille"
         this.paquets = [];
 
@@ -284,17 +284,21 @@ return false;
 
 class sixquiprend extends Game{
     constructor(host,nbJoueurs){
-        super([""],104,host,nbJoueurs);
+        super([""],105,host,nbJoueurs);
         this.createDeck();
+        this.deck.shift();  
+        this.shuffleDeck();
         this.type="6quiprend"
         this.lignes = [[],[],[],[]]
+        this.joueurQuiChoisit = null;
+        this.tourEnCours = false;
+        
     }
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
 
         for (var joueur of this.joueurs){
             joueur.score = 0;
-            joueur.choixligne = -1;
             for (let i = 0;i<10;i++){//Distribution équitable des cartes
                     joueur.main.push(this.drawCarte());
 
@@ -317,5 +321,100 @@ class sixquiprend extends Game{
             return true
         }
 
+        prendreLigne(idJoueur,ligne){ //Le joueur désigné par l'idJoueur passé en paramètre prend la ligne désignée par l'entier ligne
+            if (this.joueurQuiChoisit == null || this.joueurQuiChoisit!=idJoueur){
+                return false;
+            }
+            for (var joueur of this.joueurs){
+                if (joueur.idJoueur==idJoueur && joueur.choix==null){
+                    return false;}}
+
+
+
+            var score = 0;
+            for (var card of this.lignes[ligne]){
+            if ((card.valeur%11!=0)&&(card.valeur%5!=0)){score+=1}
+
+            if (card.valeur % 11 == 0) {score += 5;}
+            if (card.valeur % 10 == 0) {score += 3;} 
+            else {if (card.valeur % 10 == 5) {score += 2;}}
+          
+            }
+           
+
+            for (var joueur of this.joueurs){
+                if (joueur.idJoueur==idJoueur){
+                    joueur.score+=score;
+                }
+                this.lignes[ligne] = [joueur.choix]
+            }
+                return true
+        }
+
+        placerCarte(idJoueur){//effectue le placement automatique de la carte que le joueur a choisie et renvoie true si c'est possible, false s'il doit prendre une ligne
+            var retour;
+            for (var joueur of this.joueurs){
+                if (joueur.idJoueur==idJoueur){
+                    var choix = joueur.choix.valeur;
+                    var lignePlacement = 0
+
+                    //TEST DE SI OUI OU NON IL EST POSSIBLE DE PLACER UNE CARTE
+                    let canPlay = false;
+                    for (var ligne of this.lignes){
+                   
+                        if (ligne[ligne.length-1].valeur<choix){
+                            canPlay = true;
+                        }
+                    }
+                    if (canPlay==false){return false;}
+
+                    for (var ligne in this.lignes){
+                        if (Math.abs(this.lignes[ligne][this.lignes[ligne].length-1].valeur-choix)<Math.abs(this.lignes[lignePlacement][this.lignes[lignePlacement].length-1].valeur-choix)){
+                            lignePlacement = ligne;
+                    }
+                 }
+
+                 if (this.lignes[lignePlacement].length<5){
+                    this.lignes[lignePlacement].push(joueur.choix);
+                    retour = joueur.choix.valeur;
+                    joueur.choix=null;
+                 }
+
+                if (this.lignes[lignePlacement].length>=5){
+                    this.prendreLigne(joueur.idJoueur,lignePlacement);
+                }
+
+
+                 return true;
+
+                }
+            }
+        }
+
+
+        joueurMin(){//Retourne l'id du joueur qui a mis la carte dont la valuer est la plus petite
+            var min = null
+            for (var joueur of this.joueurs){
+                if ((min==null) || ((joueur.choix!=null) && (joueur.choix.valeur<min.choix.valeur))){
+                    min = joueur;
+                }
+            }
+
+            if (min == null){
+                return false
+            }
+            return min.idJoueur;
+        }
+
+
+
+
+
+
+
+
+
+
 }
-module.exports = { Game,Bataille,sixquiprend };
+
+module.exports = { Game,Bataille,sixquiprend }

@@ -36,7 +36,7 @@ app.get('/fichier/:nomFichier', function(request, response) {
 });
 
 app.get('/carte/:nomFichier', function(request, response) {
-  //console.log("renvoi de "+request.params.nomFichier);
+
   response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
 });
 
@@ -49,7 +49,6 @@ app.get('/socket.io/', (req, res) => {
 app.use(express.json());
 app.use(cookieParser());
 app.post('/login', (req, res) => {
-  console.log("login");
   const { username, password } = req.body;
   if (!username || !password) {
     res.send({ validation: false });
@@ -85,7 +84,6 @@ app.post('/login', (req, res) => {
 });
 //-------------------------------Register-----------------------------------------------
 app.post('/register', (req, res) => {
-  console.log("register");
   const { username, password } = req.body;
   if (!username || !password) {
     res.send({ validation: false });
@@ -99,7 +97,6 @@ app.post('/register', (req, res) => {
           if (err) {
             throw err;
           }
-          console.log(rows);
           if (rows.length > 0) {
             res.send({ validation: false });
           } else {
@@ -182,8 +179,12 @@ getpseudos();
 
 //-------------------------------Tests Elouand-----------------------------------------------
 var partie = new sixquiprend(1,7);
-partiesOuvertes.push(partie);
-console.log(partie)
+
+console.log("-----------------TESTS-------------------")
+
+console.log("-----------------TESTS-------------------")
+
+
 
 
 
@@ -420,7 +421,7 @@ io.on('connection', (socket) => {
                   infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":false})
                 }
               }
-              console.log(main)
+
               socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs,"tete":tete})
             }
           }
@@ -444,8 +445,13 @@ io.on('connection', (socket) => {
                 //Renvoi de choses différentes selon le type de partie
                 setTimeout(() => {
                 if (partie.type=="Bataille"){io.emit("gameStarting",{"idPartie":data.idPartie})}
-                if (partie.type=="6quiprend"){io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes})}
-                }, 2000);
+
+
+                if (partie.type=="6quiprend"){
+                  let listejoueurs = [];
+                  for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur])}
+                  io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes,"joueurs":listejoueurs})}
+                }, 1000);
                 
                 
               }
@@ -556,7 +562,7 @@ io.on('connection', (socket) => {
             //Demande d'actualisation des infos bataille
             
             socket.on('infosLobby',data=>{
-              console.log("reçuinfoslobby")
+          
               var retour = []; 
               
               for (var partie of partiesOuvertes){//On selectionne la bonne partie
@@ -634,31 +640,65 @@ io.on('connection', (socket) => {
               
 
               //------------------------------FONCTIONS POUR LE 6QUIPREND--------------------------------------------------
+            
 
-              socket.on("choixcarte",data=>{
+              async function poursuivreTour(partie){//Fonction essentielle, permet le déroulement asynchrone des tours
 
+                var joueur = partie.joueurMin();
+                if (partie.joueurMin==false){return;}
+
+                if (partie.placerCarte(joueur.idJoueur)){//Cas où la carte a été placée, pas de problème, aucun autre joueur à évaluer
+                    if (partie.joueurMin()==false){
+                      socket.emit("tourPasse",{"carteEval":false,"joueurEval":false,"choixNecessaire":false,"lignes":partie.lignes})
+                      partie.tourEnCours = false;
+                      setTimeout(() => {poursuivreTour(partie)},1300)
+                      return;}
+                    else{//Cas où la carte a été placée, aucun problème, on envoie le prochain joueur évalué
+                      socket.emit("tourPasse",{"carteEval":partie.joueurMin().choix,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
+                    setTimeout(() => {poursuivreTour(partie)},1300)
+                    return;}
+                  }
+
+                  else{//Cas où un choix de ligne est nécessaire
+                    socket.emit("tourPasse",{"carteEval":joueur.choix.valeur,"joueurEval":false,"choixNecessaire":true,"lignes":partie.lignes})
+                    return;
+                  }
+                }
+              
+
+
+
+
+
+
+
+
+              socket.on("choixCarte",data=>{
                 for (var partie of partiesEnCours){
                   if (partie.id == data.idPartie){
-                    if (partie.type=="6quiprend"){
+                    if (partie.type=="6quiprend" && partie.tourEnCours!=true){
                       for (var joueur of partie.joueurs){//Renvoi de la main du joueur
-                        if (partie.joueurs[joueur].idJoueur==socket.data.userId){
-
+                        if (joueur.idJoueur==socket.data.userId){
+                          
                           if (joueur.setChoice(new Carte(data.idCarte,""))!=false){
-                            socket.emit("choixcarte",true);
+                            console.log("carte jouée par: "+pseudos[socket.data.userId])
+                            console.log(data)
+                            socket.emit("choixCarte",data.idCarte);
                           }
-                          else{socket.emit("choixcarte",true);}
+                          else{socket.emit("choixCarte",false);}
 
 
                             if (partie.canTour()){
+                              partie.tourEnCours = true;
+                              poursuivreTour(partie)
 
-                          //ICI faire le calcul du tour
+
 
 
                             }
 
 
-                        }}}}}
-              })
+                        }}}}}})
 
 
 
@@ -670,13 +710,13 @@ io.on('connection', (socket) => {
                 for (var partie of partiesEnCours){
                   if (partie.id == data.idPartie){
                     if (partie.type=="6quiprend"){
-                      for (var joueur of partie.joueurs){//Renvoi de la main du joueur
-                        if (partie.joueurs[joueur].idJoueur==socket.data.userId){
-                            partie.prendreLigne(socket.data.idJoueur,idLigne)
-                            //FONCTION A FAIRE
+                      
+                       
+                            partie.prendreLigne(socket.data.idJoueur,ligne)
+                            
 
 
-              }}}}}})
+              }}}})
             });
             
             
