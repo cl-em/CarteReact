@@ -434,7 +434,7 @@ io.on('connection', (socket) => {
       //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
       
       socket.on("rejoindrePartie", data=>{
-        console.log("| Le joueur "+socket.data.userId+"("+pseudos[socket.data.userId]+" a rejoint la partie "+data.idPartie)
+        console.log("| Le joueur "+socket.data.userId+"("+pseudos[socket.data.userId]+") a rejoint la partie "+data.idPartie)
         for (var partie of partiesOuvertes){ 
           if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
             
@@ -485,7 +485,7 @@ io.on('connection', (socket) => {
               if (partie.égalité==true){//Si on etait dejà dans une égalité
                 
                 if (partie.canTourégalité()){
-                  console.log("tour d'égalité youhou")
+                  
                   var cartesJouees = [];//Les cartes jouees pendant le tour
                   for (var joueur of partie.joueurségalité){cartesJouees.push({"idJoueur":joueur.idJoueur,"pseudo":pseudos[joueur.idJoueur],"choix":joueur.choix});}
                   
@@ -645,22 +645,23 @@ io.on('connection', (socket) => {
               async function poursuivreTour(partie){//Fonction essentielle, permet le déroulement asynchrone des tours
 
                 var joueur = partie.joueurMin();
-                if (partie.joueurMin==false){return;}
+                if (joueur==false){return;}
+                var valCarte = joueur.choix.valeur
 
                 if (partie.placerCarte(joueur.idJoueur)){//Cas où la carte a été placée, pas de problème, aucun autre joueur à évaluer
                     if (partie.joueurMin()==false){
-                      socket.emit("tourPasse",{"carteEval":false,"joueurEval":false,"choixNecessaire":false,"lignes":partie.lignes})
+                      io.emit("tourPasse",{"idPartie":partie.idPartie,"carteEval":false,"joueurEval":false,"choixNecessaire":false,"lignes":partie.lignes})
                       partie.tourEnCours = false;
-                      setTimeout(() => {poursuivreTour(partie)},1300)
+                      setTimeout(() => {poursuivreTour(partie)},1700)
                       return;}
                     else{//Cas où la carte a été placée, aucun problème, on envoie le prochain joueur évalué
-                      socket.emit("tourPasse",{"carteEval":partie.joueurMin().choix.valeur,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
-                    setTimeout(() => {poursuivreTour(partie)},1300)
+                      io.emit("tourPasse",{"idPartie":partie.idPartie,"carteEval":partie.joueurMin().choix.valeur,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
+                    setTimeout(() => {poursuivreTour(partie)},1700)
                     return;}
                   }
 
                   else{//Cas où un choix de ligne est nécessaire
-                    socket.emit("tourPasse",{"carteEval":joueur.choix.valeur,"joueurEval":pseudos[joueur.idJoueur],"choixNecessaire":true,"lignes":partie.lignes})
+                    io.emit("tourPasse",{"idPartie":partie.idPartie,"carteEval":valCarte,"joueurEval":pseudos[joueur.idJoueur],"choixNecessaire":true,"lignes":partie.lignes})
                     return;
                   }
                 }
@@ -680,7 +681,7 @@ io.on('connection', (socket) => {
                       for (var joueur of partie.joueurs){//Renvoi de la main du joueur
                         if (joueur.idJoueur==socket.data.userId){
                           
-                          if (joueur.setChoice(new Carte(data.idCarte,""))!=false){
+                          if (joueur.setChoice(data.idCarte,"")!=false){
                             console.log("carte jouée par: "+pseudos[socket.data.userId])
                             console.log(data)
                             socket.emit("choixCarte",data.idCarte);
@@ -704,14 +705,21 @@ io.on('connection', (socket) => {
 
 
               socket.on("choixLigne",data=>{
-
+                  console.log("ligne "+data.idLigne+" choisie par "+pseudos[socket.data.userId])
                 let ligne = data.idLigne;
                 
                 for (var partie of partiesEnCours){
                   if (partie.id == data.idPartie){
                     if (partie.type=="6quiprend"){
-                            if (partie.prendreLigne(socket.data.idJoueur,ligne)){
-                              poursuivreTour(partie)
+                      if ((partie.joueurQuiChoisit == null) || (partie.joueurQuiChoisit!=socket.data.userId)){
+                        return;}
+                    
+                            if (partie.prendreLigne(socket.data.userId,ligne)){
+                              console.log(   "  |_choix effectué avec succès_|")
+                              partie.joueurQuiChoisit = null;
+
+                              poursuivreTour(partie);
+                              return;
                             }
               }}}})
             });

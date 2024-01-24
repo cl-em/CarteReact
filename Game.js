@@ -322,9 +322,7 @@ class sixquiprend extends Game{
         }
 
         prendreLigne(idJoueur,ligne){ //Le joueur désigné par l'idJoueur passé en paramètre prend la ligne désignée par l'entier ligne
-            if (this.joueurQuiChoisit == null || this.joueurQuiChoisit!=idJoueur){
-                return false;
-            }
+
             for (var joueur of this.joueurs){
                 if (joueur.idJoueur==idJoueur && joueur.choix==null){
                     return false;}}
@@ -348,6 +346,8 @@ class sixquiprend extends Game{
                 }
                 this.lignes[ligne] = [joueur.choix]
             }
+
+            joueur.choix = null;
                 return true
         }
 
@@ -361,15 +361,15 @@ class sixquiprend extends Game{
                     //TEST DE SI OUI OU NON IL EST POSSIBLE DE PLACER UNE CARTE
                     let canPlay = false;
                     for (var ligne of this.lignes){
-                   
+                        console.log(this.lignes)
                         if (ligne[ligne.length-1].valeur<choix){
                             canPlay = true;
                         }
                     }
-                    if (canPlay==false){return false;}
+                    if (canPlay==false){this.joueurQuiChoisit = joueur.idJoueur;return false;}
 
                     for (var ligne in this.lignes){
-                        if (Math.abs(this.lignes[ligne][this.lignes[ligne].length-1].valeur-choix)<Math.abs(this.lignes[lignePlacement][this.lignes[lignePlacement].length-1].valeur-choix)){
+                        if ((choix>this.lignes[ligne][this.lignes[ligne].length-1].valeur) && (Math.abs(this.lignes[ligne][this.lignes[ligne].length-1].valeur-choix)<Math.abs(this.lignes[lignePlacement][this.lignes[lignePlacement].length-1].valeur-choix))){
                             lignePlacement = ligne;
                     }
                  }
@@ -379,9 +379,9 @@ class sixquiprend extends Game{
                     retour = joueur.choix.valeur;
                     joueur.choix=null;
                  }
-
-                if (this.lignes[lignePlacement].length>=5){
+                else {
                     this.prendreLigne(joueur.idJoueur,lignePlacement);
+                    joueur.choix=null;
                 }
 
 
@@ -395,15 +395,16 @@ class sixquiprend extends Game{
         joueurMin(){//Retourne l'id du joueur qui a mis la carte dont la valuer est la plus petite
             var min = null
             for (var joueur of this.joueurs){
-                if ((min==null) || ((joueur.choix!=null) && (joueur.choix.valeur<min.choix.valeur))){
+                if ((min==null) || min.choix==null ||((joueur.choix!=null) && (joueur.choix.valeur<min.choix.valeur))){
                     min = joueur;
                 }
             }
 
-            if (min == null){
+            if (min == null || min.choix==null){
                 return false
             }
-            return min.idJoueur;
+            
+            return min;
         }
 
 
