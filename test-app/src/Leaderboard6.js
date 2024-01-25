@@ -3,7 +3,7 @@ import SocketContext from './SocketContext';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
-function Leaderboard({typeDeJeu}){
+function Leaderboard6({typeDeJeu}){
   // le type c'est : Bataille ou 6quiprend
     const navigate = useNavigate();
     const socket = React.useContext(SocketContext);
@@ -63,4 +63,4 @@ function Leaderboard({typeDeJeu}){
 ]*/
 }
 
-export default Leaderboard;
+export default Leaderboard6;

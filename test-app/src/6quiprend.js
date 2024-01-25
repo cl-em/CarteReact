@@ -9,14 +9,24 @@ import CarteJeu from './boeuf';
 import { Lobby } from './Bataille';
 import Boeuf from "./Boeuf.jsx"
 
-function afficherCarteJouee({numCarte}){
+
+function ProgressBar(){
   return(
-    <div className='carteAffichee'>
-      <h3> Carte jouée</h3>
-      <CarteJeu numeroCarte={numCarte} />
+    <div className='container'>
+      <div className='progress-bar'>
+        <div className='progress-bar-fill'>
+            ProgressBar
+        </div>
+      </div>
+      <div className='progress-label'>
+        50%
+      </div>
+      <button>Progress</button>
+      <button>reset</button>
     </div>
   )
 }
+
 
 
 function Main6QuiPrend({ listeNombre }) { //Pour afficher la main (prend en param une liste d'int)
@@ -25,6 +35,7 @@ function Main6QuiPrend({ listeNombre }) { //Pour afficher la main (prend en para
 
   let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
   let idPartie =  urlP.get("idPartie");
+  listeNombre.sort();
 
     return (
       <div className='divSVG'>
@@ -65,6 +76,18 @@ function AfficherLigne({listeLignes}){ //Pour afficher les 4 lignes du jeu (pren
         ))}
       </tbody>
     </table>
+    </div>
+  )
+}
+
+function afficherEtat({listeEtats}){
+// liste d'objets {pseudo:String,tetes:Number,aJouer:Boolean}
+
+  return(
+    <div>
+      {listeEtats.forEach((joueur,index)=>(
+        <p>{joueur.pseudo} : a joué {joueur.aJouer? "oui" : "non"}</p>
+      ))}
     </div>
   )
 }
@@ -192,25 +215,22 @@ function Jouer(){
   
   return(
     <div>
-      {/* <Chat /> */}
 
 
       <AfficherLigne listeLignes={nouvelleListeLignes} />
-      <Main6QuiPrend listeNombre={nouvelleMain} />
+      <Main6QuiPrend listeNombre={nouvelleMain.sort()} />
       <div className='infopartie'>
           {choixNecessaire? 
-          <h3>{joueurEval} clique sur un ligne</h3>:
+          <h3 style={{ color: 'aliceblue' }}>{joueurEval}, clique sur une ligne</h3>:
           (numeroCarteEval && joueurEval)?
             <div>
-              <h3>{joueurEval}</h3>
+              <h3 style={{ color: 'aliceblue' }}>{joueurEval} joue la carte :</h3>
               <CarteJeu numeroCarte={numeroCarteEval} />
-            </div> : <h3>euh faut jouer</h3>}
+            </div> : <h3 style={{ color: 'aliceblue' }}>En attente que tout les joueurs placent une carte</h3>}
         </div>
     </div>  
   )
 }
-
-let AAA = [[67,79,89],[9,6,104,98],[76,45,35,92, 20],[77,31,94,51]]
 
 export const SixQuiPrend = () => {
     return (
@@ -218,6 +238,7 @@ export const SixQuiPrend = () => {
             {/* <AfficherLigne listeLignes={AAA}/>
             <Main6QuiPrend listeNombre={[5,11,20,35,2,5,89,57,35,2]}/>
             <Boeuf width="25%"/> */}
+            <Chat />
             <Jouer /> 
         </div>
     );

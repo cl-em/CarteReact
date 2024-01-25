@@ -261,7 +261,7 @@ body {
   background-color: transparent;
   border: 2px solid rgba(255, 255, 255, 0.295);
   backdrop-filter: blur(5px);
-  border-radius: 3%;
+  border-radius: 0%;
   box-shadow: 0 0 10px rgb(0, 0, 0);
   overflow-x: auto;
 }
@@ -317,10 +317,10 @@ body {
   overflow-x: auto;
   left: 52.5%;
   transform: translateX(-50%);
-  background: url("http://localhost:8888/fichier/carpet.jpg") center/cover repeat;
+  /* background: url("http://localhost:8888/fichier/carpet.jpg") center/cover repeat; */
 
   background-size: 20%;
-  border: 5px goldenrod solid;
+  /* border: 5px goldenrod solid; */
   border-radius: 10px;
   justify-content: center;
 }
@@ -370,4 +370,25 @@ top:0;
 .infopartie{
   position: 'absolute';
   right: 0;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 20vw;
+}
+
+.messages {
+  flex-grow: 1;
+}
+
+.input-area {
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-area input {
+  flex-grow: 1;
+  margin-right: 10px;
 }

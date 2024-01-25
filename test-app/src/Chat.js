@@ -38,19 +38,22 @@ function Chat() {
 
   return (
     <div className="chat">
-      <ul>
-        {messages.map((msg, index) => (
-          <li key={index}>{msg}</li>
-        ))}
-      </ul>
-      <input
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
-        maxLength={maxMessageLength}
-      />
-      <button onClick={sendMessage}>Envoyer</button>
-    </div>
+  <ul className="messages">
+    {messages.map((msg, index) => (
+      <li key={index}>{msg}</li>
+    ))}
+  </ul>
+  <div className="input-area">
+    <input
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
+      maxLength={maxMessageLength}
+    />
+    <button onClick={sendMessage}>Envoyer</button>
+  </div>
+</div>
+
   );
 }
 

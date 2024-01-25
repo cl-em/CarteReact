@@ -28,6 +28,7 @@ import {
 } from "react-router-dom";
 import { Bataille } from './Bataille';
 import Leaderboard from './Leaderboard';
+import Leaderboard6 from './Leaderboard6';
 
 import { SixQuiPrend } from './6quiprend';
 
@@ -48,7 +49,7 @@ function MyApp() {
           <Route path='/batailleJeu'element={<SocketProvider><Bataille/></SocketProvider>}/>
           <Route path="/6quiprendJeu" element={<SocketProvider><SixQuiPrend/></SocketProvider>}/>
           <Route path='/leaderboardbataille' element={<SocketProvider><Leaderboard typeDeJeu={"Bataille"}/></SocketProvider>}/>
-          <Route path='/leaderboard6quiprend' element={<SocketProvider><Leaderboard typeDeJeu={"6quiprend"}/></SocketProvider>}/>
+          <Route path='/leaderboard6quiprend' element={<SocketProvider><Leaderboard6 typeDeJeu={"6quiprend"}/></SocketProvider>}/>
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           {/* <Route path="/chat" element={<SocketProvider><Chat/></SocketProvider>} /> */}
         </Routes>

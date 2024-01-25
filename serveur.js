@@ -410,16 +410,18 @@ io.on('connection', (socket) => {
             
             if (partie.type=="6quiprend"){
               var tete = 0;
-              
+              var choix;
               //Cas d'un 6quiprend
               for (var joueur in partie.joueurs){//Renvoi de la main du joueur
                 if (partie.joueurs[joueur].idJoueur==socket.data.userId){
                   main = partie.joueurs[joueur].main;
                   tete = partie.joueurs[joueur].score;
-                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":true,"tetes":tete})
+                  if(partie.joueurs[joueur].choix==null){choix=true}
+                  else{choix=false}
+                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":true,"tetes":tete,"doitJouer":choix})
                 }
                 else{
-                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":false,"tetes":partie.joueurs[joueur].score})
+                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":false,"tetes":partie.joueurs[joueur].score,"doitJouer":choix})
                 }
               }
 
