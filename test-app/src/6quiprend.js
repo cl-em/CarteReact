@@ -99,18 +99,18 @@ function Jouer(){
   useEffect(()=>{
     
     socket.on("gameStarting", (data) => { //Faire pareil avec tourpasse (!=gamestarting)
-      // console.log("la partie a commencé")
+       console.log("la partie a commencé")
       // console.log(data.idPartie)
       // console.log(idPartie)
       if (data.idPartie == idPartie) {
-        // console.log("la partie a commencé ET C EST LA MIENNE")
+         console.log("la partie a commencé ET C EST LA MIENNE")
         setListeLignes(data.lignes); //Liste de listes de Carte [{valeur}]
 
-        // console.log("ouai je demande les cartes");
+         console.log("ouai je demande les cartes");
 
         socket.emit("wantCarte", { "idPartie": urlP.get("idPartie")}); //Demande de la main. 
         socket.on("getCarte", (data) => { //Récupération des cartes (de la main)
-          // console.log("ouai j'ai les cartes");
+           console.log("ouai j'ai les cartes");
           setListeCartes(data.main); //Set la main (liste de cartes) [{valeur}]
         });
       }  

@@ -324,7 +324,7 @@ class sixquiprend extends Game{
         prendreLigne(idJoueur,ligne){ //Le joueur désigné par l'idJoueur passé en paramètre prend la ligne désignée par l'entier ligne
 
             for (var joueur of this.joueurs){
-                if (joueur.idJoueur==idJoueur && joueur.choix==null){
+                if ((joueur.idJoueur==idJoueur) && (joueur.choix==null)){
                     return false;}}
 
 
@@ -343,12 +343,12 @@ class sixquiprend extends Game{
             for (var joueur of this.joueurs){
                 if (joueur.idJoueur==idJoueur){
                     joueur.score+=score;
+                    this.lignes[ligne] = [joueur.choix]
+                    joueur.choix = null;
+                    return true
                 }
-                this.lignes[ligne] = [joueur.choix]
             }
-
-            joueur.choix = null;
-                return true
+            return false
         }
 
         placerCarte(idJoueur){//effectue le placement automatique de la carte que le joueur a choisie et renvoie true si c'est possible, false s'il doit prendre une ligne
@@ -368,18 +368,18 @@ class sixquiprend extends Game{
                     }
                     if (canPlay==false){this.joueurQuiChoisit = joueur.idJoueur;return false;}
 
-                    for (var ligne in this.lignes){
-                        if ((choix>this.lignes[ligne][this.lignes[ligne].length-1].valeur) && (Math.abs(this.lignes[ligne][this.lignes[ligne].length-1].valeur-choix)<Math.abs(this.lignes[lignePlacement][this.lignes[lignePlacement].length-1].valeur-choix))){
+                    for (var ligne in this.lignes){//Calcul de la ligne où placer
+                        if ((choix>this.lignes[ligne][this.lignes[ligne].length-1].valeur) && (((choix<this.lignes[lignePlacement][this.lignes[lignePlacement].length-1].valeur))||(Math.abs(this.lignes[ligne][this.lignes[ligne].length-1].valeur-choix)<Math.abs(this.lignes[lignePlacement][this.lignes[lignePlacement].length-1].valeur-choix)))){
                             lignePlacement = ligne;
                     }
                  }
 
-                 if (this.lignes[lignePlacement].length<5){
+                 if (this.lignes[lignePlacement].length<5){//Si ligne non pleine, le joueur voit sa carte se placer
                     this.lignes[lignePlacement].push(joueur.choix);
                     retour = joueur.choix.valeur;
                     joueur.choix=null;
                  }
-                else {
+                else {//Sinon, il la prend !
                     this.prendreLigne(joueur.idJoueur,lignePlacement);
                     joueur.choix=null;
                 }
