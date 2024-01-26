@@ -14,14 +14,14 @@ function MyGame(){
     <div className='jeu'>
 
     <div className='choixJeu1' onClick={()=>navigate("/bataille")}>
-    <img src="http://localhost:8888/fichier/dosCarte.png" className='dosChoix'></img>
-      <img className='elouand'></img>
+    <img src="http://localhost:8888/fichier/elouand.png" className='règlesBataille'></img>
+      <img className='elouand' src="http://localhost:8888/fichier/batailleRègles.png"></img>
       {/* <p>bataille</p> */}
     </div>
 
     <div className='choixJeu2' onClick={()=>navigate("/6quiprend")}>
     <img src="http://localhost:8888/fichier/dosCarte.png" className='dosChoix'></img>
-      <img className='kyky'></img>
+      <img className='kyky' src="http://localhost:8888/fichier/dosCarte.png"></img>
     </div>
 
     {/* <div className='jeu3' onClick={()=>navigate("/poker")}> */}

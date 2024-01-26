@@ -366,59 +366,97 @@ top:0;
 
 
 .choixJeu1{
-  width: 300px;
-  height: 500px;
-  display: flex;
-      justify-content: center;
-      align-items: center;
+  width: 335px;
+  height: 510px;
+  position:relative;
       overflow: hidden;
-      border-radius:10%;
+      border-radius:12px;
 }
 
 .choixJeu2{
-
   width: 300px;
   height: 500px;
-  display: flex;
-      justify-content: center;
-      align-items: center;
+  position:relative;
       overflow: hidden;
-      border-radius:10%;
+      border-radius:5%;
   
   }
-.dosChoix{
-  transition: transform 0.3s ease-in-out, visibility 0.3s linear 0.3s; 
-
-  visibility: visible;
-  transform: translateY(0);
-  object-fit:cover;
+.règlesBataille{
+  position: absolute;
+  border-radius:12px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  object-fit: cover;
   transform-style: preserve-3d;
-
+  z-index:2;
+  transition: transform 0.3s ease-in-out, visibility 0.3s linear 0.3s;
 }
 
+.dosChoix{
+  position: absolute;
+  border-radius:12px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  object-fit: cover;
+  transform-style: preserve-3d;
+  z-index:2;
+  transition: transform 0.3s ease-in-out, visibility 0.3s linear 0.3s;
+}
 .elouand{
-  transition: transform 0.3s ease-in-out; 
-background-color: #2ecc71;
-transform: translateY(0);
-object-fit:cover;
-transform-style: preserve-3d;
-
+  border-radius:12px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  object-fit: cover;
+  transform-style: preserve-3d;
+  z-index:1;
+  transform: translateY(0);
+  transform: rotateY(180deg);
+  transition: transform 0.3s ease-in-out;
  
 }
 
 .kyky{
-  object-fit:cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  object-fit: cover;
+  transform-style: preserve-3d;
+  z-index:1;
+  transform: translateY(0);
+  transform: rotateY(180deg);
+  transition: transform 0.3s ease-in-out;
 }
 
-.choixJeu1:hover > .dosChoix {
+.choixJeu1:hover > .règlesBataille {
   transform: rotateY(180deg);
-  visibility: hidden;
+
 }
 .choixJeu1:hover > .elouand {
-  visibility: visible;
+  transform: rotateY(0deg);
+
 }
 
+.choixJeu2:hover > .dosChoix {
+  transform: rotateY(180deg);
 
+}
+.choixJeu2:hover > .kyky {
+  transform: rotateY(0deg);
+
+}
 .Lobby6qui{
   display:flex;
   color: aliceblue;
