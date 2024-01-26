@@ -311,7 +311,7 @@ body {
   display: flex;
   bottom: 0;
   background-color: transparent;
-  width: 80vw;
+  /* width: 80vw; */
   height: 160px;
   position: absolute;
   overflow-x: auto;
