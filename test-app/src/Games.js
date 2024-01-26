@@ -20,7 +20,7 @@ function MyGame(){
     </div>
 
     <div className='choixJeu2' onClick={()=>navigate("/6quiprend")}>
-    <img src="http://localhost:8888/fichier/dosCarte.png" className='dosChoix'></img>
+    <img src="http://localhost:8888/fichier/dosCarte.png" className='règlesSixQuiPrend'></img>
       <img className='kyky' src="http://localhost:8888/fichier/dosCarte.png"></img>
     </div>
 
