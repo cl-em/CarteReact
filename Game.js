@@ -310,7 +310,7 @@ class sixquiprend extends Game{
             }
            
         this.hasStarted = true;
-        this.isOver = false;
+       
         }
 
         canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait un choix
@@ -361,7 +361,7 @@ class sixquiprend extends Game{
                     //TEST DE SI OUI OU NON IL EST POSSIBLE DE PLACER UNE CARTE
                     let canPlay = false;
                     for (var ligne of this.lignes){
-                        console.log(this.lignes)
+                      
                         if (ligne[ligne.length-1].valeur<choix){
                             canPlay = true;
                         }
@@ -408,7 +408,44 @@ class sixquiprend extends Game{
         }
 
 
+        redistrib(){
 
+
+            if (this.joueurs[0].main.length>0){
+                return;
+            }
+
+            this.deck = []
+            this.lignes = [[],[],[],[]]
+
+            this.createDeck();
+            this.deck.shift();  
+            this.shuffleDeck();
+
+            for (var joueur of this.joueurs){
+     
+                for (let i = 0;i<10;i++){//Distribution équitable des cartes
+                        joueur.main.push(this.drawCarte());
+    
+                    }
+                }
+                for (let i=0;i<4;i++){
+                    this.lignes[i].push(this.drawCarte())
+                }
+        }
+
+        isOver() {
+            for (var joueur of this.joueurs){
+                if (joueur.score>=66){return true}
+            }
+            return false;
+        }
+
+        rank() {
+            var retour = this.joueurs;
+            retour.sort(function(a,b) {return a.score-b.score});
+            return retour;
+        }
 
 
 

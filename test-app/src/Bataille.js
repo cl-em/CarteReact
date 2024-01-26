@@ -82,6 +82,7 @@ function MainJoueur() {
     if (!listeCarteRecu || !listeJoueursRecu || isEgalite || gagnant || gameStart || joueTour) {
 
         socket.emit("wantCarte", { "idPartie": urlP.get("idPartie")});
+        console.log()
 
         socket.on("getCarte", (data) => {
             setListeCartes(data.main);

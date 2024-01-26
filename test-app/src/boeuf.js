@@ -37,6 +37,7 @@ const CarteJeu = ({ numeroCarte }) => {
       <div id='numcarte4' >{numeroCarte}</div>
       <div id='numcarte5' >{numeroCarte}</div>
       <div id='score' >{score}</div>
+      
     </div>
   );
 };

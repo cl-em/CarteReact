@@ -404,28 +404,33 @@ io.on('connection', (socket) => {
                   infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"tailleMain":partie.joueurs[joueur].main.length,"taillePaquets":partie.paquets[joueur].length,"isLocalPlayer":false})
                 }
               }
-              socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
+
+              
+              socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs});
             }
             
             
             if (partie.type=="6quiprend"){
-              var tete = 0;
+              
               var choix;
               //Cas d'un 6quiprend
               for (var joueur in partie.joueurs){//Renvoi de la main du joueur
                 if (partie.joueurs[joueur].idJoueur==socket.data.userId){
                   main = partie.joueurs[joueur].main;
-                  tete = partie.joueurs[joueur].score;
-                  if(partie.joueurs[joueur].choix==null){choix=true}
-                  else{choix=false}
-                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":true,"tetes":tete,"doitJouer":choix})
+        
+                  if(partie.joueurs[joueur].choix!=null){choix=false}
+                  else{choix=true}
+
+                  infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":true,"tetes":partie.joueurs[joueur].score,"doitJouer":choix})
                 }
                 else{
+                  if(partie.joueurs[joueur].choix!=null){choix=false}
+                  else{choix=true}
                   infosJoueurs.push({"pseudo":pseudos[partie.joueurs[joueur].idJoueur],"isLocalPlayer":false,"tetes":partie.joueurs[joueur].score,"doitJouer":choix})
                 }
               }
-
-              socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs,"tete":tete})
+              io.emit("getScores",{"idPartie":partie.id,"infosJoueurs":infosJoueurs});
+              socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
             }
           }
         }
@@ -437,7 +442,7 @@ io.on('connection', (socket) => {
       //------------------------------------REJOINDRE UNE PARTIE------------------------------------------
       
       socket.on("rejoindrePartie", data=>{
-        console.log("| Le joueur "+socket.data.userId+"("+pseudos[socket.data.userId]+") a rejoint la partie "+data.idPartie)
+        console.log("| Le joueur "+socket.data.userId+" ("+pseudos[socket.data.userId]+") a rejoint la partie "+data.idPartie)
         for (var partie of partiesOuvertes){ 
           if (data.idPartie==partie.id && partie.joueurs.length<partie.joueursMax){
             
@@ -645,16 +650,41 @@ io.on('connection', (socket) => {
               //------------------------------FONCTIONS POUR LE 6QUIPREND--------------------------------------------------
             
 
+              function tryWinner(partie){
+             
+                if (partie.isOver()==false){return;}
+
+                var classement = partie.rank();
+                var retour = [];
+                for (var joueur of classement){
+                  retour.push({"pseudo":pseudos[joueur.idJoueur],"score":joueur.score})
+                }
+                console.log(retour)
+
+                io.emit("gameFinished",{"idPartie":partie.id,"classement":retour})
+                
+
+                for (var game in partiesEnCours){
+                  if (partiesEnCours[game].id == partie.id){partiesEnCours.splice(game,1)}
+
+                }
+
+
+              }
+
               async function poursuivreTour(partie){//Fonction essentielle, permet le déroulement asynchrone des tours
 
+                
                 var joueur = partie.joueurMin();
                 if (joueur==false){return;}
                 var valCarte = joueur.choix.valeur
 
                 if (partie.placerCarte(joueur.idJoueur)){//Cas où la carte a été placée, pas de problème, aucun autre joueur à évaluer
                     if (partie.joueurMin()==false){
+                      partie.redistrib();
                       io.emit("tourPasse",{"idPartie":partie.id,"carteEval":false,"joueurEval":false,"choixNecessaire":false,"lignes":partie.lignes})
                       partie.tourEnCours = false;
+                      tryWinner(partie);
                       return;}
                     else{//Cas où la carte a été placée, aucun problème, on envoie le prochain joueur évalué
                       io.emit("tourPasse",{"idPartie":partie.id,"carteEval":partie.joueurMin().choix.valeur,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
@@ -704,7 +734,7 @@ io.on('connection', (socket) => {
                             }
 
 
-                        }}}}}})
+                        }}}}}})//AFFREUX
 
 
 
@@ -731,6 +761,7 @@ io.on('connection', (socket) => {
                               else{
                                 io.emit("tourPasse",{"idPartie":partie.id,"carteEval":false,"joueurEval":false,"choixNecessaire":false,"lignes":partie.lignes})
                                 partie.tourEnCours = false;
+                               
                               }
                              
 

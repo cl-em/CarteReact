@@ -10,23 +10,41 @@ import { Lobby } from './Bataille';
 import Boeuf from "./Boeuf.jsx"
 
 
-function ProgressBar(){
+function ProgressBar({progress}){
+
+  // progress = progress*100/66;
+
+  const getColor = (p)=>{
+    if(p < 40)
+      return "#2ecc71";
+    else if (p < 70) 
+      return "#ffa500";
+    else return "#ff0000";
+  }
+
   return(
     <div className='container'>
-      <div className='progress-bar'>
-        <div className='progress-bar-fill'>
-            ProgressBar
+      <div className='progress-bar' >
+        <div className='progress-bar-fill' style={{width: progress>0 && progress<5 ? "5%" : `${parseInt(progress*100/66)}%` , backgroundColor: getColor(parseInt(progress*100/66)), textAlign:"center"}}>
+            {progress}/66
         </div>
       </div>
-      <div className='progress-label'>
-        50%
-      </div>
-      <button>Progress</button>
-      <button>reset</button>
     </div>
   )
 }
 
+function AfficherStats({infosJoueursFun}){
+  return(
+    <div className='afficherStats'>
+      {infosJoueursFun.map((element,index)=>(
+        <div key={index} className='infoJoueur6'>
+          <p className='labelStats'>{element.pseudo} a joué : {!element.doitJouer? "oui" : "non"}</p>
+          <ProgressBar progress={element.tetes} />
+        </div>
+      ))}
+    </div>
+  )
+}
 
 
 function Main6QuiPrend({ listeNombre }) { //Pour afficher la main (prend en param une liste d'int)
@@ -34,7 +52,7 @@ function Main6QuiPrend({ listeNombre }) { //Pour afficher la main (prend en para
   const socket = React.useContext(SocketContext);
 
   let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
-  let idPartie =  urlP.get("idPartie");
+  let idPartie =  parseInt(urlP.get("idPartie"));
   listeNombre.sort();
 
     return (
@@ -80,17 +98,23 @@ function AfficherLigne({listeLignes}){ //Pour afficher les 4 lignes du jeu (pren
   )
 }
 
-function afficherEtat({listeEtats}){
-// liste d'objets {pseudo:String,tetes:Number,aJouer:Boolean}
 
+function AvantJeu(){
   return(
     <div>
-      {listeEtats.forEach((joueur,index)=>(
-        <p>{joueur.pseudo} : a joué {joueur.aJouer? "oui" : "non"}</p>
-      ))}
+      <h3 style={{ color: 'aliceblue' }}>En attente des joueurs</h3>
     </div>
   )
 }
+
+function ApresJeu(){
+  return(
+    <div>
+      <h3 style={{ color: 'aliceblue' }}>C'est fini, pas de gagnant, elouand va te faire enculer</h3>
+    </div>
+  )
+}
+
 
 function Jouer(){
 
@@ -111,30 +135,34 @@ function Jouer(){
   const [listeJoueurs,setListeJoueurs] = useState([]); //  listes de joueurs {pseudo,carteJouée,tetes}
   const [choixNecessaire,setChoixNecessaire] = useState(""); // *** demande à un joueur de  cliquer sur une ligne 
   const [joueurEval,setJourEval] = useState("");
+  const [gameStart, setgameStart] = useState(false);
+  const [gameFinish, setFinish] = useState(false);
 
 
   // Formatage pour correspondre aux fonctions
   const [nouvelleMain, setNouvelleMain] = useState([]); // ***
   const [nouvelleListeLignes,setNouvelleListeLignes] = useState([]); // *** 
 
+  
+  // Affichage des statistiques de la partie en di
+  const [infosJoueurs,setInfosJoueurs] = useState([]);
 
 
   useEffect(()=>{
     
-    socket.on("gameStarting", (data) => { //Faire pareil avec tourpasse (!=gamestarting)
-       console.log("la partie a commencé")
-      // console.log(data.idPartie)
-      // console.log(idPartie)
+    socket.on("gameStarting", (data) => { //Faire pareil avec tourpasse (!=gamestarting
       if (data.idPartie == idPartie) {
-         console.log("la partie a commencé ET C EST LA MIENNE")
+        setgameStart(true); //AAAAAAAAAAA
+     
         setListeLignes(data.lignes); //Liste de listes de Carte [{valeur}]
 
          console.log("ouai je demande les cartes");
 
-        socket.emit("wantCarte", { "idPartie": urlP.get("idPartie")}); //Demande de la main. 
+        socket.emit("wantCarte", { "idPartie": idPartie}); //Demande de la main. 
         socket.on("getCarte", (data) => { //Récupération des cartes (de la main)
-           console.log("ouai j'ai les cartes");
+          //console.log("ouai j'ai les cartes");
           setListeCartes(data.main); //Set la main (liste de cartes) [{valeur}]
+
         });
       }  
     });
@@ -146,11 +174,21 @@ function Jouer(){
 
     });
 
-    return () => {
-      socket.off("getCarte");
-      socket.off("gamestarting");
-    }
+    // return () => {
+    //   socket.off("getCarte");
+    //   socket.off("gameStarting");
+    // }
     
+  },[]);
+
+  useEffect(()=>{
+    socket.on("getScores",(data)=>{
+      console.log(idPartie);
+      console.log(data.idPartie);
+      if(data.idPartie==idPartie){
+        setInfosJoueurs(data.infosJoueurs);
+      }
+    });
   },[]);
 
   useEffect(()=>{
@@ -184,12 +222,14 @@ function Jouer(){
   
   useEffect(()=>{
     socket.on("choixCarte", (data) => {
-      socket.emit("wantCarte", { "idPartie": urlP.get("idPartie")});
+      
+      socket.emit("wantCarte", { "idPartie": idPartie});
 
       if(data!=false){
         setnumeroCarteEval(data);
-        console.log(data);
+        // console.log(data);
       }
+    
     })
     
 
@@ -198,7 +238,9 @@ function Jouer(){
 
   useEffect(()=>{
     socket.on("tourPasse",(info)=>{
-      console.log("je recoit le tourPasse")
+
+      if (info.idPartie == idPartie) {
+        
       // setListeJoueurs(info.joueurs);
       // nouvelle carte à afficher sur la gauche 
       setListeLignes(info.lignes);
@@ -206,31 +248,54 @@ function Jouer(){
       setChoixNecessaire(info.choixNecessaire);
       /* c'est là */ setnumeroCarteEval(info.carteEval); 
       setJourEval(info.joueurEval);
+      socket.emit("wantCarte", { "idPartie": idPartie});
+      }
     });
   },[]);
 
+  useEffect(()=>{
+    socket.on("gameFinished", (data)=>{
+      if (data.idPartie == idPartie) {
+      setFinish(true);}
+    })
+  }, []);
+
   // INFO ENVOYEES AU SERVEUR
 
-  //let J = ["Joueur1", "Joueur2", "Joueur3", "Joueur4", "Joueur5", "Joueur1", "Joueur2", "Joueur3", "Joueur4", "Joueur5"]
   
-  return(
+  return (
     <div>
-
-
-      <AfficherLigne listeLignes={nouvelleListeLignes} />
-      <Main6QuiPrend listeNombre={nouvelleMain.sort()} />
-      <div className='infopartie'>
-          {choixNecessaire? 
-          <h3 style={{ color: 'aliceblue' }}>{joueurEval}, clique sur une ligne</h3>:
-          (numeroCarteEval && joueurEval)?
-            <div>
-              <h3 style={{ color: 'aliceblue' }}>{joueurEval} joue la carte :</h3>
-              <CarteJeu numeroCarte={numeroCarteEval} />
-            </div> : <h3 style={{ color: 'aliceblue' }}>En attente que tout les joueurs placent une carte</h3>}
-        </div>
+      {gameStart ? (
+        gameFinish ? (
+          <ApresJeu />
+        ) : (
+          <>
+            <Chat/>
+            <AfficherStats infosJoueursFun={infosJoueurs} />
+            <AfficherLigne listeLignes={nouvelleListeLignes} />
+            <Main6QuiPrend listeNombre={nouvelleMain.sort()} />
+            <div className='infopartie'>
+              {choixNecessaire ? 
+                <h3 style={{ color: 'aliceblue' }}>{joueurEval}, clique sur une ligne</h3> :
+                (numeroCarteEval && joueurEval) ?
+                  <div>
+                    <h3 style={{ color: 'aliceblue' }}>{joueurEval} joue la carte :</h3>
+                    <CarteJeu numeroCarte={numeroCarteEval} />
+                  </div> :
+                  <h3 style={{ color: 'aliceblue' }}>En attente que tout les joueurs placent une carte</h3>
+              }
+            </div>
+          </>
+        )
+      ) : (
+        <AvantJeu />
+      )}
     </div>  
-  )
-}
+  );
+}  
+  
+
+
 
 export const SixQuiPrend = () => {
     return (
@@ -238,8 +303,8 @@ export const SixQuiPrend = () => {
             {/* <AfficherLigne listeLignes={AAA}/>
             <Main6QuiPrend listeNombre={[5,11,20,35,2,5,89,57,35,2]}/>
             <Boeuf width="25%"/> */}
-            <Chat />
-            <Jouer /> 
+            {/* <GereJeu/> */}
+            <Jouer />
         </div>
     );
 };
