@@ -10,8 +10,8 @@ function MyGame(){
   const navigate = useNavigate();
 
   return (
-
     <div className='jeu'>
+      <h3 className='headerJeux'>Cliquez sur  un jeu pour commencer !</h3>
 
     <div className='choixJeu1' onClick={()=>navigate("/bataille")}>
     <img src="http://localhost:8888/fichier/elouand.png" className='règlesBataille'></img>

@@ -355,7 +355,15 @@ body {
   
 }
 
+.headerJeux{
+  top:3vh;
+font-size: 7vh;
+  position: fixed;
+  -webkit-text-stroke: goldenrod 0.3vh;
+  font-family:cursive;
 
+  z-index:35;
+}
 
 .lignesTable{
 position:fixed;
@@ -366,6 +374,7 @@ top:0;
 
 
 .choixJeu1{
+  cursor: pointer;
   width: 335px;
   height: 510px;
   position:relative;
@@ -374,6 +383,7 @@ top:0;
 }
 
 .choixJeu2{
+  cursor: pointer;
   width: 347px;
   height: 510px;
   position:relative;
