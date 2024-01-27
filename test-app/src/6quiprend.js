@@ -107,10 +107,17 @@ function AvantJeu(){
   )
 }
 
-function ApresJeu(){
+function ApresJeu({tableauFin}){
+  // [{pseudo,score}]
   return(
     <div>
-      <h3 style={{ color: 'aliceblue' }}>C'est fini, pas de gagnant, elouand va te faire enculer</h3>
+      {/* <h3 style={{ color: 'aliceblue' }}>C'est fini, pas de gagnant, elouand va te faire enculer</h3> */}
+      <h3> Classement</h3>
+      {
+        tableauFin.map((joueur,index)=>(
+          <p key={index}>{joueur.pseudo} : {joueur.score} têtes de boeufs</p>
+        ))
+      }
     </div>
   )
 }
@@ -144,9 +151,11 @@ function Jouer(){
   const [nouvelleListeLignes,setNouvelleListeLignes] = useState([]); // *** 
 
   
-  // Affichage des statistiques de la partie en di
+  // Affichage des statistiques de la partie en direct 
   const [infosJoueurs,setInfosJoueurs] = useState([]);
 
+  // Infos de fin de partie
+  const [infosFinPartie,setInfosFinPartie]= useState([]);
 
   useEffect(()=>{
     
@@ -253,10 +262,14 @@ function Jouer(){
     });
   },[]);
 
+
+  // info de fin de partie
   useEffect(()=>{
     socket.on("gameFinished", (data)=>{
       if (data.idPartie == idPartie) {
-      setFinish(true);}
+        setFinish(true);
+        setInfosFinPartie(data.classement);
+      }
     })
   }, []);
 
@@ -267,7 +280,7 @@ function Jouer(){
     <div>
       {gameStart ? (
         gameFinish ? (
-          <ApresJeu />
+          <ApresJeu tableauFin={infosFinPartie}/>
         ) : (
           <>
             <Chat/>

@@ -15,6 +15,7 @@ import RegisterConfirm from './RegisterConfirm';
 import LoginForm from './LoginForm';
 import ListePartiesBataille from './ListePartiesBataille';
 import ListeParties6quiprend from './ListeParties6quiprend';
+import Hamburger from './hamburger';
 // import Chat from './Chat';
 
 import CarteJeu from './boeuf';
@@ -39,6 +40,7 @@ function MyApp() {
     <div>
       {/* <CarteJeu numeroCarte={20}/> */}
       <Router>
+      <Hamburger />
         <Routes>
           <Route path="/" element={<LoginForm />} /> 
           <Route path="/register" element={<RegisterForm />} />
