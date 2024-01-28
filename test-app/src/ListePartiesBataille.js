@@ -71,6 +71,7 @@ function ListePartiesBataille(){
           )
         })}
       </div>
+      <button onClick={()=>navigate("/sauvegardeBataille")}>Liste Parties Sauvegardees</button>
       {/* importer la leaderboard  faut ajouter le css
       <div className='Leaderboard'> 
         <Leaderboard/>

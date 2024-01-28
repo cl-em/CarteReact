@@ -201,7 +201,102 @@ function lancerPartie(idPartie){
     }
   }
 }
+function reprendrePartie(idPartie){
+  for (var partie in partiesReprises){
+    if (partiesReprises[partie].id==idPartie){
+      partiesReprises[partie].initGame();
+      partiesEnCours.push(partiesReprises[partie]);
+      partiesReprises.splice(partie)
+      console.log("reprise de la partie "+idPartie)
+    }
+  }
+}
 
+// CREATE TABLE "Batailles" (
+// 	"idB"	INTEGER NOT NULL UNIQUE,
+// 	"idH"	INTEGER NOT NULL,
+// 	"Bataille"	TEXT,
+// 	PRIMARY KEY("idB")
+// );
+function sauvegarderPartieBataille(idPartie, idHost, Bataille){
+  Bataille = JSON.stringify(Bataille);
+  db.run("INSERT INTO Batailles(idB,idH,Bataille) VALUES(?,?,?)",[idPartie, idHost, Bataille],(err)=>{
+    console.log(err);
+  });
+}
+
+// function loadPartieBatailleFromDB(idPartie){
+//   db.all("SELECT * FROM Batailles WHERE idB = ?",[idPartie],(err,rows)=>{
+//     if(rows.length >0){
+//       return rows[0].Bataille;
+//     }else{
+//       return false;
+//     }
+//   });
+// }
+function loadPartieBatailleFromDB(idPartie){
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM Batailles WHERE idB = ?",[idPartie],(err,rows)=>{
+      if(rows.length >0){
+        resolve(rows[0].Bataille);
+      }else{
+        reject(err);
+      }
+    });
+  });
+}
+
+function supprimerPartieBataille(idPartie){
+  db.run("DELETE FROM Batailles WHERE idB = ?",[idPartie],(err)=>{
+    console.log(err);
+  });
+}
+
+// function loadPartieBataille(idPartie){
+//   console.log("chargement de la partie sauvegardee "+idPartie)
+//   loadPartieBatailleFromDB(idPartie).then((partiedb) => {
+//     // Traitez ici les données récupérées depuis la base de données (partiedb).
+//     console.log(partiedb);
+//     var partie = JSON.parse(partiedb);
+//     partiesReprises.push(partie);
+//     // supprimerPartieBataille(idPartie);
+//   }
+//   )
+//   .catch((err) => {
+//     console.log("pet");
+//     console.log(err);
+//     // Gérez les erreurs ici, si nécessaire.
+//   });
+// }
+function loadPartieBataille(idPartie){
+  return new Promise((resolve, reject) => {
+    console.log("chargement de la partie sauvegardee " + idPartie)
+    loadPartieBatailleFromDB(idPartie).then((partiedb) => {
+      console.log(partiedb);
+      var partie = JSON.parse(partiedb);
+      partiesReprises.push(partie);
+      // supprimerPartieBataille(idPartie);
+      resolve(partie); // Résoudre la promesse avec la partie chargée
+    })
+    .catch((err) => {
+      console.log("Erreur lors du chargement de la partie");
+      console.log(err);
+      reject(err); // Rejeter la promesse en cas d'erreur
+    });
+  });
+}
+
+function getHostPartiesBataille(idHost) {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM Batailles WHERE idH = ?", [idHost], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
 
 const getUserById = (id)=>{//FONCTION A NE PAS UTILISER MARCHE PAS MERCI
   let retour;
@@ -284,6 +379,44 @@ io.on('connection', (socket) => {
     })  
   })
   
+  //-------------------------------Sauvegardes-----------------------------------------
+  socket.on('sauvegarderPartieBataille',data=>{
+    //data : {idPartie}
+    for (var partie of partiesEnCours){
+      if (partie.id==data.idPartie){
+        sauvegarderPartieBataille(data.idPartie,socket.data.userId,partie);
+        return;
+      }
+    }
+  })
+
+  socket.on('loadPartieBataille', data => {
+    //data : {idPartie}
+    loadPartieBataille(data.idPartie).then((partie) => {
+      socket.emit('partieChargee',partie);
+      reprendrePartie(data.idPartie);
+    }).catch((err) => {
+      // Gérez l'erreur ici
+    });
+  }
+  )
+
+  socket.on('supprimerPartieBataille',data=>{
+    //data : {idPartie}
+    supprimerPartieBataille(data.idPartie);
+  })
+
+  socket.on('getHostPartiesBataille',data=>{
+    getHostPartiesBataille(socket.data.userId)
+    .then((parties) => {
+      // Traitez ici les données récupérées depuis la base de données (parties).
+      socket.emit('getHostPartiesBataille',parties);
+    })
+    .catch((err) => {
+      // Gérez les erreurs ici, si nécessaire.
+    });
+  })
+
   
   socket.on('demandepartiesouvertes',data=>{
     var retour = []
@@ -568,6 +701,24 @@ io.on('connection', (socket) => {
             
             
             //Demande d'actualisation des infos bataille
+            socket.on('isHost', data=>{
+              console.log("isHost");
+              for (var partie of partiesEnCours){
+                if (partie.id==data.idPartie){
+                  for(var joueur of partie.joueurs){
+                    // console.log(joueur);
+                    if (joueur.isHost && joueur.idJoueur === socket.data.userId){
+                      socket.emit('isHost',true);
+                      console.log("true host");
+                    }
+                    else{
+                      socket.emit('isHost',false);
+                      console.log("false host");
+                    }
+                  }
+                }
+              }
+            })
             
             socket.on('infosLobby',data=>{
           
@@ -657,6 +808,7 @@ io.on('connection', (socket) => {
                 var classement = partie.rank();
                 var retour = [];
                 for (var joueur of classement){
+                  db.run("UPDATE users SET scoreBataille = scoreBataille+"+(66-joueur.score)+" WHERE idU="+joueur.idJoueur )
                   retour.push({"pseudo":pseudos[joueur.idJoueur],"score":joueur.score})
                 }
                 console.log(retour)

@@ -56,6 +56,7 @@ function MainJoueur() {
     const [listeCarteRecu, setListeCarteRecu] = useState(false);
     const [listeJoueursRecu, setListeJoueursRecu] = useState(false);
     const [joueTour, setJoueTour] = useState(false);
+    const [host, setHost] = useState(false);
 
     
     let urlP = new URL(document.location).searchParams;
@@ -69,6 +70,13 @@ function MainJoueur() {
             if (data.idPartie === urlP.get("idPartie")) {
                 setGameStart(true);
             }
+            socket.emit("isHost",{idPartie:urlP.get("idPartie")});
+            socket.on("isHost", (data) => {
+                if (data === true){
+                    setHost(true);
+                }
+            }
+            )
         });
 
         return () => {
@@ -261,8 +269,16 @@ function MainJoueur() {
         window.addEventListener('beforeunload', emitQuitte); //si abandon volontaire ou involontaire
     }, []);
     
+    function sauvegarderPartie(){
+        console.log("coucou")
+        socket.emit("sauvegarderPartieBataille",{"idPartie":urlP.get("idPartie")})
+    }
+
     return (
         <div>
+            {/* { host && (
+                <button onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
+            )} */}
             <Chat />
             <Lobby  listesjoueurs={onlyJoueurs}/>
             <div className='divCartes'>

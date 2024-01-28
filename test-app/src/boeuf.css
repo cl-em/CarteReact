@@ -22,25 +22,30 @@
 .carte #numcarte1{
     grid-row: 1;
     grid-column: 1;
+    font-weight: bold;
     -webkit-text-fill-color: darkslategrey;
     margin-left:3px;
     
 }
 .carte #numcarte2{
     grid-row: 1;
+    font-weight: bold;
     grid-column: 3;
     -webkit-text-fill-color: darkslategrey;
     margin-right:3px;
+    
 
 }
 .carte #numcarte3{
     grid-row: 3;
+    font-weight: bold;
     grid-column: 1;
     -webkit-text-fill-color: darkslategrey;
     margin-left:3px;
 }
 .carte #numcarte4{
     grid-row: 3;
+    font-weight: bold;
     grid-column: 3;
     -webkit-text-fill-color: darkslategrey;
     margin-right:3px;
@@ -52,8 +57,8 @@
     grid-column: 2;
     font-size:25px;
     font-weight: bold;
-    -webkit-text-stroke: 1.4px lemonchiffon; 
-    
+    -webkit-text-stroke: 1.9px goldenrod; 
+    color: lemonchiffon;
     
 }
 

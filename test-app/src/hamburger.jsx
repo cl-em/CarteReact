@@ -11,7 +11,7 @@ const HamburgerMenu = () => {
             <meta {...meta} />
             <section class="top-nav">
                 <div>
-                GAMES
+                {/* GAMES */}
                 
                 </div>
                 <input id="menu-toggle" type="checkbox" />

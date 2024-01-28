@@ -436,7 +436,7 @@ class sixquiprend extends Game{
 
         isOver() {
             for (var joueur of this.joueurs){
-                if (joueur.score>=66){return true}
+                if (joueur.score>=10    ){return true}
             }
             return false;
         }

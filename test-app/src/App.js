@@ -16,6 +16,7 @@ import LoginForm from './LoginForm';
 import ListePartiesBataille from './ListePartiesBataille';
 import ListeParties6quiprend from './ListeParties6quiprend';
 import Hamburger from './hamburger';
+import ListeSauvegardesPartiesBataille from './ListeSauvegardesPartiesBataille';
 // import Chat from './Chat';
 
 import CarteJeu from './boeuf';
@@ -52,6 +53,7 @@ function MyApp() {
           <Route path="/6quiprendJeu" element={<SocketProvider><SixQuiPrend/></SocketProvider>}/>
           <Route path='/leaderboardbataille' element={<SocketProvider><Leaderboard typeDeJeu={"Bataille"}/></SocketProvider>}/>
           <Route path='/leaderboard6quiprend' element={<SocketProvider><Leaderboard6 typeDeJeu={"6quiprend"}/></SocketProvider>}/>
+          <Route path="/sauvegardeBataille" element={<SocketProvider><ListeSauvegardesPartiesBataille/></SocketProvider>} />
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           {/* <Route path="/chat" element={<SocketProvider><Chat/></SocketProvider>} /> */}
         </Routes>

@@ -8,7 +8,7 @@ function Leaderboard6({typeDeJeu}){
     const navigate = useNavigate();
     const socket = React.useContext(SocketContext);
     useEffect(()=>{
-        socket.emit("leaderboard6",typeDeJeu);
+        socket.emit("leaderboard",typeDeJeu);
     },[]);
 
     const [leaderboardData, setLeaderboardData] = useState(null);
@@ -16,13 +16,13 @@ function Leaderboard6({typeDeJeu}){
     useEffect(() => {
       // Abonnez-vous à l'événement "leaderboard" ici
       ; // Assurez-vous d'avoir une instance socket.io correcte
-      socket.on("leaderboard6", (data) => {
+      socket.on("leaderboard", (data) => {
         setLeaderboardData(data);
       });
   
       // Assurez-vous de vous désabonner lorsque le composant est démonté
       return () => {
-        socket.off("leaderboard6");
+        socket.off("leaderboard");
       };
     }, []); // La dépendance vide signifie que cela ne doit s'exécuter qu'une fois au montage
   
