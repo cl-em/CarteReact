@@ -52,7 +52,7 @@ function Leaderboard({typeDeJeu}){
           )}
         </div>
         <br></br>
-        <button onClick={()=>navigate("/bataille")}>Revenir à la liste des parties</button>
+        <button class="joliebouton" onClick={()=>navigate("/bataille")}>Revenir à la liste des parties</button>
       </div>
     );
     

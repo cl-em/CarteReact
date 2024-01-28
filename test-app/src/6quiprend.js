@@ -139,7 +139,7 @@ function ApresJeu({tableauFin}){
         }
       </div>
       <br></br>
-      {<button onClick={()=>navigate("/games")}>Revenir à l'écran de sélection des jeux</button>}
+      {<button class="joliebouton" onClick={()=>navigate("/games")}>Revenir à l'écran de sélection des jeux</button>}
     </div>
   );
 

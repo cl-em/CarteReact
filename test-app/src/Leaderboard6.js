@@ -52,7 +52,7 @@ function Leaderboard6({typeDeJeu}){
           )}
         </div>
         <br></br>
-        <button onClick={()=>navigate("/6quiprend")}>Revenir à la liste des parties</button>
+        <button  class="joliebouton" onClick={()=>navigate("/6quiprend")}>Revenir à la liste des parties</button>
       </div>
     );   
     

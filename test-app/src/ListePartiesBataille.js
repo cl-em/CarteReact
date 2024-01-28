@@ -45,14 +45,14 @@ function ListePartiesBataille(){
     }
     return (
     <div className='main'>
-      <button  onClick={()=>navigate("/leaderboardbataille")}>Afficher le leaderboard</button> <br></br> <br></br>
+      <button class="joliebouton" onClick={()=>navigate("/leaderboardbataille")}>Afficher le leaderboard</button> <br></br> <br></br>
       <div className='joinPartieId'>
-        <input type="text" placeholder="Id de la partie" id="idPartie"></input>
-        <button onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button>
+        <input class="input1" type="text" placeholder="Id de la partie" id="idPartie"></input>
+        <button class="joliebouton" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>
       </div>
       <div className="createPartie">
-        <input type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input>
-        <button onClick={createPartie}>Créer !</button>
+        <input class="input1" type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input>
+        <button class="joliebouton" onClick={createPartie}>Créer !</button> <br></br> <br></br>
       </div>
     
 
@@ -66,12 +66,13 @@ function ListePartiesBataille(){
               <p>{partie.joueursActuels}/{partie.joueursMax}</p>
               <p>Bataille</p>
               {/* <button onClick={()=>navigate("/bataille")}>Rejoindre !</button> */}
-              <button onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
+              <button class="joliebouton" onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
             </div>
           )
         })}
       </div>
-      <button onClick={()=>navigate("/sauvegardeBataille")}>Liste Parties Sauvegardees</button>
+      <button class="joliebouton" onClick={()=>navigate("/sauvegardeBataille")}>Liste Parties Sauvegardees</button>
+      <button class="joliebouton" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
       {/* importer la leaderboard  faut ajouter le css
       <div className='Leaderboard'> 
         <Leaderboard/>
