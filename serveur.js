@@ -225,15 +225,6 @@ function sauvegarderPartieBataille(idPartie, idHost, Bataille){
   });
 }
 
-// function loadPartieBatailleFromDB(idPartie){
-//   db.all("SELECT * FROM Batailles WHERE idB = ?",[idPartie],(err,rows)=>{
-//     if(rows.length >0){
-//       return rows[0].Bataille;
-//     }else{
-//       return false;
-//     }
-//   });
-// }
 function loadPartieBatailleFromDB(idPartie){
   return new Promise((resolve, reject) => {
     db.all("SELECT * FROM Batailles WHERE idB = ?",[idPartie],(err,rows)=>{
@@ -252,22 +243,6 @@ function supprimerPartieBataille(idPartie){
   });
 }
 
-// function loadPartieBataille(idPartie){
-//   console.log("chargement de la partie sauvegardee "+idPartie)
-//   loadPartieBatailleFromDB(idPartie).then((partiedb) => {
-//     // Traitez ici les données récupérées depuis la base de données (partiedb).
-//     console.log(partiedb);
-//     var partie = JSON.parse(partiedb);
-//     partiesReprises.push(partie);
-//     // supprimerPartieBataille(idPartie);
-//   }
-//   )
-//   .catch((err) => {
-//     console.log("pet");
-//     console.log(err);
-//     // Gérez les erreurs ici, si nécessaire.
-//   });
-// }
 function loadPartieBataille(idPartie){
   return new Promise((resolve, reject) => {
     console.log("chargement de la partie sauvegardee " + idPartie)
