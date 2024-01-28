@@ -274,17 +274,21 @@ body {
   font-size: 2vh;
 }
 
-.leaderboard{
-  color:aliceblue;
-  max-height: 500px;
-  background-color: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.295);
+.leaderboard table{
+  width: 100%;
+  border-collapse: collapse;
+  color: aliceblue;
   backdrop-filter: blur(5px);
-  align-items: center;
-  text-align: center;
-  border-radius: 10%;
-  box-shadow: 0 0 10px rgb(0, 0, 0);
-  overflow-x: auto;
+}
+
+.leaderboard th, .leaderboard td {
+  border: 1px solid rgba(255, 255, 255, 0.295);
+  padding: 8px;
+  text-align: left;
+}
+
+.leaderboard th {
+  background-color: darkgoldenrod;
 }
 
 .statsjoueur1{

@@ -31,27 +31,30 @@ function Leaderboard6({typeDeJeu}){
         <center><h1 style={{ color: 'aliceblue' }}>Classement du 6quiprend :</h1></center> <br></br>
         <div className="leaderboard">
           {leaderboardData && (
-            <div>
-              {leaderboardData.joueursTop.map((player, index) => (
-                <div key={index} className={"statsjoueur".concat(index%2)}>
-                  <div>
-                    <strong>Pseudo:</strong> {player.pseudo}
-                  </div>
-                  <div>
-                    <strong>Score {typeDeJeu}:</strong> {player["score"+typeDeJeu]}
-                  </div>
-                  <div>
-                    <strong>Classement:</strong> {player.classement}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Pseudo</th>
+                  <th>Score {typeDeJeu}</th>
+                  <th>Classement</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaderboardData.joueursTop.map((player, index) => (
+                  <tr key={index}>
+                    <td>{player.pseudo}</td>
+                    <td>{player["score" + typeDeJeu]}</td>
+                    <td>{player.classement}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
         <br></br>
         <button onClick={()=>navigate("/6quiprend")}>Revenir à la liste des parties</button>
       </div>
-    );    
+    );   
     
 /*[
   {
