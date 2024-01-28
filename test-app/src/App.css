@@ -190,14 +190,14 @@ body {
   align-items: center;
 }
 
-.test0 button, .test1 button{
+/* .test0 button, .test1 button{
   width: 100px;
   height: 30px;
   background: white;
   border: 2px solid rgb(255, 255, 255, 0.295);
   border-radius : 40px;
   box-shadow: 0 0 10px rgb(0, 0, 0); 
-}
+} */
 
 .Table{
   position: relative;
