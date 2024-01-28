@@ -108,18 +108,52 @@ function AvantJeu(){
 }
 
 function ApresJeu({tableauFin}){
+
+  const navigate = useNavigate();
+
   // [{pseudo,score}]
-  return(
+
+  return (
     <div>
-      {/* <h3 style={{ color: 'aliceblue' }}>C'est fini, pas de gagnant, elouand va te faire enculer</h3> */}
-      <h3> Classement</h3>
-      {
-        tableauFin.map((joueur,index)=>(
-          <p key={index}>{joueur.pseudo} : {joueur.score} têtes de boeufs</p>
-        ))
-      }
+      <center><h1 style={{ color: 'aliceblue' }}>Classement de la partie:</h1></center> <br></br>
+      <div className="leaderboard">
+        {
+          <table>
+            <thead>
+              <tr>
+                <th>Pseudo</th>
+                <th>Nombre de têtes de boeuf</th>
+                <th>Classement</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableauFin.map((player, index) => (
+                <tr key={index}>
+                  <td>{player.pseudo}</td>
+                  <td>{player.score}</td>
+                  <td>{index+1}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        }
+      </div>
+      <br></br>
+      {<button onClick={()=>navigate("/games")}>Revenir à l'écran de sélection des jeux</button>}
     </div>
-  )
+  );
+
+  // return(
+  //   <div>
+  //     {/* <h3 style={{ color: 'aliceblue' }}>C'est fini, pas de gagnant, elouand va te faire enculer</h3> */}
+  //     <h3> Classement</h3>
+  //     {
+  //       tableauFin.map((joueur,index)=>(
+  //         <p key={index}>{joueur.pseudo} : {joueur.score} têtes de boeufs</p>
+  //       ))
+  //     }
+  //   </div>
+  // )
 }
 
 
