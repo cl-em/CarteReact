@@ -143,17 +143,7 @@ function ApresJeu({tableauFin}){
     </div>
   );
 
-  // return(
-  //   <div>
-  //     {/* <h3 style={{ color: 'aliceblue' }}>C'est fini, pas de gagnant, elouand va te faire enculer</h3> */}
-  //     <h3> Classement</h3>
-  //     {
-  //       tableauFin.map((joueur,index)=>(
-  //         <p key={index}>{joueur.pseudo} : {joueur.score} têtes de boeufs</p>
-  //       ))
-  //     }
-  //   </div>
-  // )
+
 }
 
 
