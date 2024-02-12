@@ -261,24 +261,24 @@ function MainJoueur() {
         });
     },[]);
 
-    const emitQuitte = () => {
-        socket.emit("joueurQuitte", {"idPartie":urlP.get("idPartie")});
-    }
+    // const emitQuitte = () => {
+    //     socket.emit("joueurQuitte", {"idPartie":urlP.get("idPartie")});
+    // }
 
-    useEffect(()=>{
-        window.addEventListener('beforeunload', emitQuitte); //si abandon volontaire ou involontaire
-    }, []);
+    // useEffect(()=>{
+    //     window.addEventListener('beforeunload', emitQuitte); //si abandon volontaire ou involontaire
+    // }, []);
     
     function sauvegarderPartie(){
-        console.log("coucou")
+        // console.log("coucou")
         socket.emit("sauvegarderPartieBataille",{"idPartie":urlP.get("idPartie")})
     }
 
     return (
         <div>
-            {/* { host && (
+            { host && (
                 <button onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
-            )} */}
+            )}
             <Chat />
             <Lobby  listesjoueurs={onlyJoueurs}/>
             <div className='divCartes'>

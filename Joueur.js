@@ -13,6 +13,12 @@ constructor(id,isHost){
     this.éliminé = false;
 }
 
+static fromJSON(data){
+    var joueur = new Joueur(data.idJoueur,data.isHost);
+    joueur.main = data.main;
+    return joueur;
+}
+
 
 setChoice(valeur,couleur){//Pour sauvegarder la carte utilisée et la retirer de la main
     if (this.choix!=null){return false;}

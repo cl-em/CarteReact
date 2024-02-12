@@ -105,6 +105,24 @@ class Bataille extends Game{
 
     }
 
+    static fromJSON(data){
+        var retour = new Bataille(data.joueurs[0].idJoueur,data.joueursMax);
+        // retour.joueurs = data.joueurs;
+        // créer une liste d'objets joueurs avec joueur.fromJSON et itérer sur les joueurs de data afin de remplir
+        retour.joueurs = [];
+        for (var joueur of data.joueurs){
+            retour.joueurs.push(Joueur.fromJSON(joueur));
+        }
+        retour.paquets = data.paquets;
+        retour.deck = data.deck;
+        retour.goal = data.goal;
+        retour.hasStarted = data.hasStarted;
+        retour.tourCourant = data.tourCourant;
+        retour.id = data.id;
+        retour.chat = data.chat;
+        return retour;
+    }
+
     shufflePaquets(){//Mélange les paquets de chaque joueur
         for (var paquet of this.paquets){
         paquet = paquet.sort((a, b) => 0.5 - Math.random());

@@ -72,6 +72,7 @@ function ListePartiesBataille(){
         })}
       </div>
       <button class="joliebouton" onClick={()=>navigate("/sauvegardeBataille")}>Liste Parties Sauvegardees</button>
+      <button class="joliebouton" onClick={()=>navigate("/ListePartiesRejointes")}>Liste Parties Rejointes</button>
       <button class="joliebouton" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
       {/* importer la leaderboard  faut ajouter le css
       <div className='Leaderboard'> 

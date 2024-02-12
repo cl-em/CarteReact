@@ -201,16 +201,16 @@ function lancerPartie(idPartie){
     }
   }
 }
-function reprendrePartie(idPartie){
-  for (var partie in partiesReprises){
-    if (partiesReprises[partie].id==idPartie){
-      partiesReprises[partie].initGame();
-      partiesEnCours.push(partiesReprises[partie]);
-      partiesReprises.splice(partie)
-      console.log("reprise de la partie "+idPartie)
-    }
-  }
-}
+// function reprendrePartie(idPartie){
+//   for (var partie in partiesReprises){
+//     if (partiesReprises[partie].id==idPartie){
+//       partiesReprises[partie].initGame();
+//       partiesEnCours.push(partiesReprises[partie]);
+//       partiesReprises.splice(partie)
+//       console.log("reprise de la partie "+idPartie)
+//     }
+//   }
+// }
 
 // CREATE TABLE "Batailles" (
 // 	"idB"	INTEGER NOT NULL UNIQUE,
@@ -247,10 +247,10 @@ function loadPartieBataille(idPartie){
   return new Promise((resolve, reject) => {
     console.log("chargement de la partie sauvegardee " + idPartie)
     loadPartieBatailleFromDB(idPartie).then((partiedb) => {
-      console.log(partiedb);
-      var partie = JSON.parse(partiedb);
-      partiesReprises.push(partie);
-      // supprimerPartieBataille(idPartie);
+      var partie_json = JSON.parse(partiedb);
+      // transformer en objet bataille
+      var partie = Bataille.fromJSON(partie_json);
+      partiesEnCours.push(partie);
       resolve(partie); // Résoudre la promesse avec la partie chargée
     })
     .catch((err) => {
@@ -369,7 +369,7 @@ io.on('connection', (socket) => {
     //data : {idPartie}
     loadPartieBataille(data.idPartie).then((partie) => {
       socket.emit('partieChargee',partie);
-      reprendrePartie(data.idPartie);
+      lancerPartie(data.idPartie);
     }).catch((err) => {
       // Gérez l'erreur ici
     });
@@ -392,6 +392,18 @@ io.on('connection', (socket) => {
     });
   })
 
+  socket.on('demandepartiesRejointes',data=>{
+    var retour = []
+    for (var partie of partiesEnCours){
+      // recupérer la liste des parties dans lesquelles le joueur socket.data.userId est présent
+      for (joueur of partie.joueurs){
+        if (joueur.idJoueur==socket.data.userId){
+        retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax})
+        }
+      }
+    }
+    socket.emit('partiesRejointes', retour);
+  });
   
   socket.on('demandepartiesouvertes',data=>{
     var retour = []
