@@ -331,6 +331,25 @@ class sixquiprend extends Game{
        
         }
 
+        static fromJSON(data){
+            var retour = new sixquiprend(data.joueurs[0].idJoueur,data.joueursMax);
+            // retour.joueurs = data.joueurs;
+            // créer une liste d'objets joueurs avec joueur.fromJSON et itérer sur les joueurs de data afin de remplir
+            retour.joueurs = [];
+            for (var joueur of data.joueurs){
+                retour.joueurs.push(Joueur.fromJSON(joueur));
+            }
+            retour.lignes = data.lignes;
+            retour.deck = data.deck;
+            retour.hasStarted = data.hasStarted;
+            retour.tourCourant = data.tourCourant;
+            retour.id = data.id;
+            retour.chat = data.chat;
+            retour.joueurQuiChoisit = data.joueurQuiChoisit;
+            retour.tourEnCours = data.tourEnCours;
+            return retour;
+        }
+
         canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait un choix
     
             for (var joueur of this.joueurs){

@@ -71,6 +71,8 @@ function ListeParties6quiprend(){
           )
         })}
       </div>
+      <button class="joliebouton" onClick={()=>navigate("/sauvegardeSixQuiPrend")}>Liste Parties Sauvegardees</button>
+      <button class="joliebouton" onClick={()=>navigate("/ListePartiesRejointes")}>Liste Parties Rejointes</button>
       <button class="joliebouton" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
       {/* importer la leaderboard  faut ajouter le css
       <div className='Leaderboard'> 

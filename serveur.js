@@ -183,10 +183,6 @@ var partie = new sixquiprend(1,7);
 
 console.log("-----------------TESTS-------------------")
 
-console.log("-----------------TESTS-------------------")
-
-
-
 
 
 //Demarrage d'une partie
@@ -201,16 +197,9 @@ function lancerPartie(idPartie){
     }
   }
 }
-// function reprendrePartie(idPartie){
-//   for (var partie in partiesReprises){
-//     if (partiesReprises[partie].id==idPartie){
-//       partiesReprises[partie].initGame();
-//       partiesEnCours.push(partiesReprises[partie]);
-//       partiesReprises.splice(partie)
-//       console.log("reprise de la partie "+idPartie)
-//     }
-//   }
-// }
+
+
+// -------------------------------Sauvegardes-----------------------------------------------
 
 // CREATE TABLE "Batailles" (
 // 	"idB"	INTEGER NOT NULL UNIQUE,
@@ -218,9 +207,23 @@ function lancerPartie(idPartie){
 // 	"Bataille"	TEXT,
 // 	PRIMARY KEY("idB")
 // );
+
+// CREATE TABLE "SixQuiPrend" (
+// 	"id6"	INTEGER NOT NULL UNIQUE,
+// 	"idH"	INTEGER NOT NULL,
+// 	"SixQuiPrend"	TEXT,
+// 	PRIMARY KEY("id6")
+// );
 function sauvegarderPartieBataille(idPartie, idHost, Bataille){
   Bataille = JSON.stringify(Bataille);
   db.run("INSERT INTO Batailles(idB,idH,Bataille) VALUES(?,?,?)",[idPartie, idHost, Bataille],(err)=>{
+    console.log(err);
+  });
+}
+
+function sauvegarderPartieSixQuiPrend(idPartie, idHost, SixQuiPrend){
+  SixQuiPrend = JSON.stringify(SixQuiPrend);
+  db.run("INSERT INTO SixQuiPrend(id6,idH,SixQuiPrend) VALUES(?,?,?)",[idPartie, idHost, SixQuiPrend],(err)=>{
     console.log(err);
   });
 }
@@ -237,10 +240,30 @@ function loadPartieBatailleFromDB(idPartie){
   });
 }
 
+function loadPartieSixQuiPrendFromDB(idPartie){
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM SixQuiPrend WHERE id6 = ?",[idPartie],(err,rows)=>{
+      if(rows.length >0){
+        resolve(rows[0].SixQuiPrend);
+      }else{
+        reject(err);
+      }
+    }
+    );
+  });
+}
+
 function supprimerPartieBataille(idPartie){
   db.run("DELETE FROM Batailles WHERE idB = ?",[idPartie],(err)=>{
     console.log(err);
   });
+}
+
+function supprimerPartieSixQuiPrend(idPartie){
+  db.run("DELETE FROM SixQuiPrend WHERE id6 = ?",[idPartie],(err)=>{
+    console.log(err);
+  }
+  );
 }
 
 function loadPartieBataille(idPartie){
@@ -260,6 +283,25 @@ function loadPartieBataille(idPartie){
     });
   });
 }
+
+function loadPartieSixQuiPrend(idPartie){
+  return new Promise((resolve, reject) => {
+    console.log("chargement de la partie sauvegardee " + idPartie)
+    loadPartieSixQuiPrendFromDB(idPartie).then((partiedb) => {
+      var partie_json = JSON.parse(partiedb);
+      // transformer en objet sixquiprend
+      var partie = sixquiprend.fromJSON(partie_json);
+      partiesEnCours.push(partie);
+      resolve(partie); // Résoudre la promesse avec la partie chargée
+    })
+    .catch((err) => {
+      console.log("Erreur lors du chargement de la partie");
+      console.log(err);
+      reject(err); // Rejeter la promesse en cas d'erreur
+    });
+  });
+}
+
 
 function getHostPartiesBataille(idHost) {
   return new Promise((resolve, reject) => {
@@ -355,19 +397,44 @@ io.on('connection', (socket) => {
   })
   
   //-------------------------------Sauvegardes-----------------------------------------
-  socket.on('sauvegarderPartieBataille',data=>{
-    //data : {idPartie}
-    for (var partie of partiesEnCours){
-      if (partie.id==data.idPartie){
-        sauvegarderPartieBataille(data.idPartie,socket.data.userId,partie);
-        return;
+  socket.on('sauvegarderPartieBataille', data => {
+    for (let i = 0; i < partiesEnCours.length; i++) {
+      if (partiesEnCours[i].id == data.idPartie) {
+        sauvegarderPartieBataille(data.idPartie, socket.data.userId, partiesEnCours[i]);
+        // Supprimer la partie en cours
+        partiesEnCours.splice(i, 1); // Cette ligne supprime l'élément à l'index i
+        // signaler la fin de la partie car sauvegardee
+        socket.emit("partiesauvegardee", {"idPartie" : data.idPartie}); // regler
+        console.log("Partie sauvegardée");
       }
     }
-  })
-
+  });
+  socket.on('sauvegarderPartieSixQuiPrend', data => {
+    for (let i = 0; i < partiesEnCours.length; i++) {
+      if (partiesEnCours[i].id == data.idPartie) {
+        sauvegarderPartieSixQuiPrend(data.idPartie, socket.data.userId, partiesEnCours[i]);
+        // Supprimer la partie en cours
+        partiesEnCours.splice(i, 1); // Cette ligne supprime l'élément à l'index i
+        // signaler la fin de la partie car sauvegardee
+        socket.emit("partiesauvegardee", {"idPartie" : data.idPartie}); // regler
+        console.log("Partie sauvegardée");
+      }
+    }
+  });
+  
   socket.on('loadPartieBataille', data => {
     //data : {idPartie}
     loadPartieBataille(data.idPartie).then((partie) => {
+      socket.emit('partieChargee',partie);
+      lancerPartie(data.idPartie);
+    }).catch((err) => {
+      // Gérez l'erreur ici
+    });
+  }
+  )
+  socket.on('loadPartieSixQuiPrend', data => {
+    //data : {idPartie}
+    loadPartieSixQuiPrend(data.idPartie).then((partie) => {
       socket.emit('partieChargee',partie);
       lancerPartie(data.idPartie);
     }).catch((err) => {
@@ -380,6 +447,10 @@ io.on('connection', (socket) => {
     //data : {idPartie}
     supprimerPartieBataille(data.idPartie);
   })
+  socket.on('supprimerPartieSixQuiPrend',data=>{
+    //data : {idPartie}
+    supprimerPartieSixQuiPrend(data.idPartie);
+  })
 
   socket.on('getHostPartiesBataille',data=>{
     getHostPartiesBataille(socket.data.userId)
@@ -391,6 +462,17 @@ io.on('connection', (socket) => {
       // Gérez les erreurs ici, si nécessaire.
     });
   })
+  socket.on('getHostPartiesSixQuiPrend',data=>{
+    getHostPartiesSixQuiPrend(socket.data.userId)
+    .then((parties) => {
+      // Traitez ici les données récupérées depuis la base de données (parties).
+      socket.emit('getHostPartiesSixQuiPrend',parties);
+    })
+    .catch((err) => {
+      // Gérez les erreurs ici, si nécessaire.
+    });
+  }
+  )
 
   socket.on('demandepartiesRejointes',data=>{
     var retour = []

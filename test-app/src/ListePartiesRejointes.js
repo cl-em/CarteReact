@@ -22,7 +22,7 @@ function ListePartiesRejointes(){
         <button class="joliebouton" onClick={()=>navigate("/batailleJeu?idPartie="+document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>
       </div>
 
-      {/*  c'est la liste de toutes les partie  */}
+      {/*  c'est la liste de toutes les parties  */}
       <div className="listeParties">
         {/* input text de l'id de la partie */}
         {partiesRejointes.map((partie,index)=>{
@@ -31,13 +31,19 @@ function ListePartiesRejointes(){
               <p>{partie.id}</p>
               <p>{partie.joueursActuels}/{partie.joueursMax}</p>
               <p>Bataille</p>
-              {/* <button onClick={()=>navigate("/bataille")}>Rejoindre !</button> */}
-              <button class="joliebouton" onClick={()=>navigate("/batailleJeu?idPartie="+partie.id)}>Rejoindre !</button>
+              {partie.type === "Bataille" ? (
+                <button class="joliebouton" onClick={() => navigate("/batailleJeu?idPartie=" + partie.id)}>Rejoindre !</button>
+              ) : partie.type === "6QuiPrend" ? (
+                <button class="joliebouton" onClick={() => navigate("/6quiprendJeu?idPartie=" + partie.id)}>Rejoindre !</button>
+              ) : null
+              }
+              {/* <button class="joliebouton" onClick={()=>navigate("/batailleJeu?idPartie="+partie.id)}>Rejoindre !</button> */}
             </div>
           )
         })}
       </div>
-      <button class="joliebouton" onClick={()=>navigate("/sauvegardeBataille")}>Liste Parties Sauvegardees</button>
+      <button class="joliebouton" onClick={()=>navigate("/sauvegardeBataille")}>Liste Parties Sauvegardees Bataille</button>
+      <button class="joliebouton" onClick={()=>navigate("/sauvegardeSixQuiPrend")}>Liste Parties Sauvegardees SixQuiPrend</button>
       <button class="joliebouton" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
       {/* importer la leaderboard  faut ajouter le css
       <div className='Leaderboard'> 

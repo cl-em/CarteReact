@@ -155,6 +155,8 @@ function Jouer(){
   let idPartie =  urlP.get("idPartie");
 
 
+  const navigate = useNavigate();
+  
   // INFO RECU PAR LE SERVEUR
 
   // Recuperation avec les socket
@@ -181,11 +183,19 @@ function Jouer(){
   // Infos de fin de partie
   const [infosFinPartie,setInfosFinPartie]= useState([]);
 
+  const [host, setHost] = useState(false);
+
   useEffect(()=>{
     
     socket.on("gameStarting", (data) => { //Faire pareil avec tourpasse (!=gamestarting
       if (data.idPartie == idPartie) {
         setgameStart(true); //AAAAAAAAAAA
+        socket.emit("isHost",{idPartie:urlP.get("idPartie")});
+            socket.on("isHost", (data) => {
+                if (data === true){
+                    setHost(true);
+                }
+            });
      
         setListeLignes(data.lignes); //Liste de listes de Carte [{valeur}]
 
@@ -195,7 +205,6 @@ function Jouer(){
         socket.on("getCarte", (data) => { //Récupération des cartes (de la main)
           //console.log("ouai j'ai les cartes");
           setListeCartes(data.main); //Set la main (liste de cartes) [{valeur}]
-
         });
       }  
     });
@@ -299,6 +308,11 @@ function Jouer(){
 
   // INFO ENVOYEES AU SERVEUR
 
+  function sauvegarderPartie(){
+    // console.log("coucou")
+    socket.emit("sauvegarderPartieSixQuiPrend",{"idPartie":urlP.get("idPartie")})
+    navigate("/6quiprend")
+}
   
   return (
     <div>
@@ -311,6 +325,9 @@ function Jouer(){
             <AfficherStats infosJoueursFun={infosJoueurs} />
             <AfficherLigne listeLignes={nouvelleListeLignes} />
             <Main6QuiPrend listeNombre={nouvelleMain.sort()} />
+            { host && (
+                <button onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
+            )}
             <div className='infopartie'>
               {choixNecessaire ? 
                 <h3 style={{ color: 'aliceblue' }}>{joueurEval}, clique sur une ligne</h3> :

@@ -261,6 +261,15 @@ function MainJoueur() {
         });
     },[]);
 
+    useEffect(()=>{
+        socket.on("partiesauvegardee",(data)=>{
+            console.log(data);
+            if(data.idPartie == urlP.get("idPartie")){
+                navigate("/bataille"); // regler
+            }
+        });
+    },[socket, urlP]);
+
     // const emitQuitte = () => {
     //     socket.emit("joueurQuitte", {"idPartie":urlP.get("idPartie")});
     // }
@@ -272,6 +281,7 @@ function MainJoueur() {
     function sauvegarderPartie(){
         // console.log("coucou")
         socket.emit("sauvegarderPartieBataille",{"idPartie":urlP.get("idPartie")})
+        navigate("/bataille")
     }
 
     return (
