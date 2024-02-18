@@ -21,6 +21,9 @@ import ListePartiesRejointes from './ListePartiesRejointes';
 import ListeSauvegardesParties6quiprend from './ListeSauvegardesParties6quiprend';
 // import Chat from './Chat';
 
+import ListePartiesMagic from './ListePartiesMagic';
+import { ChangementUnivers } from './ChangementUnivers';
+
 import CarteJeu from './boeuf';
 
 import {
@@ -58,6 +61,8 @@ function MyApp() {
           <Route path="/sauvegardeBataille" element={<SocketProvider><ListeSauvegardesPartiesBataille/></SocketProvider>} />
           <Route path="/sauvegardeSixQuiPrend" element={<SocketProvider><ListeSauvegardesParties6quiprend/></SocketProvider>} />
           <Route path="/ListePartiesRejointes" element={<SocketProvider><ListePartiesRejointes/></SocketProvider>} />
+          <Route path="/changementunivers" element={<SocketProvider><ChangementUnivers/></SocketProvider>} />
+          <Route path="/magic" element={<SocketProvider><ListePartiesMagic/></SocketProvider>} />
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           {/* <Route path="/chat" element={<SocketProvider><Chat/></SocketProvider>} /> */}
         </Routes>
