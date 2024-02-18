@@ -2,36 +2,11 @@ import './App.css';
 import SocketContext from './SocketContext';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import { WavyContainer, WavyLink } from "react-wavy-transitions";
 
 function DivTexte(){
     const navigate = useNavigate();
     const socket = React.useContext(SocketContext);
-    const [buttonStyle, setButtonStyle] = useState({
-            position: 'fixed',
-            left: `27vw`,
-            top: `56vh`,
-    });
-
-    useEffect(() => {
-        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
-
-        return () => {
-            document.body.style.backgroundColor = '';
-        };
-
-    }, []);
-
-    const moveButton = () => {
-        
-        const X = Math.random() * 90
-        const Y = Math.random() * 90
-
-        setButtonStyle({
-            position: 'fixed',
-            left: `${X}vw`,
-            top: `${Y}vh`,
-        });
-    };
 
     return (
         <div className='avertissement'>
@@ -42,8 +17,8 @@ function DivTexte(){
             <br></br>
 
             <div className='avertissement-bouton'>
-                <button className='joliebouton2' style={buttonStyle} onClick={()=>navigate("/games")} onMouseEnter={moveButton} >Rebrousser chemin</button>
-                <button className='joliebouton2' onClick={()=>navigate("/magic")}>Ne pas écouter l'avertissement</button>
+                <button className='joliebouton' onClick={()=>navigate("/games")}>Rebrousser chemin!</button>
+                <div><WavyLink to="/magic" color="#840fa1">Ne pas écouter l'avertissement</WavyLink></div>
             </div>
         </div>
     );

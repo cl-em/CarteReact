@@ -7,6 +7,8 @@ import React from 'react';
 // import { useHistory } from 'react-router-dom';
 // import {} from Bataille;
 
+import { WavyContainer, WavyLink } from "react-wavy-transitions";
+
 import {Games} from "./Games";
 // import {Parties} from "./Parties";
 import SocketProvider from './SocketProvider';
@@ -45,6 +47,7 @@ function MyApp() {
   return (
     <div>
       {/* <CarteJeu numeroCarte={20}/> */}
+      <WavyContainer />
       <Router>
       <Hamburger />
         <Routes>
@@ -63,6 +66,7 @@ function MyApp() {
           <Route path="/ListePartiesRejointes" element={<SocketProvider><ListePartiesRejointes/></SocketProvider>} />
           <Route path="/changementunivers" element={<SocketProvider><ChangementUnivers/></SocketProvider>} />
           <Route path="/magic" element={<SocketProvider><ListePartiesMagic/></SocketProvider>} />
+
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           {/* <Route path="/chat" element={<SocketProvider><Chat/></SocketProvider>} /> */}
         </Routes>

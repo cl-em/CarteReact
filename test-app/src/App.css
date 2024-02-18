@@ -556,36 +556,36 @@ top:0;
   margin-bottom: 1vh;
 }
 
-.joliebouton {
-  display: inline-block;
-  padding: 3px 20px;
-  font-size: 12px;
-  font-weight: bold;
-  text-align: center;
-  text-decoration: none;
-  color: #fff;
-  background-color: #0fa12f;
-  border: 2px solid #000;
-  border-radius: 10px;
-  box-shadow: 2px 2px 0px #000;
-  transition: all 0.3s ease;
-  cursor: pointer;
+.joliebouton, .react-wavy-transitions__wavy-link {
+  font-family:'Roboto' !important;
+  display: inline-block !important;
+  padding: 3px 20px !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  color: #fff !important;
+  background-color: #0fa12f !important;
+  border: 2px solid #000 !important;
+  border-radius: 10px !important;
+  box-shadow: 2px 2px 0px #000 !important;
+  cursor: pointer !important;
 }
 
-.joliebouton:hover {
-  background-color: #fff;
-  color: #0fa12f;
-  border: 2px solid #0fa12f;
-  box-shadow: 2px 2px 0px #0fa12f;
+.joliebouton:hover,  .react-wavy-transitions__wavy-link :hover {
+  background-color: #fff !important;
+  color: #0fa12f !important;
+  border: 2px solid #0fa12f !important;
+  box-shadow: 2px 2px 0px #0fa12f !important;
 }
 
-.joliebouton:active {
-  background-color: #fcf414;
-  box-shadow: none;
-  transform: translateY(4px);
+.joliebouton:active,  .react-wavy-transitions__wavy-link:active {
+  background-color: #fcf414 !important;
+  box-shadow: none !important;
+  transform: translateY(4px) !important;
 }
 
-.joliebouton2 {
+.joliebouton2  {
   display: inline-block;
   padding: 3px 20px;
   font-size: 12px;
@@ -597,15 +597,13 @@ top:0;
   border: 2px solid #000;
   border-radius: 10px;
   box-shadow: 2px 2px 0px #000;
-  transition: all 0.3s ease;
   cursor: pointer;
-  transition: top 0.5s ease, left 0.5s ease;
 }
 
 .joliebouton2:hover {
   background-color: #fff;
   color: #840fa1a8;
-  border: 2px solid #840fa1a8;
+  border: 2px solid #840fa8;
   box-shadow: 2px 2px 0px #840fa1a8;
 }
 
@@ -647,3 +645,4 @@ top:0;
   justify-content: center;
   gap: 2%;
 }
+
