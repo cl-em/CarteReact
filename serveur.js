@@ -315,6 +315,19 @@ function getHostPartiesBataille(idHost) {
   });
 }
 
+function getHostPartiesSixQuiPrend(idHost) {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM SixQuiPrend WHERE idH = ?", [idHost], (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 const getUserById = (id)=>{//FONCTION A NE PAS UTILISER MARCHE PAS MERCI
   let retour;
   
@@ -480,7 +493,7 @@ io.on('connection', (socket) => {
       // recupérer la liste des parties dans lesquelles le joueur socket.data.userId est présent
       for (joueur of partie.joueurs){
         if (joueur.idJoueur==socket.data.userId){
-        retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax})
+        retour.push({"id":partie.id,"joueursActuels":partie.joueurs.length,"joueursMax":partie.joueursMax, "type":partie.type})
         }
       }
     }

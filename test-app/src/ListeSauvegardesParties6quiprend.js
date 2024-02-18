@@ -15,7 +15,7 @@ function ListeSauvegardesParties6quiprend(){
     }, []);
 
     function chargerPartie(id){
-        socket.emit('loadPartieBataille', {idPartie: id});
+        socket.emit('loadPartieSixQuiPrend', {idPartie: id});
         socket.on('partieChargee', (data) => {
             navigate("/6quiprendJeu?idPartie="+id);
         });
@@ -33,8 +33,8 @@ function ListeSauvegardesParties6quiprend(){
             <h1>Liste des sauvegardes</h1>
             <ul>
                 {sauvegardes.map((sauvegarde) => (
-                    <li key={sauvegarde.idB}>
-                        Partie ID : {sauvegarde.idB} <button onClick={() => chargerPartie(sauvegarde.idB)}>Charger</button><button onClick={() => supprimerPartie(sauvegarde.idB)}>Supprimer</button>
+                    <li key={sauvegarde.id6}>
+                        Partie ID : {sauvegarde.id6} <button onClick={() => chargerPartie(sauvegarde.id6)}>Charger</button><button onClick={() => supprimerPartie(sauvegarde.id6)}>Supprimer</button>
                     </li>
                 ))}
             </ul>

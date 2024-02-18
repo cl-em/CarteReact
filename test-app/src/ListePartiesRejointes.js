@@ -30,10 +30,10 @@ function ListePartiesRejointes(){
             <div className={"test".concat(index%2)} key={index}>
               <p>{partie.id}</p>
               <p>{partie.joueursActuels}/{partie.joueursMax}</p>
-              <p>Bataille</p>
+              <p>{partie.type}</p>
               {partie.type === "Bataille" ? (
                 <button class="joliebouton" onClick={() => navigate("/batailleJeu?idPartie=" + partie.id)}>Rejoindre !</button>
-              ) : partie.type === "6QuiPrend" ? (
+              ) : partie.type === "6quiprend" ? (
                 <button class="joliebouton" onClick={() => navigate("/6quiprendJeu?idPartie=" + partie.id)}>Rejoindre !</button>
               ) : null
               }
