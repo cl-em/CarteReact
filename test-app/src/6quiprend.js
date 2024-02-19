@@ -186,7 +186,6 @@ function Jouer(){
   const [host, setHost] = useState(false);
 
   useEffect(()=>{
-    
     socket.on("gameStarting", (data) => { //Faire pareil avec tourpasse (!=gamestarting
       if (data.idPartie == idPartie) {
         setgameStart(true); //AAAAAAAAAAA
@@ -224,9 +223,52 @@ function Jouer(){
   },[]);
 
   useEffect(()=>{
+    socket.on("partieChargee", (data) => {
+      console.log("cc");
+      if (data.id == idPartie) {
+        setgameStart(true);
+        socket.emit("isHost",{idPartie:urlP.get("idPartie")});
+              socket.on("isHost", (data) => {
+                  if (data === true){
+                      setHost(true);
+                  }
+              });
+        setListeLignes(data.lignes);
+        socket.emit("wantCarte", { "idPartie": idPartie});
+        socket.on("getCarte", (data) => {
+          setListeCartes(data.main);
+        });
+        
+      }
+    }
+    );
+  },[]);
+
+  useEffect(()=>{
+    socket.emit('isloaded', {idPartie: idPartie});
+    socket.on('isloaded', (data) => {
+      if(data !== false){
+        setgameStart(true);
+        setListeLignes(data.lignes);
+        socket.emit("wantCarte", { "idPartie": idPartie});
+        socket.on("getCarte", (data) => {
+          setListeCartes(data.main);
+        });
+        socket.emit("isHost",{idPartie:urlP.get("idPartie")});
+              socket.on("isHost", (data) => {
+                  if (data === true){
+                      setHost(true);
+                  }
+              });
+      }
+    }
+    );
+  },[]);
+
+  useEffect(()=>{
     socket.on("getScores",(data)=>{
-      console.log(idPartie);
-      console.log(data.idPartie);
+      // console.log(idPartie);
+      // console.log(data.idPartie);
       if(data.idPartie==idPartie){
         setInfosJoueurs(data.infosJoueurs);
       }
@@ -306,6 +348,15 @@ function Jouer(){
     })
   }, []);
 
+  useEffect(()=>{
+    socket.on("partiesauvegardee",(data)=>{
+        console.log(data);
+        if(data.idPartie == urlP.get("idPartie")){
+            navigate("/6quiprend"); // regler
+        }
+    });
+},[socket, urlP]);
+
   // INFO ENVOYEES AU SERVEUR
 
   function sauvegarderPartie(){
@@ -336,7 +387,7 @@ function Jouer(){
                     <h3 style={{ color: 'aliceblue' }}>{joueurEval} joue la carte :</h3>
                     <CarteJeu numeroCarte={numeroCarteEval} />
                   </div> :
-                  <h3 style={{ color: 'aliceblue' }}>En attente que tout les joueurs placent une carte</h3>
+                  <h3 style={{ color: 'aliceblue' }}>En attente que tous les joueurs placent une carte</h3>
               }
             </div>
           </>

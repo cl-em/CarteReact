@@ -16,9 +16,10 @@ function ListeSauvegardesParties6quiprend(){
 
     function chargerPartie(id){
         socket.emit('loadPartieSixQuiPrend', {idPartie: id});
-        socket.on('partieChargee', (data) => {
-            navigate("/6quiprendJeu?idPartie="+id);
-        });
+        navigate("/6quiprendJeu?idPartie="+id);
+        // socket.on('partieChargee', (data) => {
+            
+        // });
     }
     function supprimerPartie(id){
         socket.emit('supprimerPartieSixQuiPrend', {idPartie: id});

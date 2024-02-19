@@ -417,7 +417,7 @@ io.on('connection', (socket) => {
         // Supprimer la partie en cours
         partiesEnCours.splice(i, 1); // Cette ligne supprime l'élément à l'index i
         // signaler la fin de la partie car sauvegardee
-        socket.emit("partiesauvegardee", {"idPartie" : data.idPartie}); // regler
+        io.emit("partiesauvegardee", {"idPartie" : data.idPartie}); // regler
         console.log("Partie sauvegardée");
       }
     }
@@ -429,7 +429,7 @@ io.on('connection', (socket) => {
         // Supprimer la partie en cours
         partiesEnCours.splice(i, 1); // Cette ligne supprime l'élément à l'index i
         // signaler la fin de la partie car sauvegardee
-        socket.emit("partiesauvegardee", {"idPartie" : data.idPartie}); // regler
+        io.emit("partiesauvegardee", {"idPartie" : data.idPartie}); // regler
         console.log("Partie sauvegardée");
       }
     }
@@ -438,23 +438,36 @@ io.on('connection', (socket) => {
   socket.on('loadPartieBataille', data => {
     //data : {idPartie}
     loadPartieBataille(data.idPartie).then((partie) => {
-      socket.emit('partieChargee',partie);
       lancerPartie(data.idPartie);
+      io.emit('partieChargee',partie);
     }).catch((err) => {
       // Gérez l'erreur ici
+      console.log(err);
     });
   }
   )
   socket.on('loadPartieSixQuiPrend', data => {
     //data : {idPartie}
     loadPartieSixQuiPrend(data.idPartie).then((partie) => {
-      socket.emit('partieChargee',partie);
       lancerPartie(data.idPartie);
+      io.emit('partieChargee',partie);
     }).catch((err) => {
       // Gérez l'erreur ici
+      console.log(err);
     });
   }
   )
+
+  socket.on('isloaded', data => {
+    //data : {idPartie}
+    for (var partie of partiesEnCours){
+      if (partie.id == data.idPartie){
+        socket.emit('isloaded',partie);
+        return;
+      }
+    }
+    socket.emit('isloaded',false);
+  })
 
   socket.on('supprimerPartieBataille',data=>{
     //data : {idPartie}
