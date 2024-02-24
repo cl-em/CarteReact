@@ -1,5 +1,5 @@
-import './App.css';
-import SocketContext from './SocketContext';
+import '../App.css';
+import SocketContext from '../SocketContext';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { WavyContainer, WavyLink } from "react-wavy-transitions";

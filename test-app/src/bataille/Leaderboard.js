@@ -1,5 +1,5 @@
 import axios from "axios";
-import SocketContext from './SocketContext';
+import SocketContext from '../SocketContext';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 

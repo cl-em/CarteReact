@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
-import SocketContext from './SocketContext';
-import Leaderboard from "./Leaderboard";
+import SocketContext from '../SocketContext';
+import Leaderboard from "../bataille/Leaderboard";
 
 
 function ListePartiesMagic(){
@@ -15,6 +15,30 @@ function ListePartiesMagic(){
             setPartiesOuvertes(data);
         });
     }, [partiesOuvertes]);
+
+
+    useEffect(() => {
+        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
+
+        return () => {
+            document.body.style.backgroundColor = '';
+        };
+
+    }, []);
+
+
+
+
+    useEffect(() => {
+        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
+
+        return () => {
+            document.body.style.backgroundColor = '';
+        };
+
+    }, []);
+
+
 
 
     useEffect(() => {

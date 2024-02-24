@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
-import SocketContext from './SocketContext';
+import SocketContext from '../SocketContext';
 
 function ListeSauvegardesPartiesBataille(){
     const socket = useContext(SocketContext);

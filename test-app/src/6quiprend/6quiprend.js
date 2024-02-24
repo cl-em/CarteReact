@@ -1,12 +1,12 @@
-import './App.css';
+import '../App.css';
 import React, { useEffect, useState } from 'react';
-import SocketContext from './SocketContext';
-import Chat from './Chat';
+import SocketContext from '../SocketContext.js';
+import Chat from '../Chat.js';
 import {
     useNavigate
 } from "react-router-dom";
-import CarteJeu from './boeuf';
-import { Lobby } from './Bataille';
+import CarteJeu from './boeuf.js';
+import { Lobby } from '../bataille/Bataille.js';
 import Boeuf from "./Boeuf.jsx"
 
 

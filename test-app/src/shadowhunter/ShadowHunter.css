@@ -1,0 +1,27 @@
+body{
+    background: url("http://localhost:8888/fichier/table_spooky.png") center/cover no-repeat;
+}
+
+
+.zone{
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background: red;
+
+}
+#droite{
+    transform: rotate(1rad);
+}
+
+#gauche{
+    transform: rotate(-1rad);
+}
+
+img{
+    zoom: 0.75;
+}
+
+img:hover{
+    zoom:1;
+}

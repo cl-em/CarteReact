@@ -1,9 +1,9 @@
-import './App.css';
+import '../App.css';
 // import {idJoueur} from './App.js';
 // import {io} from "socket.io-client";
 import React, { useEffect, useState } from 'react';
-import SocketContext from './SocketContext';
-import Chat from './Chat';
+import SocketContext from '../SocketContext';
+import Chat from '../Chat';
 import {
     useNavigate
 } from "react-router-dom";
@@ -24,8 +24,8 @@ export function Lobby({listesjoueurs, nbjoueurs , joueursmax}) {
         const pos = document.querySelectorAll('.pos');
     
         pos.forEach((cercle, index) => {
-        let angle = (Math.PI * 2 * index) / pos.length;
-        Emplacement(cercle, angle);
+            let angle = (Math.PI * 2 * index) / pos.length;
+            Emplacement(cercle, angle);
         });
     }, [listesjoueurs]); //chaque changement de listesjoueurs
 
@@ -130,40 +130,6 @@ function MainJoueur() {
         return new Promise(resolve => setTimeout(resolve, ms));
     }    
 
-
-    /*useEffect(() => {
-    if(gameStart){    
-    socket.on("tourPasse", (data)=>{
-        if(urlP.get("idPartie")==data.idPartie){
-            if (afficheCond==false){
-                afficheCond=true;
-            onlyJoueurs.map((pseudo,index)=>{ // pour tous les joueurs de la partie
-                // je cherche dans les données où il est et je recupère les infos(carte posée, id,)
-                for (var player of data.cartesJouees){
-                    if(player.pseudo==pseudo){
-                        document.getElementById(pseudo).innerHTML=`<p>${pseudo}</p>`;
-                        document.getElementById(pseudo).innerHTML+=`<img class='hop' src="http://localhost:8888/carte/`+player.choix.valeur+`_`+player.choix.couleur+`.png")} />`;
-                        setTimeout(() => {
-                            document.getElementById(pseudo).innerHTML = `<p>${pseudo}</p>`;
-                          }, 5000);
-
-                    }
-                };
-                
-            })
-            setListeCarteRecu(false);
-        }
-        
-            isEgalite=data.egalite;
-            gagnant=data.winner;
-            document.getElementById("Table").innerHTML+=`<p>Le gagnant est ${gagnant}</p>`
-            setTimeout(() => {
-                document.getElementById("Table").innerHTML="";
-            }, 5000);
-          
-        }})
-    }
-    });*/
 
     const TourPasse = (data) => {
         // test si c'est la bonne partie 
