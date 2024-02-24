@@ -72,7 +72,7 @@ function MyApp() {
           {/* shadow hunter */}
           <Route path="/changementunivers" element={<SocketProvider><ChangementUnivers/></SocketProvider>} />
           <Route path="/magic" element={<SocketProvider><ListePartiesMagic/></SocketProvider>} />
-          <Route path="/shadowhunterjeu" element={<ShadowHunter />} />
+          <Route path="/shadowhunterjeu" element={<SocketProvider><ShadowHunter /></SocketProvider>} />
 
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           {/* <Route path="/chat" element={<SocketProvider><Chat/></SocketProvider>} /> */}

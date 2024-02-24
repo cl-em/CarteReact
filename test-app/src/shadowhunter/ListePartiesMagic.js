@@ -8,72 +8,27 @@ function ListePartiesMagic(){
     const navigate = useNavigate();
     const socket = useContext(SocketContext);
     const [partiesOuvertes, setPartiesOuvertes] = useState([]);
+    
     useEffect(() => {
         socket.emit('demandepartiesouvertes', 'Magic');
         socket.on('partiesOuvertes', (data) => {
-            // console.log('Liste mise à jour : ', data);
             setPartiesOuvertes(data);
         });
     }, [partiesOuvertes]);
 
 
     useEffect(() => {
+      const bg = {
+        backgroundImage : document.body.style.backgroundImage
+      }
+
         document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
 
         return () => {
-            document.body.style.backgroundColor = '';
+          document.body.style.backgroundImage = bg.backgroundImage;
         };
 
     }, []);
-
-
-
-
-    useEffect(() => {
-        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
-
-        return () => {
-            document.body.style.backgroundColor = '';
-        };
-
-    }, []);
-
-
-
-
-    useEffect(() => {
-        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
-
-        return () => {
-            document.body.style.backgroundColor = '';
-        };
-
-    }, []);
-
-
-
-
-    useEffect(() => {
-        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
-
-        return () => {
-            document.body.style.backgroundColor = '';
-        };
-
-    }, []);
-
-
-
-
-    useEffect(() => {
-        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
-
-        return () => {
-            document.body.style.backgroundColor = '';
-        };
-
-    }, []);
-
 
     const [joueursMax, setJoueursMax] = useState(2);
     const createPartie = () => {
