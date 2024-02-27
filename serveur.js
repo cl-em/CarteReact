@@ -151,8 +151,8 @@ var pseudos = {};
 
 
 //-------------------------------Classes-----------------------------------------------
-const { Game,Bataille,sixquiprend } = require('./Game.js');
-const { Joueur } = require('./Joueur.js');
+const { Game,Bataille,sixquiprend, shadowHunter } = require('./Game.js');
+const { Joueur,JoueurShadowHunter } = require('./Joueur.js');
 const { Carte } = require('./Carte.js');
 
 
@@ -179,13 +179,16 @@ getpseudos();
 
 
 //-------------------------------Tests Elouand-----------------------------------------------
-var partie = new sixquiprend(1,7);
-
 console.log("-----------------TESTS-------------------")
+var partie = new shadowHunter(1,4);
+partie.initGame()
+console.log(partie.zones)
 
 
 
-//Demarrage d'une partie
+
+
+//Demarrage d'une partie (d'un point de vue pûrement serveur, pas de l'objet partie)
 
 function lancerPartie(idPartie){
   for (var partie in partiesOuvertes){
@@ -605,6 +608,16 @@ io.on('connection', (socket) => {
           partiesOuvertes.push(partie)
           console.log("| Creation d'une partie de 6quiprend par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
           socket.emit("creerPartie",partie.id)}
+
+          if (data.type=="shadowHunter"){
+            var joueursMax = data.joueursMax;
+            if (!Number.isInteger(parseInt(joueursMax))||joueursMax>8||joueursMax<2){
+              joueursMax=8
+            }
+            let partie = new shadowHunter(socket.data.userId,joueursMax)
+            partiesOuvertes.push(partie)
+            console.log("| Creation d'une partie de shadowHunter par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
+            socket.emit("creerPartie",partie.id)}
         }
         
         )
@@ -687,6 +700,14 @@ io.on('connection', (socket) => {
                   let listejoueurs = [];
                   for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur])}
                   io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes,"joueurs":listejoueurs})}
+                }, 1000);
+
+                setTimeout(() => {
+                  
+                  if (partie.type=="shadowHunter"){
+                  let listejoueurs = [];
+                  for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur])}
+                  io.emit("gameStarting",{"idPartie":data.idPartie,"joueurs":listejoueurs})}
                 }, 1000);
                 
                 

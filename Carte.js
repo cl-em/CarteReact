@@ -8,4 +8,12 @@ this.couleur = couleur;
 
 }
 
-module.exports = { Carte };
+class CarteShadowHunter extends Carte{
+    constructor(valeur,type) {
+        super(valeur,"")
+        this.couleur = null
+        this.type = type;
+        }
+}
+
+module.exports = { Carte,CarteShadowHunter };

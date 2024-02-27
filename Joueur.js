@@ -31,12 +31,42 @@ setChoice(valeur,couleur){//Pour sauvegarder la carte utilisée et la retirer de
     return false;
 }
 
+}
 
+class JoueurShadowHunter extends Joueur{//Comme le shadow hunter a des règles bien différentes, il vaut mieux créer un joueur exprès
 
+    constructor(id,isHost,character,hp){
+        super(id,isHost)
+        this.character = character
+        this.hurtPoint = 0
+        this.hp = hp 
+        this.révélé = false
+        this.powerUsed = false
+        this.protected = false
+        this.turnsToPlay = 0
+        this.objets = []; //Contenu de la main du joueur
+        this.choix;
+        this.éliminé = false;
 
+    }
 
+    hasItem(objet){//Permet de savoir si le joueur possède l'objet
+        for (var test in this.objets){
+            if (test==objet){return true}
+        }
+        return false
+    }
 
+    isDead(){//Pour savoir si un joueur est mort
+        if (this.hurtPoint<this.hp){return false}
+        return true
+    }
 
 
 }
-module.exports = { Joueur };
+
+
+
+
+
+module.exports = { Joueur,JoueurShadowHunter };

@@ -1,5 +1,5 @@
-const { Carte } = require('./Carte.js');
-const { Joueur } = require('./Joueur.js');
+const { Carte,CarteShadowHunter } = require('./Carte.js');
+const { Joueur, JoueurShadowHunter } = require('./Joueur.js');
 class Game {
 
     constructor(couleurs,nbvaleurs,host/*host est un id d'utilisateur et crée une instance de la classe "joueur*/,joueursMax/*Nombre maximal de joueurs dans la partie, on peut néanmoins la start avant*/) {
@@ -491,5 +491,129 @@ class sixquiprend extends Game{
 
 
 }
+class shadowHunter extends Game{
 
-module.exports = { Game,Bataille,sixquiprend }
+    
+    constructor(host,nbJoueurs){
+        super([""],105,host,nbJoueurs);
+        this.deck = null//Le deck ne servira pas et on utilisera trois piles à la place
+        this.couleurs = null//Pareil pour les couleurs. On préférera utiliser l'attribut "type" des cartes
+        this.type="shadowHunter"
+        this.joueurcourant = undefined
+        this.state = undefined
+
+        //Choix des personnages
+        var shadows = ["Liche","Loup_Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
+        var hunters = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"].sort((a, b) => 0.5 - Math.random());
+        var neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
+        this.personnages = []
+
+        var s = 0
+        var h = 0
+        var n = 0
+        while(this.personnages.length<this.joueursMax){
+
+            if ((this.joueursMax-this.personnages.length==1 || s+h>n*2) && (s==h)){
+                this.personnages.push(neutres.shift())
+                n++
+                console.log("neutres: "+n)
+            }
+            else{
+    
+                    if (s<h){
+                        this.personnages.push(shadows.shift())
+                        s++
+                        console.log("shadow: "+s)
+                    }
+                    else{
+                        this.personnages.push(hunters.shift())
+                        h++
+                        console.log("hunters: "+h)
+                    
+                }
+            }
+
+
+        } 
+        
+        this.joueurs= [new JoueurShadowHunter(host,true,this.personnages.shift())]
+
+        //Création des piles en question
+        this.blanches = []
+        this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
+        this.blanches.push(new CarteShadowHunter('Bénédiction', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Amulette', 'équipement'))
+        this.blanches.push(new CarteShadowHunter('Toge_Sainte', 'équipement'))
+        this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
+        this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
+        this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Premiers_Soins', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
+
+        this.noires = []
+        this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Peau_De_Banane', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Succube_Tentatrice', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Hachoir_Maudit', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Mitrailleuse_Funeste', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Sabre_Hanté_Masamune', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Tronçonneuse_Du_Mal', 'équipement'))
+        
+        this.visions = []
+        this.visions.push(new CarteShadowHunter('Vision_Cupide', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Divine', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Enivrante', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Foudroyante', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Furtive', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Lugubre', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Mortifère', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Purificatrice', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Suprême', 'vision'))
+        
+        this.zones = []
+        for (var i=1;i<=6;i++){
+            this.zones.push(("zone"+i))
+        }
+        
+    }
+
+    shuffle(paquet){//fonction de mélange pour les différentes piles de cartes
+        paquet = paquet.sort((a, b) => 0.5 - Math.random());
+    }
+
+    initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
+       this.shuffle(this.blanches)
+       this.shuffle(this.noires)
+       this.shuffle(this.visions)
+       this.shuffle(this.zones)
+        this.hasStarted = true;
+       
+        }
+
+        addPlayer(idJoueur){
+            for (var joueur of this.joueurs){
+                if (joueur.idJoueur==idJoueur){
+                    return false;
+                }
+            }
+        
+            if (this.joueurs.length<this.joueursMax){
+            this.joueurs.push(new JoueurShadowHunter(idJoueur,false,this.personnages.shift()));
+            return true
+        }
+        else{return false;}}
+
+}
+
+module.exports = { Game,Bataille,sixquiprend,shadowHunter }
