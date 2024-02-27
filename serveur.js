@@ -40,6 +40,10 @@ app.get('/carte/:nomFichier', function(request, response) {
   response.sendFile(request.params.nomFichier, {root: __dirname+"/CartesAJouer/"});
 });
 
+app.get("/carteShadow/:nomImage",(request,response)=>{
+  response.sendFile(request.params.nomImage,{root:__dirname+"/cartesShadowHunter/"});
+});
+
 app.get('/socket.io/', (req, res) => {
   res.send('Server is running.');
 });

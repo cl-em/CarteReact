@@ -1,0 +1,103 @@
+/* .body{
+    background-image: url("http://localhost:8888/fichier/table_spooky.png");
+    height: 100%;
+    margin: 0;
+    padding: 0;
+} */
+
+#main-cartes-sh {
+    display: flex;
+    justify-content: center; /* Assure que le contenu est centré dans le conteneur */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    /* background-color: rgba(0, 0, 0, 0.5); */
+}
+
+#main-cartes-sh img {
+    transition: transform 0.3s ease;
+    max-height: 150px;
+    margin-right: -65px;
+    cursor: pointer;
+    will-change: transform;
+}
+
+#main-cartes-sh img:hover {
+    transform: scale(3) translateY(-40%);
+    z-index: 10; /* Assure que l'image survolée est au-dessus des autres */
+}
+
+.plateau-container {
+    display: flex;
+    flex-direction: column; /* Empile les éléments verticalement */
+    align-items: center; /* Centre les éléments horizontalement */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80%;
+    gap: 80px; /* Espacement entre les éléments */
+}
+
+.plateau-flex {
+    display: flex;
+    justify-content: center;
+    gap: 100px; /* Espacement entre les plateaux gauche et droite */
+}
+
+.plateau {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.plateau-gauche {
+    transform: rotate(-35deg);
+}
+
+.plateau-droite {
+    transform: rotate(41deg);
+}
+
+.plateau-base {
+    margin-right: 40px; /* Ajustez la valeur pour obtenir le décalage désiré */
+}
+
+.carte {
+    margin: 21px;
+}
+
+.carte img {
+    max-height: 180px;
+    display: block; /* Élimine l'espace sous les images */
+}
+
+#stats-sh{
+    position: fixed;
+    color: aliceblue;
+    bottom: 33%;
+    right: 0;
+    width: 20%;
+    height: 60%;
+    background-color: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.295);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 10px rgb(0, 0, 0);
+    overflow-x: auto;
+}
+
+#role-carte-sh {
+    display: flex;
+    flex-direction: column; /* Change la direction du flex pour empiler verticalement */
+    align-items: center; /* Centre horizontalement les enfants */
+    position: fixed;
+    bottom: 35%;
+    left: 5%;
+    gap: 15px;
+    z-index: 1000;
+}
+
+
+
