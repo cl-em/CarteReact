@@ -185,8 +185,9 @@ getpseudos();
 //-------------------------------Tests Elouand-----------------------------------------------
 console.log("-----------------TESTS-------------------")
 var partie = new shadowHunter(1,4);
+partie.addPlayer(2,false)
 partie.initGame()
-console.log(partie.zones)
+console.log(partie.joueurs)
 
 
 

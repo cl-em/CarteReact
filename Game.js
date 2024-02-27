@@ -503,7 +503,7 @@ class shadowHunter extends Game{
         this.state = undefined
 
         //Choix des personnages
-        var shadows = ["Liche","Loup_Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
+        var shadows = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
         var hunters = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"].sort((a, b) => 0.5 - Math.random());
         var neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
         this.personnages = []
@@ -597,6 +597,22 @@ class shadowHunter extends Game{
        this.shuffle(this.noires)
        this.shuffle(this.visions)
        this.shuffle(this.zones)
+
+        //Don des PV aux joueurs
+
+        for (var joueur of this.joueurs){
+            var char = joueur.character
+            var hp
+                if (char=="Allie" ||char=="Agnès"){hp=8}
+                if (char=="Bob" ||char=="Bryan" ||char=="Emi" || char=="Ellen"){hp=10}
+                if (char=="Catherine" ||char=="Charles" || char=="Métamorphe" || char=="Momie"){hp=11}
+                if (char=="Franklin"||char=="Fu-ka"){hp=12}
+                if (char=="Valkyrie"||char=="Vampire"||char=="Daniel"||char=="David"){hp=13}
+                if (char=="Liche"||char=="Loup-Garou"||char=="Georges"||char=="Gregor"){hp=13}
+
+
+            joueur.hp = hp
+        }
         this.hasStarted = true;
        
         }
