@@ -425,7 +425,7 @@ io.on('connection', (socket) => {
         // Supprimer la partie en cours
         partiesEnCours.splice(i, 1); // Cette ligne supprime l'élément à l'index i
         // signaler la fin de la partie car sauvegardee
-        io.emit("partiesauvegardee", {"idPartie" : data.idPartie}); // regler
+        io.emit("partieSauvegardee", {"idPartie" : data.idPartie}); // regler
         console.log("Partie sauvegardée");
       }
     }
@@ -437,7 +437,7 @@ io.on('connection', (socket) => {
         // Supprimer la partie en cours
         partiesEnCours.splice(i, 1); // Cette ligne supprime l'élément à l'index i
         // signaler la fin de la partie car sauvegardee
-        io.emit("partiesauvegardee", {"idPartie" : data.idPartie}); // regler
+        io.emit("partieSauvegardee", {"idPartie" : data.idPartie}); // regler
         console.log("Partie sauvegardée");
       }
     }
@@ -458,7 +458,9 @@ io.on('connection', (socket) => {
     //data : {idPartie}
     loadPartieSixQuiPrend(data.idPartie).then((partie) => {
       lancerPartie(data.idPartie);
-      io.emit('partieChargee',partie);
+      let listejoueurs = [];
+      for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur]);};
+      io.emit('gameStarting',{"idPartie":data.idPartie,"lignes":partie.lignes,"joueurs":partie.joueurs});
     }).catch((err) => {
       // Gérez l'erreur ici
       console.log(err);
@@ -703,7 +705,7 @@ io.on('connection', (socket) => {
                   
                   if (partie.type=="6quiprend"){
                   let listejoueurs = [];
-                  for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur])}
+                  for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur]);};
                   io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes,"joueurs":listejoueurs})}
                 }, 1000);
 
@@ -823,23 +825,39 @@ io.on('connection', (socket) => {
             
             //Demande d'actualisation des infos bataille
             socket.on('isHost', data=>{
-              console.log("isHost");
+              // console.log("isHost");
               for (var partie of partiesEnCours){
                 if (partie.id==data.idPartie){
                   for(var joueur of partie.joueurs){
                     // console.log(joueur);
                     if (joueur.isHost && joueur.idJoueur === socket.data.userId){
                       socket.emit('isHost',true);
-                      console.log("true host");
+                      return;
+                      // console.log("true host");
                     }
                     else{
                       socket.emit('isHost',false);
-                      console.log("false host");
+                      return;
+                      // console.log("false host");
                     }
                   }
                 }
               }
-            })
+            for (var partie of partiesOuvertes){
+              if (partie.id==data.idPartie){
+                for(var joueur of partie.joueurs){
+                  if (joueur.isHost && joueur.idJoueur === socket.data.userId){
+                    socket.emit('isHost',true);
+                    return;
+                  }
+                  else{
+                    socket.emit('isHost',false);
+                    return;
+                  }
+                }
+              }
+            }
+          })
             
             socket.on('infosLobby',data=>{
           

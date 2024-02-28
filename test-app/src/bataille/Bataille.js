@@ -228,7 +228,7 @@ function MainJoueur() {
     },[]);
 
     useEffect(()=>{
-        socket.on("partiesauvegardee",(data)=>{
+        socket.on("partieSauvegardee",(data)=>{
             console.log(data);
             if(data.idPartie == urlP.get("idPartie")){
                 navigate("/bataille"); // regler
