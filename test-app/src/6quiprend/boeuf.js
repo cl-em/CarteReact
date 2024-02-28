@@ -1,5 +1,5 @@
 import React from 'react';
-import Boeuf from "./boeuf.js"
+import Boeuf from "./Boeuf.jsx"
 import './boeuf.css';
 
 const CarteJeu = ({ numeroCarte }) => {
