@@ -70,6 +70,52 @@ function Plateau({ carteEnFonctionDeLaZone }) {
     );
 }
 
+function Jouer(){
+
+    let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+    let idPartie =  urlP.get("idPartie");
+
+    //joueurCourant:
+    const [degatPris,setDegatPris] = useState(0);
+    const [personnage,setPersonnage] = useState("Allie"); 
+    const [carteRevele,setCarteRevele] = useState(false);
+    const [stuff,setStuff]  = useState([]);
+    const [pouvoirUtilise,setPouvoirUtilise]  = useState(true);
+
+    // liste de joueurs
+    const [listeJoueurs,setListeJoueurs] = useState([]);
+    // {pseudo:string,révélé:bool à false si non révélé string sinon,pouvoirUtilisé:bool,dégâts:int}
+
+
+
+    useEffect(()=>{
+
+        socket.emit("wantCarte",{ "idPartie": idPartie});
+
+        socket.on("wantCarte",(data)=>{
+            let courant = data.joueurCourant;
+            setDegatPris(courant.dégâts); // int 
+            setPersonnage(courant.personnage); // String
+            setCarteRevele(courant.révélé); // bool
+
+            setStuff(courant.stuff); //liste de String 
+            setPouvoirUtilise(courant.pouvoirUtilisé);//bool
+
+            setListeJoueurs(data.joueurs);
+        });
+    },[]);
+
+
+
+
+    return (
+        <div>
+            <Role nomCarte={personnage}/>
+            <Main listeDeCarte={stuff} />
+
+        </div>
+    )
+}
 export default function ShadowHunter(){
 
     //Reset du style du body, on part sur une bonne nouvelle base (c'était plus possible)
