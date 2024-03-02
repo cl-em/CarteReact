@@ -6,6 +6,8 @@ import {
     useNavigate
 } from "react-router-dom";
 import CarteJeu from './boeuf.js';
+import { Lobby } from '../bataille/Bataille.js';
+import Boeuf from "./Boeuf.jsx"
 
 
 function ProgressBar({progress}){
@@ -183,98 +185,68 @@ function Jouer(){
 
   const [host, setHost] = useState(false);
 
-  useEffect(() => {
-    const handleGameStarting = data => {
-      console.log("gameStarting");
-      if (data.idPartie === idPartie) {
-        setgameStart(true);
-        // setHost(data.Host);
-        console.log(data);
-        setListeLignes(data.lignes);
+  useEffect(()=>{
+    socket.on("gameStarting", (data) => { //Faire pareil avec tourpasse (!=gamestarting
+      if (data.idPartie == idPartie) {
+        setgameStart(true); //AAAAAAAAAAA
+        socket.emit("isHost",{idPartie:urlP.get("idPartie")});
+            socket.on("isHost", (data) => {
+                if (data === true){
+                    setHost(true);
+                }
+            });
+     
+        setListeLignes(data.lignes); //Liste de listes de Carte [{valeur}]
+
+        //  console.log("ouai je demande les cartes");
+
         socket.emit("wantCarte", { "idPartie": idPartie}); //Demande de la main. 
         socket.on("getCarte", (data) => { //Récupération des cartes (de la main)
+          //console.log("ouai j'ai les cartes");
           setListeCartes(data.main); //Set la main (liste de cartes) [{valeur}]
         });
-      }
-    };
-  
-    const handleGameFinished = data => {
-      console.log("gameFinished");
-      if (data.idPartie === idPartie) {
-        setFinish(true);
-        // Autres mises à jour d'état basées sur data
-      }
-    };
+      }  
+    });
 
-    const handleGetScores = data => {
-      console.log("getScores");
-      if(data.idPartie===idPartie){
-        setInfosJoueurs(data.infosJoueurs);
+    socket.on("wantCarte",data=>{
+      if (data==true){
+        //AFFICHAGE DU FAIT DE POSER UNE CARTE
       }
-    };
 
-    const handleChoixCarte = data => {
-      console.log("choixCarte");
-      socket.emit("wantCarte", { "idPartie": idPartie});
-      if(data!==false){
-        setnumeroCarteEval(data);
-      }
-    };
+    });
 
-    const handleTourPasse = data => {
-      console.log("tourPasse");
-      if (data.idPartie === idPartie) {
-        setListeLignes(data.lignes);
-        setChoixNecessaire(data.choixNecessaire);
-        setnumeroCarteEval(data.carteEval);
-        setJourEval(data.joueurEval);
-        socket.emit("wantCarte", { "idPartie": idPartie});
-      }
-    };
-
-    const handleIsHost = data => {
-      console.log("isHost");
-      console.log(data);
-      if (data === true){
-        setHost(true);
-    }}
+    // return () => {
+    //   socket.off("getCarte");
+    //   socket.off("gameStarting");
+    // }
     
-    socket.on("gameStarting", handleGameStarting);
-    socket.on("gameFinished", handleGameFinished);
-    socket.on("getScores", handleGetScores);
-    socket.on("choixCarte", handleChoixCarte);
-    socket.on("tourPasse", handleTourPasse);
-    socket.emit("isHost",{"idPartie": idPartie});
-    socket.on("isHost", handleIsHost);
-
-    // Nettoyage
-    return () => {
-      socket.off("gameStarting", handleGameStarting);
-      socket.off("gameFinished", handleGameFinished);
-      socket.off("getCarte");
-      socket.off("wantCarte");
-      socket.off("partieSauvegardee");
-      socket.off("isHost", handleIsHost);
-    };
-  }, []); // Dépendances
-
-  useEffect(() => {
-    const handlePartieSauvegardee = data => {
-      console.log("partieSauvegardee");
-      if(data.idPartie === idPartie){
-        navigate("/6quiprend");
-      }
-    };
-    socket.on("partieSauvegardee", handlePartieSauvegardee);
-    return () => {
-      socket.off("partieSauvegardee", handlePartieSauvegardee);
-    }
-  }, []);
+  },[]);
 
   useEffect(()=>{
-    console.log("isloaded")
-      socket.emit('isloaded', {idPartie: idPartie});
-      socket.on('isloaded', (data) => {
+    socket.on("partieChargee", (data) => {
+      // console.log("cc");
+      if (data.id == idPartie) {
+        setgameStart(true);
+        socket.emit("isHost",{idPartie:urlP.get("idPartie")});
+              socket.on("isHost", (data) => {
+                  if (data === true){
+                      setHost(true);
+                  }
+              });
+        setListeLignes(data.lignes);
+        socket.emit("wantCarte", { "idPartie": idPartie});
+        socket.on("getCarte", (data) => {
+          setListeCartes(data.main);
+        });
+        
+      }
+    }
+    );
+  },[]);
+
+  useEffect(()=>{
+    socket.emit('isloaded', {idPartie: idPartie});
+    socket.on('isloaded', (data) => {
       if(data !== false){
         setgameStart(true);
         setListeLignes(data.lignes);
@@ -282,45 +254,114 @@ function Jouer(){
         socket.on("getCarte", (data) => {
           setListeCartes(data.main);
         });
+        socket.emit("isHost",{idPartie:urlP.get("idPartie")});
+              socket.on("isHost", (data) => {
+                  if (data === true){
+                      setHost(true);
+                  }
+              });
       }
     }
     );
   },[]);
 
-
-useEffect(()=>{
-  console.log("listeCartes");
-  let nouvelleMain2 =[]; //Futur liste d'entiers
-  listeCartes.forEach((element,index)=>{ //C'est une boucle sur liste listeCartes
-    nouvelleMain2.push(element.valeur); //Tout les elements de listeCartes sont mits dans la liste nouvelle main
-  });
-  setNouvelleMain(nouvelleMain2);
-
-  // console.log(nouvelleMain);
-
-}, [listeCartes]); //S'effectue a chaque changement de listeCartes
-
-
-useEffect(()=>{
-  console.log("listeLignes");
-  let nouvelleListeLignes2 = []; //Futur liste de listes d'entiers
-  listeLignes.forEach((ligne,index)=>{
-    nouvelleListeLignes2.push([]); //Initialisation des sous tableaux
-    ligne.forEach((carte,idx)=>{ //Boucle dans chaque ligne
-      nouvelleListeLignes2[index].push(carte.valeur); //
+  useEffect(()=>{
+    socket.on("getScores",(data)=>{
+      // console.log(idPartie);
+      // console.log(data.idPartie);
+      if(data.idPartie==idPartie){
+        setInfosJoueurs(data.infosJoueurs);
+      }
     });
-  });
-  setNouvelleListeLignes(nouvelleListeLignes2);
-  
-  // console.log(nouvelleListeLignes);
+  },[]);
 
-},[listeLignes]); //S'effectue a chaque chanement de listeLignes
+  useEffect(()=>{
+
+    let nouvelleMain2 =[]; //Futur liste d'entiers
+    listeCartes.forEach((element,index)=>{ //C'est une boucle sur liste listeCartes
+      nouvelleMain2.push(element.valeur); //Tout les elements de listeCartes sont mits dans la liste nouvelle main
+    });
+    setNouvelleMain(nouvelleMain2);
+
+    // console.log(nouvelleMain);
+
+  }, [listeCartes]); //S'effectue a chaque changement de listeCartes
+
+
+  useEffect(()=>{
+
+    let nouvelleListeLignes2 = []; //Futur liste de listes d'entiers
+    listeLignes.forEach((ligne,index)=>{
+      nouvelleListeLignes2.push([]); //Initialisation des sous tableaux
+      ligne.forEach((carte,idx)=>{ //Boucle dans chaque ligne
+        nouvelleListeLignes2[index].push(carte.valeur); //
+      });
+    });
+    setNouvelleListeLignes(nouvelleListeLignes2);
+    
+    // console.log(nouvelleListeLignes);
+
+  },[listeLignes]); //S'effectue a chaque chanement de listeLignes
+
+  
+  useEffect(()=>{
+    socket.on("choixCarte", (data) => {
+      
+      socket.emit("wantCarte", { "idPartie": idPartie});
+
+      if(data!=false){
+        setnumeroCarteEval(data);
+        // console.log(data);
+      }
+    
+    })
+    
+
+  }, []);
+
+
+  useEffect(()=>{
+    socket.on("tourPasse",(info)=>{
+
+      if (info.idPartie == idPartie) {
+        
+      // setListeJoueurs(info.joueurs);
+      // nouvelle carte à afficher sur la gauche 
+      setListeLignes(info.lignes);
+      // choixNecessaire c'est un boolean 
+      setChoixNecessaire(info.choixNecessaire);
+      /* c'est là */ setnumeroCarteEval(info.carteEval); 
+      setJourEval(info.joueurEval);
+      socket.emit("wantCarte", { "idPartie": idPartie});
+      }
+    });
+  },[]);
+
+
+  // info de fin de partie
+  useEffect(()=>{
+    socket.on("gameFinished", (data)=>{
+      if (data.idPartie == idPartie) {
+        setFinish(true);
+        setInfosFinPartie(data.classement);
+      }
+    })
+  }, []);
+
+  useEffect(()=>{
+    socket.on("partiesauvegardee",(data)=>{
+        // console.log(data);
+        if(data.idPartie == urlP.get("idPartie")){
+            navigate("/6quiprend"); // regler
+        }
+    });
+},[socket, urlP]);
 
   // INFO ENVOYEES AU SERVEUR
 
   function sauvegarderPartie(){
     // console.log("coucou")
-    socket.emit("sauvegarderPartieSixQuiPrend",{"idPartie":idPartie});
+    socket.emit("sauvegarderPartieSixQuiPrend",{"idPartie":urlP.get("idPartie")})
     navigate("/6quiprend")
 }
   
