@@ -47,6 +47,7 @@ class JoueurShadowHunter extends Joueur{//Comme le shadow hunter a des règles b
         this.objets = []; //Contenu de la main du joueur
         this.choix;
         this.éliminé = false;
+        this.position = math.floor(Math.random()*10);
 
     }
 

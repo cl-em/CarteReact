@@ -203,6 +203,8 @@ function lancerPartie(idPartie){
       partiesOuvertes.splice(partie)
       console.log("lancement de la partie "+idPartie)
     }
+
+
   }
 }
 
@@ -680,6 +682,23 @@ io.on('connection', (socket) => {
               io.emit("getScores",{"idPartie":partie.id,"infosJoueurs":infosJoueurs});
               socket.emit("getCarte",{"main":main,"infosJoueurs":infosJoueurs})
             }
+
+            if (partie.type=="shadowHunter"){
+              var joueurCourant;
+              var joueurs = []
+
+              for (var joueur in partie.joueurs){//Renvoi de la main du joueur
+                if (partie.joueurs[joueur].idJoueur==socket.data.userId){//Joueur courant
+                  joueurCourant = {"dégats":joueur.hurtPoint,"révélé":joueur.révélé,"personnage":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed}
+                }
+                else{//Autres joueurs
+                  if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"révélé":false,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})}
+                  else{ if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})}
+                }
+              }
+                }
+              socket.emit("getCarte",{"joueurCourant":joueurCourant,"joueurs":joueurs})
+            }
           }
         }
         
@@ -995,8 +1014,6 @@ io.on('connection', (socket) => {
 
 
 
-
-
               socket.on("choixCarte",data=>{
                 for (var partie of partiesEnCours){
                   if (partie.id == data.idPartie){
@@ -1059,6 +1076,14 @@ io.on('connection', (socket) => {
                               return;
                             }
               }}}})
+                          //-----------Pour Shadow Hunter (ça va être long)------------------------------
+                          
+                          async function shadowHunterStep(partie){}
+
+                          socket.on("choixShadowHunter",data=>{
+
+                          })
+            
             });
             
             

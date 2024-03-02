@@ -501,11 +501,11 @@ class shadowHunter extends Game{
         this.type="shadowHunter"
         this.joueurcourant = undefined
         this.state = undefined
-
+        this.variableTemp = undefined
         //Choix des personnages
-        var shadows = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
-        var hunters = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"].sort((a, b) => 0.5 - Math.random());
-        var neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
+        this.shadows = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
+        this.hunters = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"].sort((a, b) => 0.5 - Math.random());
+        this.neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
         this.personnages = []
 
         var s = 0
@@ -546,24 +546,28 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Bénédiction', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Amulette', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Toge_Sainte', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
-        this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Premiers_Soins', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
 
         this.noires = []
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
         this.noires.push(new CarteShadowHunter('Peau_De_Banane', 'consommable'))
         this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'consommable'))
         this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
         this.noires.push(new CarteShadowHunter('Succube_Tentatrice', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
         this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
         this.noires.push(new CarteShadowHunter('Hachoir_Maudit', 'équipement'))
         this.noires.push(new CarteShadowHunter('Mitrailleuse_Funeste', 'équipement'))
@@ -588,9 +592,45 @@ class shadowHunter extends Game{
         
     }
 
+    //-------------------------Fonction de gestion de la partie-------------------------------------------
+
+    zonesAdjacentes(z1,z2){
+        if (z1==z2){return true}
+
+        for (var z in this.zones){
+            if (z1==this.zones[z]){
+                if (z%2==0){
+                    if (this.zones[(z+1)]==z2){
+                        return true
+                    }
+                }
+                else{
+                    if (this.zones[z-1]==z2){return true}
+                }
+                return false
+            }
+        }
+        
+    }
+
     shuffle(paquet){//fonction de mélange pour les différentes piles de cartes
         paquet = paquet.sort((a, b) => 0.5 - Math.random());
     }
+
+    getDeath(){
+        for (var test of this.joueurs){
+            if (test.hurtPoint>=test.hp && test.éliminé!=false){
+                return test.idJoueur
+            }
+        }
+        return false
+    }
+
+    getWinners(){//Fonction renvoyant un tableau contenant les idJoueurs des gagnants, ou "false" s'il n'y en a pas encore
+
+    }
+
+
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
        this.shuffle(this.blanches)
@@ -630,6 +670,142 @@ class shadowHunter extends Game{
         }
         else{return false;}}
 
+
+        //---------------------------------FONCTIONS DE GESTION DES CARTES PIOCHEES---------------------------------------------
+        drawBlanche(idJoueur){
+            var joueur;
+            for (var test of this.joueurs){//Trouver le joueur concerné
+                if (test.idJoueur == idJoueur){
+                    joueur = test;
+                }
+            }
+
+            var carte = this.blanches.shift()
+            if (carte.type=="équipement"){
+                joueur.objets.push(carte.valeur)//Les inventaires sont juste des listes de string, pas besoin de plus.
+            }
+            else{
+                switch (carte.valeur) {
+                    case "Ange_Gardien":
+                        joueur.protected = true;
+                        break;
+                    case "Avènement_Suprême":
+                        if (this.hunters.contains(joueur.character)){
+                        this.joueurcourant = joueur.idJoueur
+                        this.state = "Avènement_Suprême"
+                        }
+                        break;
+                    case "Barre_De_Chocolat":
+                        if ((joueur.révélé==true) && joueur.hp<=11){
+                            joueur.hurtPoint = 0
+                        }
+                        if (joueur.révélé = false && joueur.hp<=11){
+                            this.state = "Barre_De_Chocolat"
+                            this.joueurcourant = joueur.idJoueur
+                        }
+                        break;
+                    case "Bénédiction":
+                        this.state = "Bénédiction"
+                        this.joueurcourant = joueur.idJoueur
+                    break;
+                    case "Eau_Bénite":
+                        joueur.hurtPoint-=2
+                        if (joueur.hurtPoint<0){joueur.hurtPoint = 0}
+                    break;
+                    case "Miroir_Divin":
+                      if (this.shadows.contains(joueur.character)){
+                        joueur.révélé = true
+                      }
+                    break;
+                    case "Premiers_Soins":
+                        this.state = "Premiers_Soins"
+                        this.joueurcourant = joueur.idJoueur
+                    break;
+                    case "Savoir_Ancestral":
+                        joueur.turnsToPlay++
+                    break;
+                
+                    default:
+                        break;
+                }
+            }
+
+
+            return carte.valeur
+        }
+
+
+
+
+drawNoire(idJoueur){
+    var joueur
+    for (var test of this.joueurs){//Trouver le joueur concerné
+        if (test.idJoueur == idJoueur){
+            joueur = test;
+        }
+    }
+
+    var carte = this.noires.shift()
+    var data;
+    if (carte.type=="équipement"){
+        joueur.objets.push(carte.valeur)//Les inventaires sont juste des listes de string, pas besoin de plus.
+    }
+    else{
+        switch (carte.valeur) {
+            case "Araignée_Sanguinaire":
+                this.state = "Araignée_Sanguinaire";
+                this.joueurcourant = joueur
+                break;
+            case "Chauve-Souris_Vampire":
+                this.joueurcourant = joueur.idJoueur
+                this.state = "Chauve-Souris_Vampire"
+                break;
+            case "Dynamite":
+                var destination = math.floor(Math.random()*10)
+                for (var test of this.joueurs){
+                    if (test.position==destination||this.zonesAdjacentes(this.position,destination)){
+                        test.hurtPoint++
+                    }
+                    data = destination
+                }
+
+              
+                break;
+            case "Peau_De_Banane":
+                if (joueur.objets.length==0){
+                    joueur.hurtPoint++
+                    data = "noItems"
+                }
+                else{
+                    this.state = "Peau_De_Banane_1"
+                    this.joueurcourant = joueur.idJoueur
+                }
+
+            break;
+            case "Poupée_Démoniaque":
+              this.state = "Poupée_Démoniaque"
+              this.joueurcourant = joueur.idJoueur
+            break;
+            case "Rituel_Diabolique":
+
+            if (this.shadows.contains(joueur.character)){
+                this.state = "Rituel_Diabolique"
+                this.joueurcourant = joueur.idJoueur
+            }
+
+            break;
+            case "Succube_Tentatrice":
+                this.state = "Succube_Tentatrice"
+                this.joueurcourant = joueur.idJoueur
+            break;
+        
+            default:
+                break;
+        }
+    }
+    return {"valeur":carte.valeur,"data":data}
 }
 
+
+}
 module.exports = { Game,Bataille,sixquiprend,shadowHunter }
