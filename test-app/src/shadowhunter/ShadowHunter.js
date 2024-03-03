@@ -3,27 +3,50 @@ import React, { useEffect, useState, useRef} from 'react';
 import SocketContext from '../SocketContext';
 import Chat from '../Chat';
 import {useNavigate } from "react-router-dom";
-
+import Dice from "react-dice-roll";
 
 
 function Main({listeDeCarte}){ // liste de string 
+
+    let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+    let idPartie =  urlP.get("idPartie");
+
+    let socket = React.useContext(SocketContext);
+
     return (
         <div id="main-cartes-sh">
             {listeDeCarte.map((element,index)=>(
-                <img key={index} src={"http://localhost:8888/carteShadow/"+element} alt={element}/>
+                <img key={index} src={"http://localhost:8888/carteShadow/"+element} alt={element}
+                onClick={()=>{
+                    socket.emit("choixCarte",{idPartie:idPartie,idCarte:element});
+                }}
+                />
             ))} 
         </div>
     )
 }
 
 function Role({nomCarte}){
+    let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+    let idPartie =  urlP.get("idPartie");
+
+    let socket = React.useContext(SocketContext);
     
     return (
         <div id="role-carte-sh">
             <img src={"http://localhost:8888/carteShadow/"+nomCarte}  alt={nomCarte} />
             <div>
-            <button className="joliebouton2">Révéler</button>
-            <button className="joliebouton2">Utiliser sa capacité</button>
+            <button className="joliebouton2"
+            onClick={()=>{
+                socket.emit("reveleCarte",{idPartie:idPartie,capacite:nomCarte});
+            }}
+            
+            >Révéler</button>
+            <button className="joliebouton2"
+            onClick={()=>{
+                socket.emit("utiliseCapacite",{idPartie:idPartie,capacite:nomCarte});
+            }}
+            >Utiliser sa capacité</button>
             </div>
         </div>
     )
@@ -32,7 +55,7 @@ function Role({nomCarte}){
 function Stats({}){
     return (
         <div id="stats-sh">
-            Stats des joueurs (menu défilant)
+                Stats des joueurs (menu défilant)
         </div>
     )
 }
@@ -43,27 +66,27 @@ function Plateau({ carteEnFonctionDeLaZone }) {
             <div className="plateau-flex">
                 <div className="plateau plateau-gauche">
                     <div className="carte">
-                        <img src="http://localhost:8888/carteShadow/Vampire.avif" alt="Vampire"/>
+                        <img src="http://localhost:8888/carteShadow/zone1.avif" alt="Vampire"/>
                     </div>
                     <div className="carte">
-                        <img src="http://localhost:8888/carteShadow/Vampire.avif" alt="Loup-garou"/>
+                        <img src="http://localhost:8888/carteShadow/zone2.avif" alt="Loup-garou"/>
                     </div>
                 </div>
                 <div className="plateau plateau-droite">
                     <div className="carte">
-                        <img src="http://localhost:8888/carteShadow/Vampire.avif" alt="Sorcier"/>
+                        <img src="http://localhost:8888/carteShadow/zone3.avif" alt="Sorcier"/>
                     </div>
                     <div className="carte">
-                        <img src="http://localhost:8888/carteShadow/Vampire.avif" alt="Fée"/>
+                        <img src="http://localhost:8888/carteShadow/zone4.avif" alt="Fée"/>
                     </div>
                 </div>
             </div>
             <div className="plateau plateau-base">
                 <div className="carte">
-                    <img src="http://localhost:8888/carteShadow/Vampire.avif" alt="Elfe"/>
+                    <img src="http://localhost:8888/carteShadow/zone5.avif" alt="Elfe"/>
                 </div>
                 <div className="carte">
-                    <img src="http://localhost:8888/carteShadow/Vampire.avif" alt="Dragon"/>
+                    <img src="http://localhost:8888/carteShadow/zone6.avif" alt="Dragon"/>
                 </div>
             </div>
         </div>
@@ -75,11 +98,13 @@ function Jouer(){
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie =  urlP.get("idPartie");
 
+    let socket = React.useContext(SocketContext);
+
     //joueurCourant:
     const [degatPris,setDegatPris] = useState(0);
-    const [personnage,setPersonnage] = useState("Allie"); 
+    const [personnage,setPersonnage] = useState("Allie.avif"); 
     const [carteRevele,setCarteRevele] = useState(false);
-    const [stuff,setStuff]  = useState([]);
+    const [stuff,setStuff]  = useState(["Amulette.avif"]);
     const [pouvoirUtilise,setPouvoirUtilise]  = useState(true);
 
     // liste de joueurs
@@ -92,9 +117,9 @@ function Jouer(){
 
         socket.emit("wantCarte",{ "idPartie": idPartie});
 
-        socket.on("wantCarte",(data)=>{
+        socket.on("getCarte",(data)=>{
             let courant = data.joueurCourant;
-            setDegatPris(courant.dégâts); // int 
+            setDegatPris(courant.dégaots); // int 
             setPersonnage(courant.personnage); // String
             setCarteRevele(courant.révélé); // bool
 
@@ -105,6 +130,50 @@ function Jouer(){
         });
     },[]);
 
+
+    let [message,setMessage] = useState("");
+    let [jetsDes,setJetsDes] = useState([0,0]);
+    let [joueurConcerne,setJoueurConcerne]= useState("moi");
+    let [attaquant,setAttaquant] = useState("moi");
+    let [defenseur,setDefenseur] = useState("moi");
+    // {pseudo:string,carte:false si pas révélé String sinon,
+    // objetsPertinents:array de string}
+
+    let [estRevele,setEstRevele] = useState(false);
+    // false : c'est une carte pioché
+
+    useEffect(()=>{
+        socket.on("tourPasse",(data)=>{
+            let action = data.rapportAction;
+            let zozo = action.valeur;
+            switch (action.type) {
+                case "jetsDeDés":
+                    setJetsDes(zozo.valeurs);
+                    break;
+                case "dégatSubits":
+                    setJoueurConcerne(zozo.pseudo);
+                    setDegatPris(zozo.dégâts);
+                    break;
+                case  "cartePiochée":
+                    setCarteRevele(zozo);
+                    setEstRevele(false);
+                    break;
+                case "carteRévélée" :
+                    setCarteRevele(zozo);
+                    setEstRevele(true);
+                    break;
+                case "attaque":
+                    setAttaquant(zozo.attaquant);
+                    setDefenseur(zozo.defenseur);
+                    break;
+                default : 
+                    console.log("probleme");
+                    break;
+            }
+
+
+        });
+    },[]);
 
 
 
@@ -128,7 +197,7 @@ export default function ShadowHunter(){
         const OAlign = document.body.style.display;
         const OJustify = document.body.style.display;
 
-        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.avif")`;
+        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
         document.body.style.height = '100%';
         document.body.style.margin = '0';
         document.body.style.padding = '0';
@@ -153,11 +222,9 @@ export default function ShadowHunter(){
     return(
         <>
         <div id="default">
-            {/* <Role nomCarte={"Vampire.avif"}/> */}
-            <Role nomCarte={"Agnès.avif"}/>
             <Stats />
             <Plateau/>
-            <Main listeDeCarte={["Agnès.avif","Allie.avif","Amulette.avif","Broche_De_Chance.avif", "Agnès.avif","Allie.avif","Amulette.avif","Broche_De_Chance.avif", "Agnès.avif","Allie.avif","Amulette.avif","Broche_De_Chance.avif", "Agnès.avif","Allie.avif","Amulette.avif","Broche_De_Chance.avif"]}/>
+            <Jouer />
             <Chat />
         </div>
         </>

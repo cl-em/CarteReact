@@ -514,19 +514,19 @@ class shadowHunter extends Game{
         while(this.personnages.length<this.joueursMax){
 
             if ((this.joueursMax-this.personnages.length==1 || s+h>n*2) && (s==h)){
-                this.personnages.push(neutres.shift())
+                this.personnages.push(this.neutres.shift())
                 n++
                 console.log("neutres: "+n)
             }
             else{
     
                     if (s<h){
-                        this.personnages.push(shadows.shift())
+                        this.personnages.push(this.shadows.shift())
                         s++
                         console.log("shadow: "+s)
                     }
                     else{
-                        this.personnages.push(hunters.shift())
+                        this.personnages.push(this.hunters.shift())
                         h++
                         console.log("hunters: "+h)
                     
