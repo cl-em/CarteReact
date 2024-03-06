@@ -33,12 +33,12 @@ function ListePartiesMagic(){
     const createPartie = () => {
         socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"Magic"});
         socket.on('creerPartie', (idPartie) => {
-            // console.log(idPartie);
+            console.log(idPartie);
             if (idPartie === false) {
               navigate("/");
             }
             else{
-              navigate("/Magic?idPartie="+idPartie);
+              navigate("/shadhowhunterjeu?idPartie="+idPartie);
             }
         }
         );
@@ -48,7 +48,7 @@ function ListePartiesMagic(){
         console.log(idPartie);
         socket.on('rejoindrePartie', (data) => {
             console.log(data);
-            if (data !== false && data == idPartie) {
+            if (data !== false && data === idPartie) {
                 navigate("/shadowhunterjeu?idPartie="+idPartie);
             }
             else{
@@ -59,14 +59,14 @@ function ListePartiesMagic(){
     }
     return (
     <div className='main'>
-      <button class="joliebouton2" onClick={()=>navigate("/leaderboardMagic")}>Afficher le leaderboard</button> <br></br> <br></br>
+      <button className="joliebouton2" onClick={()=>navigate("/leaderboardMagic")}>Afficher le leaderboard</button> <br></br> <br></br>
       <div className='joinPartieId'>
-        <input  class="input1" type="text" placeholder="Id de la partie" id="idPartie"></input> 
-        <button  class="joliebouton2" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>
+        <input  className="input1" type="text" placeholder="Id de la partie" id="idPartie"></input> 
+        <button  className="joliebouton2" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>
       </div>
       <div className="createPartie">
-        <input class="input1" type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input> 
-        <button class="joliebouton2" onClick={createPartie}>Créer !</button> <br></br> <br></br>
+        <input className="input1" type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input> 
+        <button className="joliebouton2" onClick={createPartie}>Créer !</button> <br></br> <br></br>
       </div>
     
 
@@ -80,12 +80,12 @@ function ListePartiesMagic(){
               <p>{partie.joueursActuels}/{partie.joueursMax}</p>
               <p>Magic</p>
               {/* <button onClick={()=>navigate("/6quiprend")}>Rejoindre !</bsutton> */}
-              <button class="joliebouton2"onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
+              <button className="joliebouton2"onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
             </div>
           )
         })}
       </div>
-      <button class="joliebouton2" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
+      <button className="joliebouton2" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
       {/* importer la leaderboard  faut ajouter le css
       <div className='Leaderboard'> 
         <Leaderboard/>
