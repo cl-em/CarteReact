@@ -44,12 +44,12 @@ function ListePartiesMagic(){
         );
     }
     const rejoindrePartie = (idPartie) => {
-        socket.emit('rejoindrePartie', {"idPartie":idPartie, "type":"Magic"});
+        socket.emit('rejoindrePartie', {"idPartie":idPartie, "type":"shadowHunter"});
         console.log(idPartie);
         socket.on('rejoindrePartie', (data) => {
-            // console.log(data);
-            if (data !== false && data === idPartie) {
-                navigate("/MagicJeu?idPartie="+idPartie);
+            console.log(data);
+            if (data !== false && data == idPartie) {
+                navigate("/shadowhunterjeu?idPartie="+idPartie);
             }
             else{
               const message = "La partie est pleine ou n'existe pas !";

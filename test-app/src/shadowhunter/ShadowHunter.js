@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef} from 'react';
 import SocketContext from '../SocketContext';
 import Chat from '../Chat';
 import {useNavigate } from "react-router-dom";
-import Dice from "react-dice-roll";
+// import Dice from "react-dice-roll";
 
 
 function Main({listeDeCarte}){ // liste de string 
