@@ -9,7 +9,7 @@ function ListePartiesMagic(){
     const [partiesOuvertes, setPartiesOuvertes] = useState([]);
     
     useEffect(() => {
-        socket.emit('demandepartiesouvertes', 'Magic');
+        socket.emit('demandepartiesouvertes', 'shadowHunter');
         socket.on('partiesOuvertes', (data) => {
             setPartiesOuvertes(data);
         });
@@ -31,7 +31,7 @@ function ListePartiesMagic(){
 
     const [joueursMax, setJoueursMax] = useState(2);
     const createPartie = () => {
-        socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"Magic"});
+        socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"shadowHunter"});
         socket.on('creerPartie', (idPartie) => {
             console.log(idPartie);
             if (idPartie === false) {
@@ -78,7 +78,7 @@ function ListePartiesMagic(){
             <div className={"test".concat(index%2)} key={index}>
               <p>{partie.id}</p>
               <p>{partie.joueursActuels}/{partie.joueursMax}</p>
-              <p>Magic</p>
+              <p>Shadow Hunter</p>
               {/* <button onClick={()=>navigate("/6quiprend")}>Rejoindre !</bsutton> */}
               <button className="joliebouton2"onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
             </div>
