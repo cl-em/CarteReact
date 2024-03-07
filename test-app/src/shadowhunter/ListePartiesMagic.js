@@ -38,7 +38,7 @@ function ListePartiesMagic(){
               navigate("/");
             }
             else{
-              navigate("/shadhowhunterjeu?idPartie="+idPartie);
+              navigate("/shadowhunterjeu?idPartie="+idPartie);
             }
         }
         );
@@ -53,6 +53,7 @@ function ListePartiesMagic(){
             }
             else{
               const message = "La partie est pleine ou n'existe pas !";
+              console.log(message);
             }
         }
         );
