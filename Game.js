@@ -665,7 +665,7 @@ class shadowHunter extends Game{
             }
         
             if (this.joueurs.length<this.joueursMax){
-            this.joueurs.push(new JoueurShadowHunter(idJoueur,false,this.personnages.shift()));
+            this.joueurs.push(new JoueurShadowHunter(idJoueur,false,this.personnages.shift(),10));
             return true
         }
         else{return false;}}
@@ -764,7 +764,7 @@ drawNoire(idJoueur){
                 var destination = math.floor(Math.random()*10)
                 for (var test of this.joueurs){
                     if (test.position==destination||this.zonesAdjacentes(this.position,destination)){
-                        test.hurtPoint++
+                        test.hurtPoint+=3
                     }
                     data = destination
                 }

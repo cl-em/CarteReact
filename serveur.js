@@ -158,6 +158,7 @@ var pseudos = {};
 const { Game,Bataille,sixquiprend, shadowHunter } = require('./Game.js');
 const { Joueur,JoueurShadowHunter } = require('./Joueur.js');
 const { Carte } = require('./Carte.js');
+const { Console } = require('console');
 
 
 
@@ -683,16 +684,17 @@ io.on('connection', (socket) => {
               var joueurCourant;
               var joueurs = []
 
-              for (var joueur in partie.joueurs){//Renvoi de la main du joueur
-                if (partie.joueurs[joueur].idJoueur==socket.data.userId){//Joueur courant
+              for (var joueur of partie.joueurs){//Renvoi de la main du joueur
+                if (joueur.idJoueur==socket.data.userId){//Joueur courant
                   joueurCourant = {"dégats":joueur.hurtPoint,"révélé":joueur.révélé,"personnage":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed}
                 }
                 else{//Autres joueurs
                   if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"révélé":false,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})}
-                  else{ if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})}
+                  else{joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})
                 }
               }
                 }
+               
               socket.emit("getCarte",{"joueurCourant":joueurCourant,"joueurs":joueurs})
             }
           }
@@ -725,8 +727,8 @@ io.on('connection', (socket) => {
                 }, 1000);
 
                 setTimeout(() => {
-                  
                   if (partie.type=="shadowHunter"){
+                  
                   let listejoueurs = [];
                   for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur])}
                   io.emit("gameStarting",{"idPartie":data.idPartie,"joueurs":listejoueurs})}
@@ -1074,6 +1076,24 @@ io.on('connection', (socket) => {
               }}}})
                           //-----------Pour Shadow Hunter (ça va être long)------------------------------
                           
+                        socket.on("reveleCarte",data=>{
+                          for (var partie of partiesEnCours){
+                            if (partie.id == data.idPartie){
+                              for (var joueur of partie.joueurs){
+                                if (joueur.character=="capacite"){
+                                  joueur.révélé = true;
+                                  console.log("Le joueur "+ socket.data.userId+ " s'est révélé.")
+                                }
+                              }
+                            }
+                          }
+                        })
+
+                        
+
+
+
+
                           async function shadowHunterStep(partie){}
 
                           socket.on("choixShadowHunter",data=>{

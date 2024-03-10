@@ -16,7 +16,7 @@ function Main({listeDeCarte}){ // liste de string
     return (
         <div id="main-cartes-sh">
             {listeDeCarte.map((element,index)=>(
-                <img key={index} src={"http://localhost:8888/carteShadow/"+element} alt={element}
+                <img key={index} src={"http://localhost:8888/carteShadow/"+element+".avif"} alt={element}
                 onClick={()=>{
                     socket.emit("choixCarte",{idPartie:idPartie,idCarte:element});
                 }}
@@ -34,11 +34,11 @@ function Role({nomCarte}){
     
     return (
         <div id="role-carte-sh">
-            <img src={"http://localhost:8888/carteShadow/"+nomCarte}  alt={nomCarte} />
+            <img src={"http://localhost:8888/carteShadow/"+nomCarte+".avif"}  alt={nomCarte} />
             <div>
             <button className="joliebouton2"
             onClick={()=>{
-                socket.emit("reveleCarte",{idPartie:idPartie,capacite:nomCarte});
+                socket.emit("reveleCarte",{"idPartie":idPartie,"capacite":nomCarte});
             }}
             
             >Révéler</button>
@@ -104,7 +104,7 @@ function Jouer(){
     const [degatPris,setDegatPris] = useState(0);
     const [personnage,setPersonnage] = useState("Allie.avif"); 
     const [carteRevele,setCarteRevele] = useState(false);
-    const [stuff,setStuff]  = useState(["Amulette.avif"]);
+    const [stuff,setStuff]  = useState(["Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif"]);
     const [pouvoirUtilise,setPouvoirUtilise]  = useState(true);
 
     // liste de joueurs

@@ -72,7 +72,7 @@
 
 .carte img {
     max-height: 180px;
-    display: block; /* Élimine l'espace sous les images */
+    display: block; 
 }
 
 #stats-sh{
