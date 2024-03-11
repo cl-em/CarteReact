@@ -135,7 +135,7 @@ function Jouer(){
         });
     },[]);
 
-    
+    // info des tours
     let [message,setMessage] = useState("");
     let [jetsDes,setJetsDes] = useState([0,0]);
     let [joueurConcerne,setJoueurConcerne]= useState("moi");
