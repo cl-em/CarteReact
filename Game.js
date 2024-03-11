@@ -597,20 +597,14 @@ class shadowHunter extends Game{
     zonesAdjacentes(z1,z2){
         if (z1==z2){return true}
 
-        for (var z in this.zones){
-            if (z1==this.zones[z]){
-                if (z%2==0){
-                    if (this.zones[(z+1)]==z2){
-                        return true
-                    }
-                }
-                else{
-                    if (this.zones[z-1]==z2){return true}
-                }
-                return false
-            }
+        if (z1%2==0){
+            return (z2==z1+1)
         }
         
+        else{
+            return (z2==z1-1)
+        }
+
     }
 
     shuffle(paquet){//fonction de mélange pour les différentes piles de cartes

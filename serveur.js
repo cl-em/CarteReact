@@ -186,6 +186,11 @@ getpseudos();
 //-------------------------------Tests Elouand-----------------------------------------------
 console.log("-----------------TESTS-------------------")
 
+var part = new shadowHunter(1,4)
+part.initGame()
+console.log(part.zones)
+console.log(part.zonesAdjacentes(4,5))
+
 
 
 
