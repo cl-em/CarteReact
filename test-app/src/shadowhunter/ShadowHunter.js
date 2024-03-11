@@ -111,11 +111,16 @@ function Jouer(){
     const [listeJoueurs,setListeJoueurs] = useState([]);
     // {pseudo:string,révélé:bool à false si non révélé string sinon,pouvoirUtilisé:bool,dégâts:int}
 
+    useEffect(()=>{
+        socket.on("gameStarting",(data)=>{
+            if(data.idPartie === idPartie)
+                socket.emit("wantCarte",{idPartie:idPartie});
+        })
+    },[])
 
 
     useEffect(()=>{
-
-        socket.emit("wantCarte",{ "idPartie": idPartie});
+        
 
         socket.on("getCarte",(data)=>{
             let courant = data.joueurCourant;
@@ -130,7 +135,7 @@ function Jouer(){
         });
     },[]);
 
-
+    
     let [message,setMessage] = useState("");
     let [jetsDes,setJetsDes] = useState([0,0]);
     let [joueurConcerne,setJoueurConcerne]= useState("moi");

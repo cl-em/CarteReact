@@ -23,6 +23,7 @@ const HamburgerMenu = () => {
                 <li><a href='/games'>Games</a></li>
                 <li><a href='/bataille'>Bataille</a></li>
                 <li><a href='/6quiprend'>6QuiPrend</a></li>
+                <li><a href="/magic">magic</a> </li>
                 <li><a href='/leaderboardbataille'>Leaderboard Bataille</a></li>
                 <li><a href='/leaderboard6quiprend'>Leaderboard 6QuiPrend</a></li>
                 </ul>
