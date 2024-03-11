@@ -102,9 +102,9 @@ function Jouer(){
 
     //joueurCourant:
     const [degatPris,setDegatPris] = useState(0);
-    const [personnage,setPersonnage] = useState("Allie.avif"); 
+    const [personnage,setPersonnage] = useState("Allie"); 
     const [carteRevele,setCarteRevele] = useState(false);
-    const [stuff,setStuff]  = useState(["Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif", "Amulette.avif"]);
+    const [stuff,setStuff]  = useState(["Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette"]);
     const [pouvoirUtilise,setPouvoirUtilise]  = useState(true);
 
     // liste de joueurs
