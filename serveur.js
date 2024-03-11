@@ -731,7 +731,7 @@ io.on('connection', (socket) => {
                   
                   let listejoueurs = [];
                   for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur])}
-                  io.emit("gameStarting",{"idPartie":data.idPartie,"joueurs":listejoueurs})}
+                  io.emit("gameStarting",{"idPartie":data.idPartie,"joueurs":listejoueurs,"zones":partie.zones})}
                 }, 1000);
                 
                 
