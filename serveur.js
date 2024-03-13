@@ -188,8 +188,10 @@ console.log("-----------------TESTS-------------------")
 
 var part = new shadowHunter(1,4)
 part.initGame()
+console.log(part)
+console.log(part.drawNoire(1))
 console.log(part.zones)
-console.log(part.zonesAdjacentes(4,5))
+  
 
 
 
@@ -1084,12 +1086,21 @@ io.on('connection', (socket) => {
                         socket.on("reveleCarte",data=>{
                           for (var partie of partiesEnCours){
                             if (partie.id == data.idPartie){
+                              console.log("Le joueur "+ socket.data.userId+ " s'est révélé avec le personnage "+data.capacite)
                               for (var joueur of partie.joueurs){
-                                if (joueur.character=="capacite"){
+                                if (joueur.idJoueur == socket.data.userId){
+                                if (joueur.character==data.capacite && joueur.révélé==false){
                                   joueur.révélé = true;
-                                  console.log("Le joueur "+ socket.data.userId+ " s'est révélé.")
+                                  console.log("    | révélation faite avec succès")
+                                  return
                                 }
-                              }
+                                if (joueur.révélé==true){
+                                  console.log("    | joueur déjà révélé !")
+                                  
+                                  return
+                                }
+                                console.log("    | révélation échouée")
+                              }}
                             }
                           }
                         })

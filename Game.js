@@ -755,7 +755,7 @@ drawNoire(idJoueur){
                 this.state = "Chauve-Souris_Vampire"
                 break;
             case "Dynamite":
-                var destination = math.floor(Math.random()*10)
+                var destination = Math.floor(Math.random()*10)
                 for (var test of this.joueurs){
                     if (test.position==destination||this.zonesAdjacentes(this.position,destination)){
                         test.hurtPoint+=3
@@ -799,6 +799,8 @@ drawNoire(idJoueur){
     }
     return {"valeur":carte.valeur,"data":data}
 }
+
+
 
 
 }
