@@ -67,16 +67,13 @@ function Stats({}){
 function CartePlateau({deuxCarte,position}){ //deuxCarte : list 2 element 
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie =  urlP.get("idPartie");
-
     let socket = React.useContext(SocketContext);
-
-
 
     return (
         <div className={"plateau plateau-"+position}>
             {deuxCarte.map((carte,index)=>(
                 <div className="carte" key={index}>
-                    <img src={"http://localhost:8888/carteShadow/"+carte} alt={carte} 
+                    <img src={"http://localhost:8888/carteShadow/"+carte+".avif"} alt={carte} 
                     onClick={()=>{
                         socket.emit("choixCarte",{idPartie:idPartie,type:"zone",carte:carte});
                     }}
@@ -88,7 +85,6 @@ function CartePlateau({deuxCarte,position}){ //deuxCarte : list 2 element
 }
 
 function Plateau({ carteEnFonctionDeLaZone }) {
-
     return (
         <div className="plateau-container">
             <div className="plateau-flex">
@@ -125,7 +121,7 @@ function Jouer(){
             if(data.idPartie === idPartie){
                 socket.emit("wantCarte",{idPartie:idPartie});
 
-                setZoneDeJeu(data.zone);
+                setZoneDeJeu(data.zones);
             }
 
         })
