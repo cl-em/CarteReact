@@ -18,7 +18,8 @@ function Main({listeDeCarte}){ // liste de string
             {listeDeCarte.map((element,index)=>(
                 <img key={index} src={"http://localhost:8888/carteShadow/"+element+".avif"} alt={element}
                 onClick={()=>{
-                    socket.emit("choixCarte",{idPartie:idPartie,idCarte:element});
+                    socket.emit("choixCarte",{idPartie:idPartie,idCarte:element,type:"itemlocalw"});
+                    console.log("choixcarte");
                 }}
                 />
             ))} 
@@ -39,12 +40,15 @@ function Role({nomCarte}){
             <button className="joliebouton2"
             onClick={()=>{
                 socket.emit("reveleCarte",{"idPartie":idPartie,"capacite":nomCarte});
+                console.log("reveleCarte");
             }}
             
             >Révéler</button>
             <button className="joliebouton2"
             onClick={()=>{
+                
                 socket.emit("utiliseCapacite",{idPartie:idPartie,capacite:nomCarte});
+                console.log("utiliseCapacite")
             }}
             >Utiliser sa capacité</button>
             </div>
@@ -60,34 +64,38 @@ function Stats({}){
     )
 }
 
+function CartePlateau({deuxCarte,position}){ //deuxCarte : list 2 element 
+    let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+    let idPartie =  urlP.get("idPartie");
+
+    let socket = React.useContext(SocketContext);
+
+
+
+    return (
+        <div className={"plateau plateau-"+position}>
+            {deuxCarte.map((carte,index)=>(
+                <div className="carte" key={index}>
+                    <img src={"http://localhost:8888/carteShadow/"+carte} alt={carte} 
+                    onClick={()=>{
+                        socket.emit("choixCarte",{idPartie:idPartie,type:"zone",carte:carte});
+                    }}
+                    />
+                </div>
+            ))}
+        </div>
+    )
+}
+
 function Plateau({ carteEnFonctionDeLaZone }) {
+
     return (
         <div className="plateau-container">
             <div className="plateau-flex">
-                <div className="plateau plateau-gauche">
-                    <div className="carte">
-                        <img src="http://localhost:8888/carteShadow/zone1.avif" alt="Vampire"/>
-                    </div>
-                    <div className="carte">
-                        <img src="http://localhost:8888/carteShadow/zone2.avif" alt="Loup-garou"/>
-                    </div>
-                </div>
-                <div className="plateau plateau-droite">
-                    <div className="carte">
-                        <img src="http://localhost:8888/carteShadow/zone3.avif" alt="Sorcier"/>
-                    </div>
-                    <div className="carte">
-                        <img src="http://localhost:8888/carteShadow/zone4.avif" alt="Fée"/>
-                    </div>
-                </div>
-            </div>
-            <div className="plateau plateau-base">
-                <div className="carte">
-                    <img src="http://localhost:8888/carteShadow/zone5.avif" alt="Elfe"/>
-                </div>
-                <div className="carte">
-                    <img src="http://localhost:8888/carteShadow/zone6.avif" alt="Dragon"/>
-                </div>
+                <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0,2)} position={"gauche"}/>
+                <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(2,4)} position={"droite"}/>
+                <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(4)} position={"base"}/> 
+
             </div>
         </div>
     );
@@ -109,12 +117,17 @@ function Jouer(){
 
     // liste de joueurs
     const [listeJoueurs,setListeJoueurs] = useState([]);
+    const [zoneDeJeu,setZoneDeJeu] = useState(["zone1.avif","zone2.avif","zone3.avif","zone4.avif","zone5.avif","zone6.avif"]);
     // {pseudo:string,révélé:bool à false si non révélé string sinon,pouvoirUtilisé:bool,dégâts:int}
 
     useEffect(()=>{
         socket.on("gameStarting",(data)=>{
-            if(data.idPartie === idPartie)
+            if(data.idPartie === idPartie){
                 socket.emit("wantCarte",{idPartie:idPartie});
+
+                setZoneDeJeu(data.zone);
+            }
+
         })
     },[])
 
@@ -180,12 +193,13 @@ function Jouer(){
         });
     },[]);
 
-
+    console.log("jouer" , zoneDeJeu);
 
     return (
         <div>
             <Role nomCarte={personnage}/>
             <Main listeDeCarte={stuff} />
+            <Plateau carteEnFonctionDeLaZone={zoneDeJeu} />
 
         </div>
     )
@@ -228,7 +242,6 @@ export default function ShadowHunter(){
         <>
         <div id="default">
             <Stats />
-            <Plateau/>
             <Jouer />
             <Chat />
         </div>

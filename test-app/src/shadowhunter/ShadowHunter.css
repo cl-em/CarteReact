@@ -40,12 +40,14 @@
     right: 0;
     height: 80%;
     gap: 80px; /* Espacement entre les éléments */
+    width: 50%;
 }
 
 .plateau-flex {
     display: flex;
     justify-content: center;
     gap: 100px; /* Espacement entre les plateaux gauche et droite */
+    flex-wrap: wrap;
 }
 
 .plateau {
