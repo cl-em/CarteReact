@@ -665,6 +665,17 @@ class shadowHunter extends Game{
         else{return false;}}
 
 
+
+        getIdFromCharacter(char){
+            for (var joueur of this.joueurs){
+                if (joueur.character==char){
+                    return joueur.idJoueur;
+                }
+                return null
+            }
+        }
+
+
         //---------------------------------FONCTIONS DE GESTION DES CARTES PIOCHEES---------------------------------------------
         drawBlanche(idJoueur){
             var joueur;
@@ -684,7 +695,7 @@ class shadowHunter extends Game{
                         joueur.protected = true;
                         break;
                     case "Avènement_Suprême":
-                        if (this.hunters.contains(joueur.character)){
+                        if (this.hunters.includes(joueur.character)){
                         this.joueurcourant = joueur.idJoueur
                         this.state = "Avènement_Suprême"
                         }
@@ -707,7 +718,7 @@ class shadowHunter extends Game{
                         if (joueur.hurtPoint<0){joueur.hurtPoint = 0}
                     break;
                     case "Miroir_Divin":
-                      if (this.shadows.contains(joueur.character)){
+                      if (this.shadows.includes(joueur.character)){
                         joueur.révélé = true
                       }
                     break;
@@ -782,7 +793,7 @@ drawNoire(idJoueur){
             break;
             case "Rituel_Diabolique":
 
-            if (this.shadows.contains(joueur.character)){
+            if (this.shadows.includes(joueur.character)){
                 this.state = "Rituel_Diabolique"
                 this.joueurcourant = joueur.idJoueur
             }
@@ -799,8 +810,69 @@ drawNoire(idJoueur){
     }
     return {"valeur":carte.valeur,"data":data}
 }
+        //---------------------------------FONCTIONS DE JEU---------------------------------------------
+
+        takeDamage(player,damage){//Attention, player est un objet joueur à qui faire les dégâts, pas un idJoueur
+            player.hurtPoint+=damage
+            if (player.isDead()){player.éliminé==true;return true}
+            return false
+        }
+
+    canAttack(atk,def){//Définit si le joueur d'id atk peut attaquer le jouer d'id def
+        var attaquant = null;
+        var défenseur = null;
+        for (var joueur of this.joueurs){
+            if (joueur.idJoueur==atk){attaquant = joueur}
+            if (joueur.idJoueur==def){défenseur= joueur }
+        }
+        if (attaquant==null||défenseur==null){return false}
+
+        return (this.zonesAdjacentes((attaquant.position,défenseur.position)&&!attaquant.hasItem("Revolver_Des_Ténèbres"))||!this.zonesAdjacentes((attaquant.position,défenseur.position)&&attaquant.hasItem("Revolver_Des_Ténèbres")))
+
+    }
+
+    startNextTurn(){//Fonction qui démarre le tour suivant, lance les dés de placement et  propose à Emi d'utiliser son pouvoir 
+
+    }
+
+    attaquer(atk,def){
+        var attaquant = null;
+        var défenseur = null;
+        for (var joueur of this.joueurs){
+            if (joueur.idJoueur==atk){attaquant = joueur}
+            if (joueur.idJoueur==def){défenseur= joueur }
+        }
+        if (attaquant==null||défenseur==null){return null}
+
+        var retour = {"dés":null,"dégâts":null,"lg":false}
+        var d6 =  Math.floor(Math.random()*6)
+        var d4 =  Math.floor(Math.random()*4)
+
+        var damage
+        if (attaquant.hasItem("Sabre_Hanté_Masamune")||attaquant.character=="Valkyrie"){baseDamage = d4;retour.dés = [d4]}
+        else{baseDamage = Math.abs(d6-d4);retour.dés = [d4,d6]}
+
+        var totalDamage = baseDamage
+        if (baseDamage>0){
+            if (attaquant.hasItem("Hachoir_Maudit")){totalDamage++}
+            if (attaquant.hasItem("Tronçonneuse_Du_Mal")){totalDamage++}
+            if (attaquant.hasItem("Hache_Tueuse")){totalDamage++}
+            if (attaquant.hasItem("Lance_De_Longinus" && this.hunters.includes(atk.character))){totalDamage+=2}
+            if (défenseur.hasItem("Toge_Sainte") || attaquant.hasItem("Toge_Sainte")){totalDamage-=1}
+        }
+        if (défenseur.protected==true){totalDamage=0}
+        retour.dégâts = totalDamage
+        if (this.takeDamage(défenseur,totalDamage)==false){
+            if (défenseur.character=="Loup-Garou"){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;return retour}
+        }
+        
+        this.startNextTurn()
+        return retour;
 
 
+
+
+    }
 
 
 }
