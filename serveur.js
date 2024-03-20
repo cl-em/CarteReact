@@ -44,6 +44,10 @@ app.get("/carteShadow/:nomImage",(request,response)=>{
   response.sendFile(request.params.nomImage,{root:__dirname+"/cartesShadowHunter2/"});
 });
 
+app.get("/carteShadow2/:nomImage",(request,response)=>{
+  response.sendFile(request.params.nomImage,{root:__dirname+"/cartesShadowHunter2/"});
+}); 
+
 app.get('/socket.io/', (req, res) => {
   res.send('Server is running.');
 });
