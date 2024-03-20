@@ -16,8 +16,8 @@ export default function Action({rapportAction}){
         case "jetsDeDés" :
             ActComp = (
                 <div>
-                    <Dice cheatValue={actV.valeurs[0]} />
-                    <Dice cheatValue={actV.valeurs[1]} />
+                    <Dice cheatValue={actV[0]} />
+                    <Dice cheatValue={actV[1]} />
                 </div>
             )
             break;

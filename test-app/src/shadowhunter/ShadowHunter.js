@@ -18,7 +18,7 @@ function Main({listeDeCarte}){ // liste de string
     return (
         <div id="main-cartes-sh">
             {listeDeCarte.map((element,index)=>(
-                <img key={index} src={"http://localhost:8888/carteShadow/"+element+".avif"} alt={element}
+                <img key={index} src={"http://localhost:8888/carteShadow/"+element+".png"} alt={element}
                 onClick={()=>{
                     socket.emit("choixCarte",{idPartie:idPartie,idCarte:element,type:"itemlocalw"});
                     console.log("choixcarte");
@@ -37,7 +37,7 @@ function Role({nomCarte}){
     
     return (
         <div id="role-carte-sh">
-            <img src={"http://localhost:8888/carteShadow/"+nomCarte+".avif"}  alt={nomCarte} />
+            <img src={"http://localhost:8888/carteShadow/"+nomCarte+".png"}  alt={nomCarte} />
             <div>
             <button className="joliebouton2"
             onClick={()=>{
@@ -80,7 +80,7 @@ function CartePlateau({deuxCarte,position}){ //deuxCarte : list 2 element
         <div className={"plateau plateau-"+position}>
             {deuxCarte.map((carte,index)=>(
                 <div className="carte" key={index}>
-                    <img src={"http://localhost:8888/carteShadow/"+carte+".avif"} alt={carte} 
+                    <img src={"http://localhost:8888/carteShadow/"+carte+".png"} alt={carte} 
                     onClick={()=>{
                         socket.emit("choixCarte",{idPartie:idPartie,type:"zone",carte:carte});
                     }}
@@ -174,7 +174,7 @@ function Jouer(){
             console.log(data)
             if(data.idPartie==idPartie){
                 setMessage(data.Message);
-                setAction(data.rapport);
+                setAction(data.rapportAction);
 
             }
             
