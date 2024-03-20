@@ -153,6 +153,9 @@ function Jouer(){
     // {pseudo:string,carte:false si pas révélé String sinon,
     // objetsPertinents:array de string}
 
+
+    let [faireChoix,setFaireChoix] = useState()
+
     let [estRevele,setEstRevele] = useState(false);
     // false : c'est une carte pioché
 
@@ -183,6 +186,8 @@ function Jouer(){
                 default : 
                     console.log("probleme");
                     break;
+
+                // choix machin en liste d'action et faire des sockets avec le nom des actions 
             }
 
 
