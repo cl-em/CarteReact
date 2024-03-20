@@ -5,6 +5,8 @@ import Chat from '../Chat';
 import {useNavigate } from "react-router-dom";
 // import Dice from "react-dice-roll";
 
+import Action from "./ActionShadow";
+
 
 function Main({listeDeCarte}){ // liste de string 
 
@@ -40,15 +42,12 @@ function Role({nomCarte}){
             <button className="joliebouton2"
             onClick={()=>{
                 socket.emit("reveleCarte",{"idPartie":idPartie,"capacite":nomCarte});
-                console.log("reveleCarte");
             }}
             
             >Révéler</button>
             <button className="joliebouton2"
             onClick={()=>{
-                
                 socket.emit("utiliseCapacite",{idPartie:idPartie,capacite:nomCarte});
-                console.log("utiliseCapacite")
             }}
             >Utiliser sa capacité</button>
             </div>
@@ -56,10 +55,18 @@ function Role({nomCarte}){
     )
 }
 
-function Stats({}){
+function Stats({listeJoueurs}){
     return (
         <div id="stats-sh">
-                Stats des joueurs (menu défilant)
+                {listeJoueurs.map((joueur,index)=>{
+                    <div key={index}>
+                        {joueur.pseudo} 
+                        révélé : {joueur.révélé}
+                        dégâts  : {joueur.dégâts}
+                        pouvoir : {joueur.pouvoirUtilisé}
+                        stuff : {joueur.stuff}
+                    </div>                
+               })}
         </div>
     )
 }
@@ -113,7 +120,7 @@ function Jouer(){
 
     // liste de joueurs
     const [listeJoueurs,setListeJoueurs] = useState([]);
-    const [zoneDeJeu,setZoneDeJeu] = useState(["zone1.avif","zone2.avif","zone3.avif","zone4.avif","zone5.avif","zone6.avif"]);
+    const [zoneDeJeu,setZoneDeJeu] = useState(["zone1","zone2","zone3","zone4","zone5","zone6"]);
     // {pseudo:string,révélé:bool à false si non révélé string sinon,pouvoirUtilisé:bool,dégâts:int}
 
     useEffect(()=>{
@@ -159,50 +166,31 @@ function Jouer(){
     let [estRevele,setEstRevele] = useState(false);
     // false : c'est une carte pioché
 
+    const [action,setAction] = useState({});
+
     useEffect(()=>{
         socket.on("tourPasse",(data)=>{
             console.log("tourpasse reçu")
             console.log(data)
-            let action = data.rapportAction;
-            let zozo = action.valeur;
-            switch (action.type) {
-                case "jetsDeDés":
-                    setJetsDes(zozo.valeurs);
-                    break;
-                case "dégatSubits":
-                    setJoueurConcerne(zozo.pseudo);
-                    setDegatPris(zozo.dégâts);
-                    break;
-                case  "cartePiochée":
-                    setCarteRevele(zozo);
-                    setEstRevele(false);
-                    break;
-                case "carteRévélée" :
-                    setCarteRevele(zozo);
-                    setEstRevele(true);
-                    break;
-                case "attaque":
-                    setAttaquant(zozo.attaquant);
-                    setDefenseur(zozo.defenseur);
-                    break;
-                default : 
-                    console.log("probleme");
-                    break;
+            if(data.idPartie==idPartie){
+                setMessage(data.Message);
+                setAction(data.rapport);
 
-                // choix machin en liste d'action et faire des sockets avec le nom des actions 
             }
-
+            
 
         });
     },[]);
-
-    console.log("jouer" , zoneDeJeu);
 
     return (
         <div>
             <Role nomCarte={personnage}/>
             <Main listeDeCarte={stuff} />
             <Plateau carteEnFonctionDeLaZone={zoneDeJeu} />
+
+            <Action rapportAction={action} />
+
+            <Stats listeJoueurs={listeJoueurs}/>
 
         </div>
     )
@@ -244,7 +232,7 @@ export default function ShadowHunter(){
     return(
         <>
         <div id="default">
-            <Stats />
+        
             <Jouer />
             <Chat />
         </div>
