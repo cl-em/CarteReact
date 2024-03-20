@@ -8,7 +8,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
   background: url("http://localhost:8888/fichier/table.jpg") center/cover no-repeat;
 }
 

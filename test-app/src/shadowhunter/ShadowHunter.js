@@ -37,6 +37,7 @@ function Role({nomCarte}){
     
     return (
         <div id="role-carte-sh">
+            Votre rôle (gardez le secret) :
             <img src={"http://localhost:8888/carteShadow/"+nomCarte+".avif"}  alt={nomCarte} />
             <div>
             <button className="joliebouton2"
@@ -58,15 +59,43 @@ function Role({nomCarte}){
 function Stats({listeJoueurs}){
     return (
         <div id="stats-sh">
-                {listeJoueurs.map((joueur,index)=>{
-                    <div key={index}>
-                        {joueur.pseudo} 
-                        révélé : {joueur.révélé}
-                        dégâts  : {joueur.dégâts}
-                        pouvoir : {joueur.pouvoirUtilisé}
-                        stuff : {joueur.stuff}
+            <div id="Joueurs">
+                <center>Kyky</center>
+                révélé : 
+                <br></br>
+                dégâts  : 
+                <br></br>
+                pouvoir : 
+
+            </div>
+
+            <div id="Joueurs">   
+            </div>
+
+            <div id="Joueurs">   
+            </div>
+
+            <div id="Joueurs">   
+            </div>
+
+            <div id="Joueurs">   
+            </div>
+
+            <div id="Joueurs">   
+            </div>
+
+            <div id="Joueurs">   
+            </div>
+
+                {/* {listeJoueurs.map((joueur,index)=>{
+                    <div id = "Joueurs" key={index}>
+                        <center>{joueur.pseudo}</center>
+                        révélé : {joueur.révélé} <br></br>
+                        dégâts  : {joueur.dégâts} <br></br>
+                        pouvoir : {joueur.pouvoirUtilisé} <br></br>
+                        stuff : {joueur.stuff} <br></br>
                     </div>                
-               })}
+                })} */}
         </div>
     )
 }
@@ -94,14 +123,25 @@ function CartePlateau({deuxCarte,position}){ //deuxCarte : list 2 element
 function Plateau({ carteEnFonctionDeLaZone }) {
     return (
         <div className="plateau-container">
-            <div className="plateau-flex">
+            <div>Plateau de jeu :</div>
                 <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0,2)} position={"gauche"}/>
                 <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(2,4)} position={"droite"}/>
                 <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(4)} position={"base"}/> 
+            </div>
+    );
+}
 
+function Pioches(){
+    return(
+        <div id="pioches">
+            <div>Pioches :</div> <br></br>
+            <div>
+            <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"}/>
+            <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"}/>
+            <img src={"http://localhost:8888/carteShadow2/Carte_Vision.png"}/>
             </div>
         </div>
-    );
+    )
 }
 
 function Jouer(){
@@ -192,6 +232,8 @@ function Jouer(){
 
             <Stats listeJoueurs={listeJoueurs}/>
 
+            <Pioches/>
+
         </div>
     )
 }
@@ -200,31 +242,31 @@ export default function ShadowHunter(){
     //Reset du style du body, on part sur une bonne nouvelle base (c'était plus possible)
     useEffect(() => {
         const Obg = document.body.style.backgroundImage;
-        const OHeight = document.body.style.height;
-        const OMargin = document.body.style.margin;
-        const OPadding = document.body.style.padding;
-        const ODisplay = document.body.style.display;
-        const OAlign = document.body.style.display;
-        const OJustify = document.body.style.display;
+        // const OHeight = document.body.style.height;
+        // const OMargin = document.body.style.margin;
+        // const OPadding = document.body.style.padding;
+        // const ODisplay = document.body.style.display;
+        // const OAlign = document.body.style.display;
+        // const OJustify = document.body.style.display;
 
         document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
-        document.body.style.height = '100%';
-        document.body.style.margin = '0';
-        document.body.style.padding = '0';
+        // document.body.style.height = '100%';
+        // document.body.style.margin = '0';
+        // document.body.style.padding = '0';
 
-        document.body.style.display = 'block';
-        document.body.style.alignItems = 'initial';
-        document.body.style.justifyContent = 'initial';
+        // document.body.style.display = 'block';
+        // document.body.style.alignItems = 'initial';
+        // document.body.style.justifyContent = 'initial';
 
         return () => {
             document.body.style.backgroundImage = Obg;
-            document.body.style.height = OHeight;
-            document.body.style.margin = OMargin;
-            document.body.style.padding = OPadding;
+            // document.body.style.height = OHeight;
+            // document.body.style.margin = OMargin;
+            // document.body.style.padding = OPadding;
 
-            document.body.style.display = ODisplay;
-            document.body.style.alignItems = OAlign;
-            document.body.style.justifyContent = OJustify;
+            // document.body.style.display = ODisplay;
+            // document.body.style.alignItems = OAlign;
+            // document.body.style.justifyContent = OJustify;
 
         };
         }, []);
@@ -232,7 +274,6 @@ export default function ShadowHunter(){
     return(
         <>
         <div id="default">
-        
             <Jouer />
             <Chat />
         </div>

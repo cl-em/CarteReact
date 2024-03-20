@@ -60,7 +60,7 @@ export default function Action({rapportAction}){
         default :
             ActComp = (
                 <div>
-                    y a un probleme chef
+                    
                 </div>
             )
 

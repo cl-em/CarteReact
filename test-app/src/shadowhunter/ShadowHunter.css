@@ -1,19 +1,15 @@
-/* .body{
-    background-image: url("http://localhost:8888/fichier/table_spooky.png");
-    height: 100%;
-    margin: 0;
-    padding: 0;
-} */
+/*----------------------------------------------Main-----------------------------------------------------*/
 
 #main-cartes-sh {
     display: flex;
-    justify-content: center; /* Assure que le contenu est centré dans le conteneur */
+    justify-content: center;
+    align-items: center;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     padding: 20px;
-    /* background-color: rgba(0, 0, 0, 0.5); */
+    z-index: 1000;
 }
 
 #main-cartes-sh img {
@@ -26,56 +22,47 @@
 
 #main-cartes-sh img:hover {
     transform: scale(3) translateY(-70%);
-    z-index: 10; /* Assure que l'image survolée est au-dessus des autres */
     transition-delay: 0.2s;
+
 }
+
+/*----------------------------------------------Plateau-----------------------------------------------------*/
+
+.plateau-container, .plateau, .carte {
+    position: relative;
+    z-index: 1;
+}
+
+#main-cartes-sh img:hover {
+    transform: scale(3) translateY(-70%);
+    z-index: 1000;
+    transition-delay: 0.2s;
+    position: relative;
+}
+
 
 .plateau-container {
+    color: aliceblue;
     display: flex;
-    flex-direction: column; /* Empile les éléments verticalement */
-    align-items: center; /* Centre les éléments horizontalement */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 80%;
-    gap: 80px; /* Espacement entre les éléments */
-    width: 50%;
-}
-
-.plateau-flex {
-    display: flex;
-    justify-content: center;
-    gap: 100px; /* Espacement entre les plateaux gauche et droite */
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    gap: 3vh;
+    width: 100%;
+    height: 70vh;
+    width: 30vh;
 }
 
 .plateau {
     display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.plateau-gauche {
-    transform: rotate(-35deg);
-}
-
-.plateau-droite {
-    transform: rotate(41deg);
-}
-
-.plateau-base {
-    margin-right: 40px; /* Ajustez la valeur pour obtenir le décalage désiré */
-}
-
-.carte {
-    margin: 21px;
+    gap: 3vw;
 }
 
 .carte img {
     max-height: 180px;
     display: block; 
 }
+
+/*----------------------------------------------Statistiques-----------------------------------------------------*/
 
 #stats-sh{
     position: fixed;
@@ -84,25 +71,56 @@
     right: 0;
     width: 20%;
     height: 60%;
-    background-color: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.295);
-    backdrop-filter: blur(5px);
-    box-shadow: 0 0 10px rgb(0, 0, 0);
     overflow-x: auto;
 }
 
+#Joueurs{
+
+    width: 90%;
+    height: 10vh;
+    background-color: rgb(67, 70, 70);
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgb(0, 0, 0);
+    border: 2px solid rgba(255, 255, 255, 0.295);
+}
+
+
+
+/*----------------------------------------------Role-----------------------------------------------------*/
+
 #role-carte-sh {
+    color: aliceblue;
     display: flex;
-    flex-direction: column; /* Change la direction du flex pour empiler verticalement */
-    align-items: center; /* Centre horizontalement les enfants */
+    flex-direction: column;
+    align-items: center;
     position: fixed;
-    bottom: 35%;
-    left: 5%;
+    top: 50vh;
+    left: 8%;
     gap: 15px;
-    z-index: 1000;
+    padding: 20px;
+    z-index: 2000;
 }
 
 #role-carte-sh img {
-    max-height: 150px;
+    max-height: 300px;
     /* cursor: pointer; */
 }
+
+/*----------------------------------------------Pioches-----------------------------------------------------*/
+
+    #pioches {
+        color: aliceblue;
+        position: fixed;
+        top: 15vh;
+        left: 5vw;
+        z-index: 1001;
+        padding: 20px;
+        width: 600px;
+        height: 300px;
+    }
+
+    #pioches img{
+        max-height: 180px;
+    }
+
