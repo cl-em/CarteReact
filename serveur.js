@@ -1084,6 +1084,7 @@ io.on('connection', (socket) => {
                           //-----------Pour Shadow Hunter (ça va être long)------------------------------
                           
                         socket.on("reveleCarte",data=>{
+                          io.emit("tourPasse",{"Message":(pseudos[socket.data.userId]+" s'est révélé en tant que "+data.capacite),"rapportAction":{"type":"carteRévélée","valeur":data.capacite},"idPartie":data.idPartie})
                           for (var partie of partiesEnCours){
                             if (partie.id == data.idPartie){
                               console.log("Le joueur "+ socket.data.userId+ " s'est révélé avec le personnage "+data.capacite)
@@ -1106,11 +1107,13 @@ io.on('connection', (socket) => {
                         })
 
                         
+                        async function shadowHunterStep(partie){}
+
+                        socket.on("choixCarte",data=>{
+                          console.log(data)
+                        })
 
 
-
-
-                          async function shadowHunterStep(partie){}
 
                           socket.on("choixShadowHunter",data=>{
 

@@ -161,6 +161,8 @@ function Jouer(){
 
     useEffect(()=>{
         socket.on("tourPasse",(data)=>{
+            console.log("tourpasse reçu")
+            console.log(data)
             let action = data.rapportAction;
             let zozo = action.valeur;
             switch (action.type) {
