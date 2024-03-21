@@ -698,7 +698,7 @@ io.on('connection', (socket) => {
                 }
               }
                 }
-
+                console.log(joueurs)
               socket.emit("getCarte",{"joueurCourant":joueurCourant,"joueurs":joueurs})
             }
           }
@@ -1086,15 +1086,15 @@ io.on('connection', (socket) => {
                           //-----------Pour Shadow Hunter (ça va être long)------------------------------
                            
                         socket.on("reveleCarte",data=>{
-                          var datarenvoyee = {"Message":(pseudos[socket.data.userId]+" s'est révélé en tant que "+data.capacite),"rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":data.capacite,"pseudo":pseudos[socket.data.userId]}},"idPartie":data.idPartie}
-                          console.log(datarenvoyee)
-                          io.emit("tourPasse",datarenvoyee)
+                          
                           for (var partie of partiesEnCours){
                             if (partie.id == data.idPartie){
-                              console.log("Le joueur "+ socket.data.userId+ " s'est révélé avec le personnage "+data.capacite)
+                              console.log("Le joueur "+ pseudos[socket.data.userId]+ " s'est révélé avec le personnage "+data.capacite)
                               for (var joueur of partie.joueurs){
                                 if (joueur.idJoueur == socket.data.userId){
-                                if (joueur.character==data.capacite && joueur.révélé==false){
+                                  if (joueur.character==data.capacite && joueur.révélé==false){
+                                var datarenvoyee = {"Message":(pseudos[socket.data.userId]+" s'est révélé en tant que "+data.capacite),"rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":data.capacite,"pseudo":pseudos[socket.data.userId]}},"idPartie":data.idPartie}
+                                io.emit("tourPasse",datarenvoyee)
                                   joueur.révélé = true;
                                   console.log("    | révélation faite avec succès")
                                   return

@@ -224,6 +224,7 @@ function Jouer() {
 
     useEffect(() => {
         socket.on("tourPasse", (data) => {
+            socket.emit("wantCarte", { idPartie: idPartie })
             console.log("tourpasse reçu")
             console.log(data)
             if (data.idPartie == idPartie) {
