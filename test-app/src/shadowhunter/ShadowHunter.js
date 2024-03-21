@@ -1,11 +1,15 @@
 import "./ShadowHunter.css";
-import React, { useEffect, useState, useRef } from 'react';
+import React, { createContext, useEffect, useState, useRef,useContext } from 'react';
 import SocketContext from '../SocketContext';
 import Chat from '../Chat';
 import { useNavigate } from "react-router-dom";
+import { createPortal } from 'react-dom';
 // import Dice from "react-dice-roll";
 
 import Action from "./ActionShadow";
+
+
+
 
 
 function AvantJeu() {
@@ -19,6 +23,14 @@ function AvantJeu() {
 function ApresJeu({ tableauFin }) {
 }
 
+function AfficherCarte({ chemin }) {
+    return (
+        <div>
+            <img src={chemin} alt={chemin} />
+        </div>
+    )
+}
+
 function Main({ listeDeCarte }) { // liste de string 
 
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
@@ -28,11 +40,12 @@ function Main({ listeDeCarte }) { // liste de string
 
     return (
         <div id="main-cartes-sh">
+            <div>Vos items :</div> <br></br>
             {listeDeCarte.map((element, index) => (
                 <img key={index} src={"http://localhost:8888/carteShadow/" + element + ".avif"} alt={element}
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, idCarte: element, type: "itemlocalw" });
-                        console.log("choixcarte");
+
                     }}
                 />
             ))}
@@ -46,14 +59,19 @@ function Role({ nomCarte }) {
 
     let socket = React.useContext(SocketContext);
 
+    const [imageUrl, setImageUrl] = useState('');
+    const [afficher, setAfficher] = useState(false);
+
+    const imageSrc = `http://localhost:8888/carteShadow/${nomCarte}.avif`;
     return (
         <div id="role-carte-sh">
             Votre rôle (gardez le secret) :
-            <img src={"http://localhost:8888/carteShadow/" + nomCarte + ".avif"} alt={nomCarte} />
+            <img id="uneImage" src={imageSrc} alt={nomCarte} />
             <div>
                 <button className="joliebouton2"
                     onClick={() => {
-                        socket.emit("reveleCarte", { "idPartie": idPartie, "capacite": nomCarte });
+                
+                        // socket.emit("reveleCarte", { "idPartie": idPartie, "capacite": nomCarte });
                     }}
 
                 >Révéler</button>
@@ -70,29 +88,55 @@ function Role({ nomCarte }) {
 function Stats({ listeJoueurs }) {
     return (
         <div id="stats-sh">
+
             <div id="Joueurs">
-                <center>Kyky</center>
-                révélé :
+                <div id="Joueurs-display">
+                    <div id="Joueurs-name">
+                        <p>Kyky</p>
+                    </div>
+                    <div id="Joueurs-carte">
+                        <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} /> <br></br> <br></br>
+                    </div>
+                    <div style={{ color: "red" }}>
+                        Le joueur ne s'est pas encore révelé
+                    </div>
+                </div>
+                Le joueur a pris 8 degâts.
                 <br></br>
-                dégâts  :
                 <br></br>
-                pouvoir :
-
+                <div id="stuff">
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                </div>
             </div>
 
             <div id="Joueurs">
-            </div>
-
-            <div id="Joueurs">
-            </div>
-
-            <div id="Joueurs">
-            </div>
-
-            <div id="Joueurs">
-            </div>
-
-            <div id="Joueurs">
+                <div id="Joueurs-display">
+                    <div id="Joueurs-name">
+                        <p>Elouand</p>
+                    </div>
+                    <div id="Joueurs-carte">
+                        <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} /> <br></br> <br></br>
+                    </div>
+                    <div style={{ color: "green" }}>
+                        Le joueur s'est révélé
+                    </div>
+                </div>
+                Le joueur a pris 8 degâts.
+                <br></br>
+                <br></br>
+                <div id="stuff">
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
+                </div>
             </div>
 
             <div id="Joueurs">
@@ -123,6 +167,8 @@ function CartePlateau({ deuxCarte, position }) { //deuxCarte : list 2 element
                     <img src={"http://localhost:8888/carteShadow/" + carte + ".avif"} alt={carte}
                         onClick={() => {
                             socket.emit("choixCarte", { idPartie: idPartie, type: "zone", carte: carte });
+                        
+
                         }}
                     />
                 </div>
@@ -135,9 +181,8 @@ function Plateau({ carteEnFonctionDeLaZone }) {
     return (
         <div className="plateau-container">
             <div>Plateau de jeu :</div>
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0, 2)} position={"gauche"} />
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(2, 4)} position={"droite"} />
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(4)} position={"base"} />
+            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0, 3)} position={"droite"} />
+            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(3)} position={"base"} />
         </div>
     );
 }
@@ -149,7 +194,9 @@ function Pioches() {
             <div>
                 <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
                 <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"} />
-                <img src={"http://localhost:8888/carteShadow2/Carte_Vision.png"} />
+                <img src={"http://localhost:8888/carteShadow2/Carte_Vision.png"}
+                    onClick={() => AfficherCarte("http://localhost:888/carteShadow2/Carte_Vision.png")}
+                />
             </div>
         </div>
     )
@@ -194,7 +241,7 @@ function Jouer() {
 
         socket.on("getCarte", (data) => {
             let courant = data.joueurCourant;
-            setDegatPris(courant.dégaots); // int 
+            setDegatPris(courant.dégats); // int 
             setPersonnage(courant.personnage); // String
             setCarteRevele(courant.révélé); // bool
 
@@ -244,21 +291,26 @@ function Jouer() {
         });
     }, []);
 
+
+
     return (
         <div>
-            {gameStart ? 
+            {/* {gameStart ?  */}
             <div>
-            <Chat/>
-            <Role nomCarte={personnage} />
-            <Main listeDeCarte={stuff} />
-            <Plateau carteEnFonctionDeLaZone={zoneDeJeu} />
-            <Action rapportAction={action} />
-            <Stats listeJoueurs={listeJoueurs} />
-            <Pioches />
-            </div> : <AvantJeu/>}
+                <Chat />
+                <Role nomCarte={personnage} />
+                <Main listeDeCarte={stuff} />
+                <Plateau carteEnFonctionDeLaZone={zoneDeJeu} />
+                <Action rapportAction={action} />
+                <Stats listeJoueurs={listeJoueurs} />
+                <Pioches />
+        
+            </div>
+            {/* : <AvantJeu/>} */}
         </div>
     )
 }
+
 export default function ShadowHunter() {
 
     useEffect(() => {
@@ -273,10 +325,9 @@ export default function ShadowHunter() {
     }, []);
 
     return (
-        <>
-            <div id="default">
-                <Jouer />
-            </div>
-        </>
+        <div id="default">
+            <Jouer />
+
+        </div>
     );
 };

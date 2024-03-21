@@ -1,7 +1,7 @@
 import "./ShadowHunter.css";
-import Dice from "react-dice-roll";
 import SocketContext from "../SocketContext";
 import React from "react";
+import RollDice from "./DiceRoll/DiceRoll";
 
 
 export default function Action({rapportAction}){
@@ -16,8 +16,7 @@ export default function Action({rapportAction}){
         case "jetsDeDés" :
             ActComp = (
                 <div>
-                    <Dice cheatValue={actV.valeurs[0]} />
-                    <Dice cheatValue={actV.valeurs[1]} />
+
                 </div>
             )
             break;
@@ -60,7 +59,7 @@ export default function Action({rapportAction}){
         default :
             ActComp = (
                 <div>
-                    
+                    {/* <RollDice /> */}
                 </div>
             )
 

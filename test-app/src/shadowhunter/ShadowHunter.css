@@ -1,12 +1,10 @@
 /*----------------------------------------------Main-----------------------------------------------------*/
 
 #main-cartes-sh {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    color: aliceblue;
     position: fixed;
-    bottom: 0;
-    left: 0;
+    top: 70vh;
+    left: 3vw;
     right: 0;
     padding: 20px;
     z-index: 1000;
@@ -46,19 +44,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3vh;
+    gap: 1vh;
     width: 100%;
-    height: 70vh;
+    height: 90vh;
     width: 30vh;
 }
 
 .plateau {
     display: flex;
-    gap: 3vw;
+    gap: 1vw;
 }
 
 .carte img {
-    max-height: 180px;
+    max-height: 150px;
     display: block; 
 }
 
@@ -75,14 +73,45 @@
 }
 
 #Joueurs{
-
+    text-align: center;
     width: 90%;
-    height: 10vh;
+    height: 20vh;
     background-color: rgb(67, 70, 70);
     margin-bottom: 10px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgb(0, 0, 0);
     border: 2px solid rgba(255, 255, 255, 0.295);
+    overflow: auto;
+}
+
+#Joueurs-display{
+    margin-left: 10px;
+    margin-top: 40px;
+    text-align: center;
+    display: flex;
+}
+
+#Joueurs-display p{
+    margin-top: 12px;
+    margin-right: 10px;
+}
+
+#Joueurs-carte{
+    margin-left: 5px;
+    margin-right: 12px;
+}
+
+#stuff{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+}
+
+#Joueurs img{
+    max-height: 45px;
+    margin-right: 5px;
+    cursor: pointer;
 }
 
 
@@ -95,15 +124,15 @@
     flex-direction: column;
     align-items: center;
     position: fixed;
-    top: 50vh;
-    left: 8%;
+    top: 37vh;
+    left: 3vw;
     gap: 15px;
     padding: 20px;
     z-index: 2000;
 }
 
 #role-carte-sh img {
-    max-height: 300px;
+    max-height: 150px;
     /* cursor: pointer; */
 }
 
@@ -112,15 +141,15 @@
     #pioches {
         color: aliceblue;
         position: fixed;
-        top: 15vh;
-        left: 5vw;
+        top: 10vh;
+        left: 3vw;
         padding: 20px;
         width: 600px;
         height: 300px;
     }
 
     #pioches img{
-        max-height: 180px;
+        max-height: 150px;
         margin-right: 10px;
     }
 
