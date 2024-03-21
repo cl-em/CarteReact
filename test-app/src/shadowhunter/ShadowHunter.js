@@ -90,50 +90,27 @@ function Stats({ listeJoueurs }) {
 
     return (
         <div id="stats-sh">
-            {/* <div id="Joueurs">
-                <div id="Joueurs-display">
-                    <div id="Joueurs-name">
-                        <p>Kyky</p>
-                    </div>
-                    <div id="Joueurs-carte">
-                        <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} /> <br></br> <br></br>
-                    </div>
-                    <div style={{ color: "red" }}>
-                        Le joueur ne s'est pas encore révelé
-                    </div>
-                </div>
-                Le joueur a pris 8 degâts.
-                <br></br>
-                <br></br>
-                <div id="stuff">
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                </div>
-            </div> */}
+            {listeJoueurs.map((joueur, index) => (
 
-
-            {listeJoueurs.map((joueur, index) => {
                 <div id="Joueurs">
                     <div id="Joueurs-display">
                         <div id="Joueurs-name">
-                            {joueur.pseudo}
+                            <p>{joueur.pseudo}</p>
                         </div>
                         <div id="Joueurs-carte">
-                            {/* state de dos (defaut) si le gars se revele  on met l'image du mec */} <br></br> <br></br>
-
+                            {joueur.révélé ?
+                                <img src={"http://localhost:8888/carteShadow2/" + joueur.révélé + ".png"} alt={joueur.révélé} /> :
+                                <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"} />
+                            } <br></br> <br></br>
                         </div>
                         <div id="Joueurs-revele">
-                            Le joueurs ne s'est pas révélé
+                            {joueur.révélé ? <p style={{ color: "green" }}>Le joueur s'est révélé</p> : <p style={{ color: "red" }}>Le joueur ne s'est pas révélé</p>}
                         </div>
                     </div>
-                    Le joueur a pris x degâts
+                    Le joueur a pris {joueur.dégats} degâts
                     <br></br> <br></br>
                     <div id="stuff">
-                        {joueur.map((carte, index) => (
+                        {joueur.stuff.length && joueur.stuff.map((carte, index) => (
                             <img key={index} src={"http://localhost:8888/carteShadow2/" + carte + ".png"} alt={carte}
                                 onClick={() => {
                                     socket.emit("choixCarte", { idPartie: idPartie, type: "stuffOther", carte: carte });
@@ -142,7 +119,7 @@ function Stats({ listeJoueurs }) {
                         ))}
                     </div>
                 </div>
-            })}
+            ))}
         </div >
     )
 }
@@ -285,7 +262,6 @@ function Jouer() {
             if (data.idPartie == idPartie) {
                 setMessage(data.Message);
                 setAction(data.rapportAction);
-
             }
 
 
