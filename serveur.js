@@ -698,7 +698,7 @@ io.on('connection', (socket) => {
                 }
               }
                 }
-               
+
               socket.emit("getCarte",{"joueurCourant":joueurCourant,"joueurs":joueurs})
             }
           }
@@ -1151,7 +1151,7 @@ io.on('connection', (socket) => {
                               if (partie.id==data.idPartie){
                                 if (partie.getIdFromCharacter(data.capacite)!=socket.data.userId){return}
                                 for (var joueur of partie.joueurs){
-                                  if (joueur.idJoueur==socket.data.userId && joueur.révélé==false){{socket.emit("tourPasse",{"Message":"Révélez-vous pour utiliser votre pouvoir","rapportAction":false,"idPartie":data.idPartie});return;}}
+                                  if (joueur.idJoueur==socket.data.userId && (joueur.révélé==false||joueur.pouvoirUtilisé==true)){{socket.emit("tourPasse",{"Message":"Révélez-vous pour utiliser votre pouvoir","rapportAction":false,"idPartie":data.idPartie});return;}}
                                 }
                                 switch (data.capacite){
                                   case "Emi":

@@ -231,8 +231,6 @@ function Jouer() {
                 setAction(data.rapportAction);
 
             }
-            
-
         });
     },[]);
 
