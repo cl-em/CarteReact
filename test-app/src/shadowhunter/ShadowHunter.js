@@ -1,16 +1,15 @@
+/*----------------------------------------------Import-----------------------------------------------------*/
+
 import "./ShadowHunter.css";
-import React, { createContext, useEffect, useState, useRef,useContext } from 'react';
+import React, { createContext, useEffect, useState, useRef, useContext } from 'react';
 import SocketContext from '../SocketContext';
 import Chat from '../Chat';
 import { useNavigate } from "react-router-dom";
 import { createPortal } from 'react-dom';
 // import Dice from "react-dice-roll";
-
 import Action from "./ActionShadow";
 
-
-
-
+/*----------------------------------------------Avant jeu + Apres jeu-----------------------------------------------------*/
 
 function AvantJeu() {
     return (
@@ -23,13 +22,7 @@ function AvantJeu() {
 function ApresJeu({ tableauFin }) {
 }
 
-function AfficherCarte({ chemin }) {
-    return (
-        <div>
-            <img src={chemin} alt={chemin} />
-        </div>
-    )
-}
+/*----------------------------------------------Main-----------------------------------------------------*/
 
 function Main({ listeDeCarte }) { // liste de string 
 
@@ -42,7 +35,7 @@ function Main({ listeDeCarte }) { // liste de string
         <div id="main-cartes-sh">
             <div>Vos items :</div> <br></br>
             {listeDeCarte.map((element, index) => (
-                <img key={index} src={"http://localhost:8888/carteShadow/" + element + ".avif"} alt={element}
+                <img key={index} src={"http://localhost:8888/carteShadow/" + element + ".png"} alt={element}
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, idCarte: element, type: "itemlocalw" });
 
@@ -53,25 +46,24 @@ function Main({ listeDeCarte }) { // liste de string
     )
 }
 
+/*----------------------------------------------Role-----------------------------------------------------*/
+
 function Role({ nomCarte }) {
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie = urlP.get("idPartie");
 
     let socket = React.useContext(SocketContext);
 
-    const [imageUrl, setImageUrl] = useState('');
-    const [afficher, setAfficher] = useState(false);
 
     const imageSrc = `http://localhost:8888/carteShadow/${nomCarte}.avif`;
     return (
         <div id="role-carte-sh">
             Votre rôle (gardez le secret) :
-            <img id="uneImage" src={imageSrc} alt={nomCarte} />
+            <img src={"http://localhost:8888/carteShadow/" + nomCarte + ".png"} alt={nomCarte} />
             <div>
                 <button className="joliebouton2"
                     onClick={() => {
-                
-                        // socket.emit("reveleCarte", { "idPartie": idPartie, "capacite": nomCarte });
+                        socket.emit("reveleCarte", { "idPartie": idPartie, "capacite": nomCarte });
                     }}
 
                 >Révéler</button>
@@ -85,11 +77,20 @@ function Role({ nomCarte }) {
     )
 }
 
+/*----------------------------------------------Stats-----------------------------------------------------*/
+
 function Stats({ listeJoueurs }) {
+
+    console.log(listeJoueurs)
+
+    let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+    let idPartie = urlP.get("idPartie");
+
+    let socket = React.useContext(SocketContext);
+
     return (
         <div id="stats-sh">
-
-            <div id="Joueurs">
+            {/* <div id="Joueurs">
                 <div id="Joueurs-display">
                     <div id="Joueurs-name">
                         <p>Kyky</p>
@@ -112,48 +113,41 @@ function Stats({ listeJoueurs }) {
                     <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
                     <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
                 </div>
-            </div>
+            </div> */}
 
-            <div id="Joueurs">
-                <div id="Joueurs-display">
-                    <div id="Joueurs-name">
-                        <p>Elouand</p>
+
+            {listeJoueurs.map((joueur, index) => {
+                <div id="Joueurs">
+                    <div id="Joueurs-display">
+                        <div id="Joueurs-name">
+                            {joueur.pseudo}
+                        </div>
+                        <div id="Joueurs-carte">
+                            {/* state de dos (defaut) si le gars se revele  on met l'image du mec */} <br></br> <br></br>
+
+                        </div>
+                        <div id="Joueurs-revele">
+                            Le joueurs ne s'est pas révélé
+                        </div>
                     </div>
-                    <div id="Joueurs-carte">
-                        <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} /> <br></br> <br></br>
-                    </div>
-                    <div style={{ color: "green" }}>
-                        Le joueur s'est révélé
+                    Le joueur a pris x degâts
+                    <br></br> <br></br>
+                    <div id="stuff">
+                        {joueur.map((carte, index) => (
+                            <img key={index} src={"http://localhost:8888/carteShadow2/" + carte + ".png"} alt={carte}
+                                onClick={() => {
+                                    socket.emit("choixCarte", { idPartie: idPartie, type: "stuffOther", carte: carte });
+                                }}
+                            />
+                        ))}
                     </div>
                 </div>
-                Le joueur a pris 8 degâts.
-                <br></br>
-                <br></br>
-                <div id="stuff">
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                    <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                </div>
-            </div>
-
-            <div id="Joueurs">
-            </div>
-
-            {/* {listeJoueurs.map((joueur,index)=>{
-                    <div id = "Joueurs" key={index}>
-                        <center>{joueur.pseudo}</center>
-                        révélé : {joueur.révélé} <br></br>
-                        dégâts  : {joueur.dégâts} <br></br>
-                        pouvoir : {joueur.pouvoirUtilisé} <br></br>
-                        stuff : {joueur.stuff} <br></br>
-                    </div>                
-                })} */}
-        </div>
+            })}
+        </div >
     )
 }
+
+/*----------------------------------------------Plateau-----------------------------------------------------*/
 
 function CartePlateau({ deuxCarte, position }) { //deuxCarte : list 2 element 
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
@@ -164,11 +158,9 @@ function CartePlateau({ deuxCarte, position }) { //deuxCarte : list 2 element
         <div className={"plateau plateau-" + position}>
             {deuxCarte.map((carte, index) => (
                 <div className="carte" key={index}>
-                    <img src={"http://localhost:8888/carteShadow/" + carte + ".avif"} alt={carte}
+                    <img src={"http://localhost:8888/carteShadow/" + carte + ".png"} alt={carte}
                         onClick={() => {
                             socket.emit("choixCarte", { idPartie: idPartie, type: "zone", carte: carte });
-                        
-
                         }}
                     />
                 </div>
@@ -187,20 +179,39 @@ function Plateau({ carteEnFonctionDeLaZone }) {
     );
 }
 
+/*----------------------------------------------Pioches-----------------------------------------------------*/
+
 function Pioches() {
+    let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+    let idPartie = urlP.get("idPartie");
+    let socket = React.useContext(SocketContext);
+
     return (
         <div id="pioches">
             <div>Pioches :</div> <br></br>
             <div>
-                <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"} />
-                <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"} />
+                <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"}
+                    onClick={() => {
+                        socket.emit("choixCarte", { idPartie: idPartie, type: "pioche", carte: "Lumiere" });
+                    }}
+
+                />
+                <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"}
+                    onClick={() => {
+                        socket.emit("choixCarte", { idPartie: idPartie, type: "pioche", carte: "Tenebres" });
+                    }}
+                />
                 <img src={"http://localhost:8888/carteShadow2/Carte_Vision.png"}
-                    onClick={() => AfficherCarte("http://localhost:888/carteShadow2/Carte_Vision.png")}
+                    onClick={() => {
+                        socket.emit("choixCarte", { idPartie: idPartie, type: "pioche", carte: "Vision" });
+                    }}
                 />
             </div>
         </div>
     )
 }
+
+/*----------------------------------------------Jouer (appel de tout les autres composants)-----------------------------------------------------*/
 
 function Jouer() {
 
@@ -220,7 +231,7 @@ function Jouer() {
 
     // liste de joueurs
     const [listeJoueurs, setListeJoueurs] = useState([]);
-    const [zoneDeJeu, setZoneDeJeu] = useState(["zone1", "zone2", "zone3", "zone4", "zone5", "zone6"]);
+    const [zoneDeJeu, setZoneDeJeu] = useState(["Zone1", "Zone2", "Zone3", "Zone4", "Zone5", "Zone6"]);
     // {pseudo:string,révélé:bool à false si non révélé string sinon,pouvoirUtilisé:bool,dégâts:int}
 
     useEffect(() => {
@@ -237,8 +248,6 @@ function Jouer() {
 
 
     useEffect(() => {
-
-
         socket.on("getCarte", (data) => {
             let courant = data.joueurCourant;
             setDegatPris(courant.dégats); // int 
@@ -275,19 +284,11 @@ function Jouer() {
             console.log(data)
             if (data.idPartie == idPartie) {
                 setMessage(data.Message);
-                setAction(data.rapport);
+                setAction(data.rapportAction);
 
             }
 
 
-        });
-    }, []);
-
-    useEffect(() => {
-        socket.on("gameFinished", (data) => {
-            if (data.idPartie == idPartie) {
-                setFinish(true);
-            }
         });
     }, []);
 
@@ -304,12 +305,14 @@ function Jouer() {
                 <Action rapportAction={action} />
                 <Stats listeJoueurs={listeJoueurs} />
                 <Pioches />
-        
+
             </div>
             {/* : <AvantJeu/>} */}
         </div>
     )
 }
+
+/*----------------------------------------------Default-----------------------------------------------------*/
 
 export default function ShadowHunter() {
 
@@ -327,7 +330,6 @@ export default function ShadowHunter() {
     return (
         <div id="default">
             <Jouer />
-
         </div>
     );
 };

@@ -41,7 +41,7 @@ app.get('/carte/:nomFichier', function(request, response) {
 });
 
 app.get("/carteShadow/:nomImage",(request,response)=>{
-  response.sendFile(request.params.nomImage,{root:__dirname+"/cartesShadowHunter/"});
+  response.sendFile(request.params.nomImage,{root:__dirname+"/cartesShadowHunter2/"});
 });
 
 app.get("/carteShadow2/:nomImage",(request,response)=>{
@@ -1086,9 +1086,11 @@ io.on('connection', (socket) => {
                             }
               }}}})
                           //-----------Pour Shadow Hunter (ça va être long)------------------------------
-                          
+                           
                         socket.on("reveleCarte",data=>{
-                          io.emit("tourPasse",{"Message":(pseudos[socket.data.userId]+" s'est révélé en tant que "+data.capacite),"rapportAction":{"type":"carteRévélée","valeur":data.capacite},"idPartie":data.idPartie})
+                          var datarenvoyee = {"Message":(pseudos[socket.data.userId]+" s'est révélé en tant que "+data.capacite),"rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":data.capacite,"pseudo":pseudos[socket.data.userId]}},"idPartie":data.idPartie}
+                          console.log(datarenvoyee)
+                          io.emit("tourPasse",datarenvoyee)
                           for (var partie of partiesEnCours){
                             if (partie.id == data.idPartie){
                               console.log("Le joueur "+ socket.data.userId+ " s'est révélé avec le personnage "+data.capacite)
@@ -1119,8 +1121,8 @@ io.on('connection', (socket) => {
 
 
 
-                          socket.on("choixShadowHunter",data=>{
-
+                          socket.on("utiliseCapacite",data=>{
+                            io.emit("tourPasse",{"Message":"c'est bon tourPasse marche","rapportAction":{"type":  "jetsDeDés","valeur":[3,4]},"idPartie":data.idPartie})
                           })
             
             });
