@@ -188,13 +188,6 @@ getpseudos();
 
 
 //-------------------------------Tests Elouand-----------------------------------------------
-console.log("-----------------TESTS-------------------")
-
-var part = new shadowHunter(1,4)
-part.initGame()
-console.log(part)
-console.log(part.drawNoire(1))
-console.log(part.zones)
   
 
 
@@ -705,7 +698,7 @@ io.on('connection', (socket) => {
                 }
               }
                 }
-               
+
               socket.emit("getCarte",{"joueurCourant":joueurCourant,"joueurs":joueurs})
             }
           }
@@ -743,6 +736,9 @@ io.on('connection', (socket) => {
                   let listejoueurs = [];
                   for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur])}
                   io.emit("gameStarting",{"idPartie":data.idPartie,"joueurs":listejoueurs,"zones":partie.zones})}
+                  setTimeout(()=>{
+                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant}},"idPartie":data.idPartie})
+                    },200)
                 }, 1000);
                 
                 
@@ -1048,11 +1044,13 @@ io.on('connection', (socket) => {
 
 
 
+
+                              
+
                             }
 
 
                         }}}}}})//AFFREUX
-
 
 
 
@@ -1113,21 +1111,79 @@ io.on('connection', (socket) => {
                         })
 
                         
-                        async function shadowHunterStep(partie){}
+                        function effetCase(joueur,partie){//Selon la case courante du joueur, fait des effets différents
+
+                        }
 
                         socket.on("choixCarte",data=>{
                           console.log(data)
-                        })
+                          for (var partie of partiesEnCours){
+                            if (partie.id == data.idPartie){
+                              if (partie.type=="shadowHunter" && partie.joueurCourant==socket.data.userId){
+                                for (var joueur of partie.joueurs){//Renvoi de la main du joueur
+                                  if (joueur.idJoueur==socket.data.userId){
+                                    //Le code
+                                    if (data.type=="zone"){
+                                      switch (partie.state){
+                                        case "pouvoirEmi":
+
+                                          var départ = joueur.position
+                                          var arrivée = partie.getIndexFromZone(data.carte)
+                                          if (arrivée==(départ+1)||(arrivée==(départ-1))||((départ==0)&&(arrivée==5))||((départ==5)&&(arrivée==0))){
+                                          joueur.position = parseInt(partie.getIndexFromZone(data.carte))
+                                          io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" s'est déplacé vers "+partie.getNameFromZone(data.carte),"rapportAction":false,"idPartie":data.idPartie})
+
+                                          effetCase(joueur,partie)
+                                          break;
+                                        }
+                                      }
+                                      
+                                    }
+
+                        }}}}}})
 
 
 
                           socket.on("utiliseCapacite",data=>{
-                            io.emit("tourPasse",{"Message":"c'est bon tourPasse marche","rapportAction":{"type":  "jetsDeDés","valeur":[3,4]},"idPartie":data.idPartie})
-                          })
+                         
+
+                            for (var partie of partiesEnCours){
+                              if (partie.id==data.idPartie){
+                                if (partie.getIdFromCharacter(data.capacite)!=socket.data.userId){return}
+                                for (var joueur of partie.joueurs){
+                                  if (joueur.idJoueur==socket.data.userId && (joueur.révélé==false||joueur.pouvoirUtilisé==true)){{socket.emit("tourPasse",{"Message":"Révélez-vous pour utiliser votre pouvoir","rapportAction":false,"idPartie":data.idPartie});return;}}
+                                }
+                                switch (data.capacite){
+                                  case "Emi":
+                                    if (partie.joueurCourant==socket.data.userId && partie.state=="débutTour"){
+                                      partie.state = "pouvoirEmi"
+                                      io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'Emi !","rapportAction":false,"idPartie":data.idPartie})
+                                      return
+                                    }
+                                }
+
+                              }
+                            }
+                             })
             
             });
             
             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             process.on('SIGINT', () => {
               db.close((err) => {
                 if (err) {

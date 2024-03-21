@@ -141,7 +141,6 @@ while (this.deck.length>=this.joueurs.length){//Distribution équitable des cart
 
     for (var joueur of this.joueurs){this.paquets.push([])}
 this.hasStarted = true;
-
 }
 
 canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait un choix
@@ -499,12 +498,12 @@ class shadowHunter extends Game{
         this.deck = null//Le deck ne servira pas et on utilisera trois piles à la place
         this.couleurs = null//Pareil pour les couleurs. On préférera utiliser l'attribut "type" des cartes
         this.type="shadowHunter"
-        this.joueurcourant = undefined
+        this.joueurCourant = undefined
         this.state = undefined
         this.variableTemp = undefined
         //Choix des personnages
         this.shadows = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
-        this.hunters = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"].sort((a, b) => 0.5 - Math.random());
+        this.hunters = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Emi"/*,"Ellen"*/].sort((a, b) => 0.5 - Math.random());
         this.neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
         this.personnages = []
 
@@ -648,6 +647,8 @@ class shadowHunter extends Game{
             joueur.hp = hp
         }
         this.hasStarted = true;
+        this.joueurCourant = this.joueurs[0].idJoueur
+        this.state = "débutTour"
        
         }
 
@@ -675,6 +676,33 @@ class shadowHunter extends Game{
             }
         }
 
+        getIndexFromZone(zone){
+            for (var z in this.zones){
+                if (this.zones[z]==zone){
+                    return z
+                }
+            }
+            return false
+        }
+
+        getNameFromZone(zone){
+            switch (zone){
+                case "zone1":
+                    return "l'antre de l'ermite"
+                case "zone2":
+                    return "la porte de l'outremonde"
+                case "zone3":
+                    return "le monastère"
+                case "zone4":
+                    return "le cimetière"
+                case "zone5":
+                    return "la forêt hantée"
+                case "zone6":
+                    return "le sanctuaire ancien"
+                
+            }
+        }
+
 
         //---------------------------------FONCTIONS DE GESTION DES CARTES PIOCHEES---------------------------------------------
         drawBlanche(idJoueur){
@@ -696,7 +724,7 @@ class shadowHunter extends Game{
                         break;
                     case "Avènement_Suprême":
                         if (this.hunters.includes(joueur.character)){
-                        this.joueurcourant = joueur.idJoueur
+                        this.joueurCourant = joueur.idJoueur
                         this.state = "Avènement_Suprême"
                         }
                         break;
@@ -706,12 +734,12 @@ class shadowHunter extends Game{
                         }
                         if (joueur.révélé = false && joueur.hp<=11){
                             this.state = "Barre_De_Chocolat"
-                            this.joueurcourant = joueur.idJoueur
+                            this.joueurCourant = joueur.idJoueur
                         }
                         break;
                     case "Bénédiction":
                         this.state = "Bénédiction"
-                        this.joueurcourant = joueur.idJoueur
+                        this.joueurCourant = joueur.idJoueur
                     break;
                     case "Eau_Bénite":
                         joueur.hurtPoint-=2
@@ -724,7 +752,7 @@ class shadowHunter extends Game{
                     break;
                     case "Premiers_Soins":
                         this.state = "Premiers_Soins"
-                        this.joueurcourant = joueur.idJoueur
+                        this.joueurCourant = joueur.idJoueur
                     break;
                     case "Savoir_Ancestral":
                         joueur.turnsToPlay++
@@ -759,10 +787,10 @@ drawNoire(idJoueur){
         switch (carte.valeur) {
             case "Araignée_Sanguinaire":
                 this.state = "Araignée_Sanguinaire";
-                this.joueurcourant = joueur
+                this.joueurCourant = joueur
                 break;
             case "Chauve-Souris_Vampire":
-                this.joueurcourant = joueur.idJoueur
+                this.joueurCourant = joueur.idJoueur
                 this.state = "Chauve-Souris_Vampire"
                 break;
             case "Dynamite":
@@ -783,25 +811,25 @@ drawNoire(idJoueur){
                 }
                 else{
                     this.state = "Peau_De_Banane_1"
-                    this.joueurcourant = joueur.idJoueur
+                    this.joueurCourant = joueur.idJoueur
                 }
 
             break;
             case "Poupée_Démoniaque":
               this.state = "Poupée_Démoniaque"
-              this.joueurcourant = joueur.idJoueur
+              this.joueurCourant = joueur.idJoueur
             break;
             case "Rituel_Diabolique":
 
             if (this.shadows.includes(joueur.character)){
                 this.state = "Rituel_Diabolique"
-                this.joueurcourant = joueur.idJoueur
+                this.joueurCourant = joueur.idJoueur
             }
 
             break;
             case "Succube_Tentatrice":
                 this.state = "Succube_Tentatrice"
-                this.joueurcourant = joueur.idJoueur
+                this.joueurCourant = joueur.idJoueur
             break;
         
             default:
