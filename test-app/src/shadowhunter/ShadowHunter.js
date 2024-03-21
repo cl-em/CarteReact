@@ -48,7 +48,7 @@ function Role({ nomCarte }) {
 
     return (
         <div id="role-carte-sh">
-            Votre rôle (gardez le secret) :
+            Votre rôle (gardez-le secret) :
             <img src={"http://localhost:8888/carteShadow/" + nomCarte + ".png"} alt={nomCarte} />
             <div>
                 <button className="joliebouton2"

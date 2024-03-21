@@ -49,7 +49,7 @@ export default function Action({rapportAction}){
         case "choix":
             ActComp = (
                 <div>
-                    {actV.bouton.map((text,index)=>(
+                    {actV.boutons.map((text,index)=>(
                         <button key={index} onClick={()=>{
                             socket.emit("choixCarte",{idPartie:idPartie,type:"choix",text:text})
                         }}>{text}</button>

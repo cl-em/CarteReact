@@ -11,7 +11,7 @@ function DivTexte(){
     return (
         <div className='avertissement'>
             <div className='avertissement-texte'>
-                <h3 style={{ color: 'aliceblue' }}>Vous vous apprêtez a complétement changer d'univers, il est préférable pour vous de rebrousser chemin</h3>
+                <h3 style={{ color: 'aliceblue' }}>Vous vous apprêtez à complètement changer d'univers, il est préférable pour vous de rebrousser chemin</h3>
             </div>
 
             <br></br>
