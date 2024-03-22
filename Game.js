@@ -705,6 +705,17 @@ class shadowHunter extends Game{
 
 
         //---------------------------------FONCTIONS DE GESTION DES CARTES PIOCHEES---------------------------------------------
+        drawVerte(idJoueur){
+            var joueur;
+            for (var test of this.joueurs){//Trouver le joueur concerné
+                if (test.idJoueur == idJoueur){
+                    joueur = test;
+                }
+            }
+            this.joueurCourant = joueur.idJoueur
+            this.state = this.vertes.shift().valeur
+        }
+        
         drawBlanche(idJoueur){
             var joueur;
             for (var test of this.joueurs){//Trouver le joueur concerné

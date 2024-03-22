@@ -687,18 +687,24 @@ io.on('connection', (socket) => {
             if (partie.type=="shadowHunter"){
               var joueurCourant;
               var joueurs = []
-
+              
               for (var joueur of partie.joueurs){//Renvoi de la main du joueur
+
                 if (joueur.idJoueur==socket.data.userId){//Joueur courant
-                  joueurCourant = {"dégats":joueur.hurtPoint,"révélé":joueur.révélé,"personnage":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed}
+                  joueurCourant = {"dégats":joueur.hurtPoint,"révélé":joueur.révélé,"position":joueur.position,"personnage":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed}
+                  if (joueur.éliminé==false){
+                  if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"position":joueur.position,"révélé":false,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})}
+                  else{joueurs.push({"pseudo":pseudos[joueur.idJoueur],"position":joueur.position,"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})}
+                  }
                 }
                 else{//Autres joueurs
-                  if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"révélé":false,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})}
-                  else{joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})
+                  if (joueur.éliminé==false){
+                  if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"position":joueur.position,"révélé":false,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})}
+                  else{joueurs.push({"pseudo":pseudos[joueur.idJoueur],"position":joueur.position,"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.powerUsed})
+                  }
                 }
               }
                 }
-                console.log(joueurs)
               socket.emit("getCarte",{"joueurCourant":joueurCourant,"joueurs":joueurs})
             }
           }
@@ -727,6 +733,7 @@ io.on('connection', (socket) => {
                   if (partie.type=="6quiprend"){
                   let listejoueurs = [];
                   for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur]);};
+                  console.log(partie)
                   io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes,"joueurs":listejoueurs})}
                 }, 1000);
 
@@ -1136,8 +1143,27 @@ io.on('connection', (socket) => {
                                           effetCase(joueur,partie)
                                           break;
                                         }
+
+                                        case "pouvoirFu-ka":
+
+                                          io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a ciblé "+socket.data.carte+" avec le pouvoir de Fu-ka !","rapportAction":false,"idPartie":data.idPartie})
+                                          var cible;
+                                          for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.getIdFromCharacter(data.carte)){cible=joueur}}
+                                          effetCase(joueur,partie)
+                                          break;
                                       }
                                       
+                                    }
+                                    if (data.type=="CartePersonnage"){
+
+                                    }
+                                    if (data.type=="stuffOther"){
+
+                                    }
+                                    if (data.type=="stuffSelf")
+
+                                    if (data.type=="pioche"){
+
                                     }
 
                         }}}}}})
@@ -1160,6 +1186,12 @@ io.on('connection', (socket) => {
                                       io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'Emi !","rapportAction":false,"idPartie":data.idPartie})
                                       return
                                     }
+
+                                    case "Fu-ka":
+                                      if (partie.joueurCourant==socket.data.userId && partie.state=="débutTour"){
+                                        partie.state = "pouvoirFu-ka"
+                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir de Fu-ka !","rapportAction":false,"idPartie":data.idPartie})
+                                        return
                                 }
 
                               }

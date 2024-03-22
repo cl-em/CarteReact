@@ -37,7 +37,7 @@ function Main({ listeDeCarte }) { // liste de string
             {listeDeCarte.map((element, index) => (
                 <img key={index} src={"http://localhost:8888/carteShadow/" + element + ".png"} alt={element}
                     onClick={() => {
-                        socket.emit("choixCarte", { idPartie: idPartie, idCarte: element, type: "itemlocalw" });
+                        socket.emit("choixCarte", { idPartie: idPartie, idCarte: element, type: "stuffSelf" });
 
                     }}
                 />
@@ -99,8 +99,14 @@ function Stats({ listeJoueurs }) {
                         </div>
                         <div id="Joueurs-carte">
                             {joueur.révélé ?
-                                <img src={"http://localhost:8888/carteShadow2/" + joueur.révélé + ".png"} alt={joueur.révélé} /> :
-                                <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"} />
+                                <img src={"http://localhost:8888/carteShadow2/" + joueur.révélé + ".png"} alt={joueur.révélé} 
+                                onClick={() => {
+                                    //socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: carte });
+                                }} /> :
+                                <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"} 
+                                onClick={() => {
+                                    //socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: carte });
+                                }} />
                             } <br></br> <br></br>
                         </div>
                         <div id="Joueurs-revele">
