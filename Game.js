@@ -648,6 +648,7 @@ class shadowHunter extends Game{
         }
         this.hasStarted = true;
         this.joueurCourant = this.joueurs[0].idJoueur
+        this.joueurCourant.turnsToPlay = 1
         this.state = "débutTour"
        
         }
@@ -715,7 +716,7 @@ class shadowHunter extends Game{
             this.joueurCourant = joueur.idJoueur
             this.state = this.vertes.shift().valeur
         }
-        
+
         drawBlanche(idJoueur){
             var joueur;
             for (var test of this.joueurs){//Trouver le joueur concerné
@@ -852,7 +853,10 @@ drawNoire(idJoueur){
         //---------------------------------FONCTIONS DE JEU---------------------------------------------
 
         takeDamage(player,damage){//Attention, player est un objet joueur à qui faire les dégâts, pas un idJoueur
-            player.hurtPoint+=damage
+            if (damage==0){return false}
+            if (player.hasItem("Toge_Sainte")){player.hurtPoint+=damage-1}
+            else{player.hurtPoint+=damage}
+
             if (player.isDead()){player.éliminé==true;return true}
             return false
         }
@@ -897,7 +901,7 @@ drawNoire(idJoueur){
             if (attaquant.hasItem("Tronçonneuse_Du_Mal")){totalDamage++}
             if (attaquant.hasItem("Hache_Tueuse")){totalDamage++}
             if (attaquant.hasItem("Lance_De_Longinus" && this.hunters.includes(atk.character))){totalDamage+=2}
-            if (défenseur.hasItem("Toge_Sainte") || attaquant.hasItem("Toge_Sainte")){totalDamage-=1}
+            if (attaquant.hasItem("Toge_Sainte")){totalDamage-=1}
         }
         if (défenseur.protected==true){totalDamage=0}
         retour.dégâts = totalDamage

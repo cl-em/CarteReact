@@ -41,7 +41,7 @@ class JoueurShadowHunter extends Joueur{//Comme le shadow hunter a des règles b
         this.hurtPoint = 0
         this.hp = hp 
         this.révélé = false
-        this.powerUsed = false
+        this.pouvoirUtilisé = false
         this.protected = false
         this.turnsToPlay = 0
         this.objets = []; //Contenu de la main du joueur
