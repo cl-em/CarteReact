@@ -101,11 +101,11 @@ function Stats({ listeJoueurs }) {
                             {joueur.révélé ?
                                 <img src={"http://localhost:8888/carteShadow2/" + joueur.révélé + ".png"} alt={joueur.révélé} 
                                 onClick={() => {
-                                    //socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: carte });
+                                    socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: joueur.révélé,joueurConcerne:joueur.pseudo });
                                 }} /> :
-                                <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"} 
+                                <img src={"http://localhost:8888/carteShadow2/Personnage.png"} 
                                 onClick={() => {
-                                    //socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: carte });
+                                    socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: "Personnage",joueurConcerne:joueur.pseudo });
                                 }} />
                             } <br></br> <br></br>
                         </div>
@@ -116,13 +116,16 @@ function Stats({ listeJoueurs }) {
                     Le joueur a pris {joueur.dégats} degâts
                     <br></br> <br></br>
                     <div id="stuff">
-                        {joueur.stuff.length && joueur.stuff.map((carte, index) => (
-                            <img key={index} src={"http://localhost:8888/carteShadow2/" + carte + ".png"} alt={carte}
-                                onClick={() => {
-                                    socket.emit("choixCarte", { idPartie: idPartie, type: "stuffOther", carte: carte });
-                                }}
-                            />
-                        ))}
+                        { joueur.stuff.length ? 
+                            joueur.stuff.map((carte, index) => (
+                                <img key={index} src={"http://localhost:8888/carteShadow2/" + carte + ".png"} alt={carte}
+                                    onClick={() => {
+                                        socket.emit("choixCarte", { idPartie: idPartie, type: "stuffOther", carte: carte, joueurConcerne:joueur.pseudo});
+                                    }}
+                                />
+                            ))
+                            : <div></div>
+                        }
                     </div>
                 </div>
             ))}
@@ -156,8 +159,10 @@ function Plateau({ carteEnFonctionDeLaZone }) {
     return (
         <div className="plateau-container">
             <div>Plateau de jeu :</div>
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0, 3)} position={"droite"} />
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(3)} position={"base"} />
+
+            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0, 2)} position={"droite"} />
+            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(2, 4)} position={"droite"} />
+            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(4)} position={"base"} />
         </div>
     );
 }
@@ -211,6 +216,7 @@ function Jouer() {
     const [pouvoirUtilise, setPouvoirUtilise] = useState(true);
     const [gameStart, setgameStart] = useState(false);
     const [gameFinish, setFinish] = useState(false);
+    const [idJoueur,setIdJoueur]  = useState("");
 
     // liste de joueurs
     const [listeJoueurs, setListeJoueurs] = useState([]);
@@ -236,11 +242,15 @@ function Jouer() {
             setDegatPris(courant.dégats); // int 
             setPersonnage(courant.personnage); // String
             setCarteRevele(courant.révélé); // bool
-
+            setIdJoueur(courant.idJoueur);
+            
+            
             setStuff(courant.stuff); //liste de String 
             setPouvoirUtilise(courant.pouvoirUtilisé);//bool
 
             setListeJoueurs(data.joueurs);
+
+
         });
     }, []);
 
@@ -285,9 +295,11 @@ function Jouer() {
                 <Role nomCarte={personnage} />
                 <Main listeDeCarte={stuff} />
                 <Plateau carteEnFonctionDeLaZone={zoneDeJeu} />
-                <Action rapportAction={action} />
+                <Action rapportAction={action} idJoueurLocal={idJoueur}/>
                 <Stats listeJoueurs={listeJoueurs} />
                 <Pioches />
+                { message.length >0 ?<p>{message}</p> :<div></div>}
+
 
             </div>
             {/* : <AvantJeu/>} */}

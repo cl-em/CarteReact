@@ -503,7 +503,7 @@ class shadowHunter extends Game{
         this.variableTemp = undefined
         //Choix des personnages
         this.shadows = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
-        this.hunters = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Emi"/*,"Ellen"*/].sort((a, b) => 0.5 - Math.random());
+        this.hunters = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"].sort((a, b) => 0.5 - Math.random());
         this.neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
         this.personnages = []
 
@@ -648,7 +648,7 @@ class shadowHunter extends Game{
         }
         this.hasStarted = true;
         this.joueurCourant = this.joueurs[0].idJoueur
-        this.joueurCourant.turnsToPlay = 1
+        this.joueurs[0].turnsToPlay = 1
         this.state = "débutTour"
        
         }
