@@ -1318,16 +1318,6 @@ io.on('connection', (socket) => {
                                     partie.state = "pouvoirMomie"
                                     io.emit("tourPasse", { "Message": pseudos[socket.data.userId] + " canalise son énergie de momie et se prépare à frapper une cible sur la porte de l'outremonde!", "rapportAction": false, "idPartie": data.idPartie })
                                     return}
-                                    
-                                    case "Liche":
-                                  if (partie.joueurCourant==socket.data.userId && partie.state=="débutTour"){
-                                  for (var joueur of partie.joueurs){if (joueur.idJoueur==socket.data.userId){
-                                    for (var z of partie.joueurs){
-                                      if (z.éliminé==true){joueur.turnsToPlay++}
-                                    }
-                                    joueur.pouvoirUtilisé=true}}
-                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" fait de la nécromancie !","rapportAction":false,"idPartie":data.idPartie})
-                                        return}
 
 
 
