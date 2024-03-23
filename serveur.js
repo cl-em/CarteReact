@@ -1318,6 +1318,47 @@ io.on('connection', (socket) => {
                                         }
                                     }
 
+                                    if (data.type=="choix"){
+                                      switch (data.text){
+
+                                        case 'lancer les dés !'://Cas de lancer de dés en début de tour.
+                                          if (partie.state!="débutTour"){return}
+                                          var destination;
+                                          var roll1 = Math.floor(Math.random()*6)+1
+                                          var roll2 = Math.floor(Math.random()*4)+1
+                                          switch (roll1+roll2){
+                                            case 2:
+                                            case 3:
+                                              joueur.position = partie.getIndexFromZone("Zone0")
+                                              break
+                                            case 4:
+                                            case 5:
+                                              joueur.position = partie.getIndexFromZone("Zone1")
+                                              break
+                                            case 6:
+                                              joueur.position = partie.getIndexFromZone("Zone2")
+                                              break
+                                            case 7:
+                                            partie.state = "choixDestinatin"
+                                            return
+                                            case 8:
+                                              joueur.position = partie.getIndexFromZone("Zone3")
+                                              break
+                                              case 9:
+                                                joueur.position = partie.getIndexFromZone("Zone4")
+                                                break
+                                                case 10:
+                                                  joueur.position = partie.getIndexFromZone("Zone5")
+                                                  break
+
+                                          }
+
+                                          jetsDeDés -> valeurs: un tableau de taille 2 avec le jet du dé 6 et celui du D4 (ou 0 si un des deux a pas été lancé)
+
+                                        break
+                                      }
+                                    }
+
                         }}}}}})
 
 

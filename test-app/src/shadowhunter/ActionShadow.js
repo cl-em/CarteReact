@@ -22,9 +22,8 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         case "dégatSubits":
             ActComp = (
                 <div>
-                  {actV.pseudo}  a subit {actV.dégâts} dégâts
                   {actV.personnages.map((carte,index)=>(
-                    <img key={index} src={"http://localhost:8888/carteShadow/"+carte+"png"} alt= {carte} />
+                    <img key={index} src={"http://localhost:8888/carteShadow/"+carte+".png"} alt= {carte} />
                   ))}
                 </div>
             )
@@ -33,7 +32,8 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         case "cartePiochée":
             ActComp = (
                 <div>
-                    Vous devez piocher une carte {actV}
+            <img key={actV} class="joliebouton" src={"http://localhost:8888/carteShadow/"+actV+".png"} alt= {actV} />
+
                 </div>
             )
             break;
@@ -47,24 +47,28 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
             break;
 
         case "choix":
+            
             ActComp = idJoueurLocal==actV.idJoueur ?  (
                 <div>
                     {actV.boutons.map((text, index) => (
-                      
+                        
                         <button key={index} onClick={() => {
                             socket.emit("choixCarte", { idPartie: idPartie, type: "choix", text: text })
                         }}>{text}</button>
-                    ))}
+                        ))}
                 </div>
             ) :<div></div>
+            break
+           
 
         case "carteRévélée" : 
             ActComp = (
                 <div>
-                    {actV.pseudo} est {actV.carteRévélée}
+    <img key={actV} src={"http://localhost:8888/carteShadow/"+actV.carteRévélée+".png"} alt= {actV} />
+
                 </div>
             )
-
+        break
         default:
             ActComp = (
                 <div>

@@ -806,7 +806,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 this.state = "Chauve-Souris_Vampire"
                 break;
             case "Dynamite":
-                var destination = Math.floor(Math.random()*10)
+                var destination = Math.floor(Math.random()*6)
                 for (var test of this.joueurs){
                     if (test.position==destination||this.zonesAdjacentes(this.position,destination)){
                         test.hurtPoint+=3
@@ -832,6 +832,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
               this.state = "Poupée_Démoniaque"
               this.joueurCourant = joueur.idJoueur
             break;
+
             case "Rituel_Diabolique":
 
             if (this.shadows.includes(joueur.character)){
