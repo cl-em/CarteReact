@@ -8,7 +8,7 @@ function Chat() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const maxMessages = 50;
-  const maxMessageLength = 25;
+  const maxMessageLength = 250;
   const socket = React.useContext(SocketContext);
 
   useEffect(() => {

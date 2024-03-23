@@ -23,7 +23,7 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
 
         case "dégatSubits":
             ActComp = (
-                <div>
+                <div className="carte1" id="tourPasse">
                   {actV.personnages.map((carte,index)=>(
                     <img key={index} src={"http://localhost:8888/carteShadow/"+carte+".png"} alt= {carte} />
                   ))}
@@ -33,8 +33,9 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
 
         case "cartePiochée":
             ActComp = (
-                <div>
-            <img key={actV} class="joliebouton" src={"http://localhost:8888/carteShadow/"+actV+".png"} alt= {actV} />
+                <div className="carte1" id="tourPasse">
+                    <img key={actV} src={"http://localhost:8888/carteShadow/"+actV+".png"} alt= {actV} />
+
 
                 </div>
             )
@@ -65,12 +66,13 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
 
         case "carteRévélée":
             ActComp = (
-                <div>
-                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV.carteRévélée + ".png"} alt={actV} />
 
+
+                <div className="carte1" id="tourPasse">
+                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV.carteRévélée + ".png"} alt={actV} />
                 </div>
             )
-        break;
+            break;
 
         case "vision": 
 
@@ -82,12 +84,12 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
                     :<div></div>}
                 </div>
             )
-
+            break;   
 
         default:
             ActComp = (
                 <div>
-                    problème
+                    {/* problème */}
                 </div>
             )
 

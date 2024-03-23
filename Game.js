@@ -503,7 +503,7 @@ class shadowHunter extends Game{
         this.variableTemp = undefined
         //Choix des personnages
         this.shadows = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
-        this.hunters = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Emi"/*,"Ellen"*/].sort((a, b) => 0.5 - Math.random());
+        this.hunters = [/*"Gregor","Georges","Fu-ka","Franklin","Emi"*/,"Allie",/*,"Ellen"*/].sort((a, b) => 0.5 - Math.random());
         this.neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
         this.personnages = []
 
@@ -613,6 +613,7 @@ class shadowHunter extends Game{
     getDeath(){
         for (var test of this.joueurs){
             if (test.hurtPoint>=test.hp && test.éliminé!=false){
+                test.éliminé=true
                 return test.idJoueur
             }
         }
@@ -859,7 +860,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             if (player.hasItem("Toge_Sainte")){player.hurtPoint+=damage-1}
             else{player.hurtPoint+=damage}
 
-            if (player.isDead()){player.éliminé==true;return true}
+            if (player.isDead()){return true}
             return false
         }
 
@@ -876,8 +877,30 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
 
     }
 
-    startNextTurn(){//Fonction qui démarre le tour suivant, lance les dés de placement et  propose à Emi d'utiliser son pouvoir 
+    existTarget(joueur){
+        for (var j of this.joueurs){
+            if (this.canAttack(joueur.idJoueur,j.idJoueur)){return true}
+        }
+        return false
+    }
+    canSteal(){
+        for (var joueur of this.joueurs){
+            if (joueur.objets.length>0){return true}
+        }
+        return false
+    }
 
+    nextPlayer(){//Change le joueur courant au prochain dans la liste
+    var indexCourant = 0;
+    for (var j in this.joueurs){if (this.joueurs[j]==this.joueurCourant){indexCourant=j}}
+    if (j==this.joueursMax-1){
+        this.joueurCourant=this.joueurs[0].idJoueur
+    }
+    else{
+        this.joueurCourant=this.joueurs[indexCourant+1].idJoueur
+    }
+        
+    
     }
 
     attaquer(atk,def){
@@ -888,13 +911,13 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             if (joueur.idJoueur==def){défenseur= joueur }
         }
         if (attaquant==null||défenseur==null){return null}
-
         var retour = {"dés":null,"dégâts":null,"lg":false}
         var d6 =  Math.floor(Math.random()*6)
         var d4 =  Math.floor(Math.random()*4)
 
-        var damage
-        if (attaquant.hasItem("Sabre_Hanté_Masamune")||attaquant.character=="Valkyrie"){baseDamage = d4;retour.dés = [d4]}
+        var baseDamage
+        
+        if (attaquant.hasItem("Sabre_Hanté_Masamune")||attaquant.character=="Valkyrie"){baseDamage = d4;retour.dés = [false,d4]}
         else{baseDamage = Math.abs(d6-d4);retour.dés = [d4,d6]}
 
         var totalDamage = baseDamage
@@ -908,10 +931,9 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         if (défenseur.protected==true){totalDamage=0}
         retour.dégâts = totalDamage
         if (this.takeDamage(défenseur,totalDamage)==false){
-            if (défenseur.character=="Loup-Garou"){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;return retour}
+            if (défenseur.character=="Loup-Garou"&&défenseur.révélé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
         }
         
-        this.startNextTurn()
         return retour;
 
 

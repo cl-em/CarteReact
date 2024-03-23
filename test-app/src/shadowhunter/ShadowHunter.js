@@ -223,9 +223,9 @@ function Jouer() {
 
     //joueurCourant:
     const [degatPris, setDegatPris] = useState(0);
-    const [personnage, setPersonnage] = useState("Allie");
+    const [personnage, setPersonnage] = useState("");
     const [carteRevele, setCarteRevele] = useState(false);
-    const [stuff, setStuff] = useState(["Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette", "Amulette"]);
+    const [stuff, setStuff] = useState([""]);
     const [pouvoirUtilise, setPouvoirUtilise] = useState(true);
     const [gameStart, setgameStart] = useState(false);
     const [gameFinish, setFinish] = useState(false);
@@ -311,7 +311,9 @@ function Jouer() {
                     <Action rapportAction={action} idJoueurLocal={idJoueur} />
                     <Stats listeJoueurs={listeJoueurs} />
                     <Pioches />
+                    <div className="messageTourPasse">
                     {message.length > 0 ? <p>{message}</p> : <div></div>}
+                    </div>
 
 
                 </div>
