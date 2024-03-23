@@ -164,3 +164,26 @@
     max-height: 150px;
     margin-right: 10px;
 }
+
+/*----------------------------------------------TourPasse-----------------------------------------------------*/
+
+#tourPasse {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    color: aliceblue;
+    position: fixed;
+    bottom: 8%;
+    width: 30vw;
+    left: 50%;
+    transform:translateX(-50%);
+}
+
+.messageTourPasse{
+    color: aliceblue;
+    text-align: center;
+}
+
+.carte1 img{
+    height: 150px;
+}
