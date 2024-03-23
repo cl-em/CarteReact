@@ -154,7 +154,9 @@ function CartePlateau({ deuxCarte, position, listeJoueurs }) {
                         }}
                     />
                     {joueursDansCetteZone(carte).map((joueur, joueurIndex) => (
-                        <div key={joueurIndex} className="joueurPseudo">
+                        <div key={joueurIndex} className="joueurPseudo" style={{
+                            bottom: `${10 + joueurIndex * 25}px`, // Evite la superposition des joueurs (c'est sacrément embetant sinon)
+                        }}>
                             {joueur.pseudo}
                         </div>
                     ))}
