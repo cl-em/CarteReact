@@ -42,6 +42,9 @@ import Leaderboard6 from './6quiprend/Leaderboard6';
 import { SixQuiPrend } from './6quiprend/6quiprend';
 import ShadowHunter from './shadowhunter/ShadowHunter';
 
+import Des from "./shadowhunter/Des/Des";
+
+
 
 //Defini toutes tes pages ici
 function MyApp() {
@@ -76,6 +79,12 @@ function MyApp() {
 
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           {/* <Route path="/chat" element={<SocketProvider><Chat/></SocketProvider>} /> */}
+
+
+
+          {/* route pour tester des composants */}
+          <Route path='/test' element={<Des des1valeur={3} des2valeur={2}/>} />
+
         </Routes>
       </Router>
     </div>
