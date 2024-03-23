@@ -26,7 +26,9 @@
 
 /*----------------------------------------------Plateau-----------------------------------------------------*/
 
-.plateau-container, .plateau, .carte {
+.plateau-container,
+.plateau,
+.carte {
     position: relative;
     z-index: 1;
 }
@@ -57,12 +59,22 @@
 
 .carte img {
     max-height: 150px;
-    display: block; 
+    display: block;
+}
+
+.joueurPseudo {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: white;
+    background-color: rgba(0, 0, 0, 1);
+    padding: 2px 5px;
+    border-radius: 5px;
 }
 
 /*----------------------------------------------Statistiques-----------------------------------------------------*/
 
-#stats-sh{
+#stats-sh {
     position: fixed;
     color: aliceblue;
     bottom: 33%;
@@ -72,7 +84,7 @@
     overflow-x: auto;
 }
 
-#Joueurs{
+#Joueurs {
     text-align: center;
     width: 90%;
     height: 20vh;
@@ -84,31 +96,31 @@
     overflow: auto;
 }
 
-#Joueurs-display{
+#Joueurs-display {
     margin-left: 10px;
     margin-top: 40px;
     text-align: center;
     display: flex;
 }
 
-#Joueurs-display p{
+#Joueurs-display p {
     margin-top: 12px;
     margin-right: 10px;
 }
 
-#Joueurs-carte{
+#Joueurs-carte {
     margin-left: 5px;
     margin-right: 12px;
 }
 
-#stuff{
+#stuff {
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: auto;
 }
 
-#Joueurs img{
+#Joueurs img {
     max-height: 45px;
     margin-right: 5px;
     cursor: pointer;
@@ -138,18 +150,17 @@
 
 /*----------------------------------------------Pioches-----------------------------------------------------*/
 
-    #pioches {
-        color: aliceblue;
-        position: fixed;
-        top: 10vh;
-        left: 3vw;
-        padding: 20px;
-        width: 600px;
-        height: 300px;
-    }
+#pioches {
+    color: aliceblue;
+    position: fixed;
+    top: 10vh;
+    left: 3vw;
+    padding: 20px;
+    width: 600px;
+    height: 300px;
+}
 
-    #pioches img{
-        max-height: 150px;
-        margin-right: 10px;
-    }
-
+#pioches img {
+    max-height: 150px;
+    margin-right: 10px;
+}
