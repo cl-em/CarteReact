@@ -1092,8 +1092,74 @@ io.on('connection', (socket) => {
                               return;
                             }
               }}}})
+
+
+
+              
                           //-----------Pour Shadow Hunter (ça va être long)------------------------------
                            
+                          //-------Les fonctions-----------------------------------
+                          function tourPasseDeCirconstance(partie){//Renvoie un tourPasse selon l'état actuel de la partie. Sert à éviter qu'on soit bloqués si Allie utilise son pouvoir ou si quelqu'un se révèle au mauvais moment
+                            //La fonction va être trèèèèès longue
+                            switch (partie.state){
+                              case "débutTour":
+                                console.log("la goat des fonctions emit un tourPasse de début de tour")
+                                io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant}}})
+                              break
+                              case "choixPioche":
+                                io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" doit cliquer sur la pioche dont il souhaite tirer une carte !","rapportAction":false})
+                              break
+                              case "Araignée_Sanguinaire":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché une araignée sanguinaire et clique sur la carte de la personne vers qui l'envoyer !","rapportAction":{type:"cartePiochée",valeur:"Araignée_Sanguinaire"},"idPartie":partie.id})
+                                break
+                              case "Chauve-Souris_Vampire":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché une chauve-souris vampire et choisit à qui voler son énergie vitale...","rapportAction":{type:"cartePiochée",valeur:"Chauve-Souris_Vampire"},"idPartie":partie.id})
+                              break
+                              case "Peau_De_Banane_1":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché une peau de banane... L'un de ses équipements lui glisse des mains ! Reste à cliquer pour décider duquel...","rapportAction": {type:"cartePiochée",valeur:"Peau_de_Banane"},"idPartie":partie.id})
+                              break
+                              case "Peau_De_Banane_2":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit qui trouvera son objet...","rapportAction": {type:"cartePiochée",valeur:partie.variableTemp},"idPartie":data.idPartie})
+                              case "Poupée_Démoniaque":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé une poupée étrange et s'amuse avec... Mais l'image d'un autre joueur lui vient en tête. Qui est-ce ?","rapportAction":{type:"cartePiochée",valeur:"Poupée_Démoniaque"},"idPartie":partie.id})
+                              break
+                              case "Rituel_Diabolique":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" tombe sur les restes d'un vieux rituel maléfique et décide s'il souhaite s'y intéresser de plus près...","rapportAction":{type:"choix",valeur:["S'intéresser au rituel","Le laisser où il est"]},"idPartie":partie.id,"idJoueur":joueur.idJoueur})
+                              break
+                              case "Succube_Tentatrice":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé une succube qui propose de l'aider à voler l'objet d'un joueur. "+pseudos[partie.joueurCourant]+" clique sur l'objet à voler !","rapportAction":{type:"cartePiochée",valeur:"Succube_Tentatrice"},"idPartie":partie.id})
+
+
+                            }
+                          }
+
+                          function tourPasseDeMort(){
+
+                          }
+
+                          function piocheNoire(partie,joueur){//Fonction serveur pour faire piocher une carte noire au joueur passé en paramètre dans l'environnement de la partie
+                            var cartePiochée = partie.drawNoire(joueur.idJoueur)
+                            switch (cartePiochée.valeur){
+                              case "Dynamite":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a lancé une dynamite sur "+partie.getNameFromZone(cartePiochée.data),"rapportAction":{type:"cartePiochée",valeur:"Dynamite"},"idPartie":data.idPartie})
+                                break
+                                default:
+                                  tourPasseDeCirconstance(partie)
+                                break
+                            }//Fin Switch Cartepiochée
+
+                          }
+
+
+                          function testFinPartie(partie){//Fonction qui teste si la partie est terminée et, si c'est le cas, qui envoie un socket.emit("partieFinie",data), data étant un tableau contenant le pseudo des joueurs qui ont gagné. La fonction ajoutera aussi du score à ces joueurs
+
+                          }
+  
+  
+                          function effetCase(joueur,partie){//Selon la case courante du joueur, fait des effets différents
+                            
+                          }
+                          //-------Les socket-----------------------------------
                         socket.on("reveleCarte",data=>{
                           
                           for (var partie of partiesEnCours){
@@ -1106,7 +1172,11 @@ io.on('connection', (socket) => {
                                 io.emit("tourPasse",datarenvoyee)
                                   joueur.révélé = true;
                                   console.log("    | révélation faite avec succès")
-                                  return
+                                    setTimeout(() => {
+                                      tourPasseDeCirconstance(partie)
+                                      return
+                                    }, 2500);
+                                  
                                 }
                                 if (joueur.révélé==true){
                                   console.log("    | joueur déjà révélé !")
@@ -1119,14 +1189,6 @@ io.on('connection', (socket) => {
                           }
                         })
 
-                        function testFinPartie(partie){//Fonction qui teste si la partie est terminée et, si c'est le cas, qui envoie un socket.emit("partieFinie",data), data étant un tableau contenant le pseudo des joueurs qui ont gagné. La fonction ajoutera aussi du score à ces joueurs
-
-                        }
-
-
-                        function effetCase(joueur,partie){//Selon la case courante du joueur, fait des effets différents
-
-                        }
 
                         socket.on("choixCarte",data=>{
                           console.log(data)
@@ -1241,7 +1303,19 @@ io.on('connection', (socket) => {
                                     if (data.type=="stuffSelf")
 
                                     if (data.type=="pioche"){
+                                        if (partie.state!="choixPioche"){return}
+                                        switch (data.Carte){
+                                          case "lumiere":
+                                            break
 
+                                          case "tenebres":
+                                            piocheNoire(partie,joueur)
+                                          break//Fin du case tenebres
+
+                                          case "vision":
+                                          break
+
+                                        }
                                     }
 
                         }}}}}})
@@ -1294,6 +1368,9 @@ io.on('connection', (socket) => {
                                 case "Allie":
                                   for (var joueur of partie.joueurs){if (joueur.idJoueur==socket.data.userId){joueur.hurtPoint=0;joueur.pouvoirUtilisé=true}}
                                         io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" se soigne de toutes ses blessures !","rapportAction":false,"idPartie":data.idPartie})
+                                        setTimeout(() => {
+                                          tourPasseDeCirconstance(partie)
+                                        }, 2500);
                                         return
 
                                 case "Liche":

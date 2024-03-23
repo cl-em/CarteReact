@@ -50,6 +50,7 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
             ActComp = idJoueurLocal==actV.idJoueur ?  (
                 <div>
                     {actV.boutons.map((text, index) => (
+                      
                         <button key={index} onClick={() => {
                             socket.emit("choixCarte", { idPartie: idPartie, type: "choix", text: text })
                         }}>{text}</button>

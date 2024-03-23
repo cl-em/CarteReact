@@ -503,7 +503,7 @@ class shadowHunter extends Game{
         this.variableTemp = undefined
         //Choix des personnages
         this.shadows = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
-        this.hunters = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"].sort((a, b) => 0.5 - Math.random());
+        this.hunters = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Emi"/*,"Ellen"*/].sort((a, b) => 0.5 - Math.random());
         this.neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
         this.personnages = []
 
@@ -782,7 +782,7 @@ class shadowHunter extends Game{
 
 
 
-drawNoire(idJoueur){
+drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et data les trucs en plus, surtout pour la dynamite
     var joueur
     for (var test of this.joueurs){//Trouver le joueur concerné
         if (test.idJoueur == idJoueur){
@@ -799,7 +799,7 @@ drawNoire(idJoueur){
         switch (carte.valeur) {
             case "Araignée_Sanguinaire":
                 this.state = "Araignée_Sanguinaire";
-                this.joueurCourant = joueur
+                this.joueurCourant = joueur.idJoueur
                 break;
             case "Chauve-Souris_Vampire":
                 this.joueurCourant = joueur.idJoueur
@@ -824,6 +824,7 @@ drawNoire(idJoueur){
                 else{
                     this.state = "Peau_De_Banane_1"
                     this.joueurCourant = joueur.idJoueur
+                    data="Items"
                 }
 
             break;
