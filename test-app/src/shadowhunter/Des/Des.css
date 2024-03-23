@@ -1,0 +1,81 @@
+:root {
+    --taille-font-des: 45;
+    --couleur-font : white;
+}
+
+
+.des1 {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    width: 100px;
+    height: 100px;
+    border-radius: 10%;
+    text-align: center;
+    font-size: calc(var(--taille-font-des) * 1px);
+    color: var(--couleur-font);
+
+    background-color: purple;
+
+
+    animation-name: spin;
+
+
+}
+
+
+
+.des2 {
+    width: 100px;
+    height: 100px;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 100px solid purple;
+    position: relative;
+
+    animation-name: spinR;
+
+
+}
+
+.des1,
+.des2 {
+    
+    animation-duration: 300ms;
+    animation-iteration-count: 3;
+    animation-timing-function: linear;
+}
+
+.face2 {
+    position: absolute;
+    font-size: calc(var(--taille-font-des)*1px);
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(calc(calc(70 - var(--taille-font-des))*1px));
+    color: var(--couleur-font);
+
+
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spinR {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-360deg);
+    }
+}

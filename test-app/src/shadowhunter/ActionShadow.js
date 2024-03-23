@@ -1,6 +1,7 @@
 import "./ShadowHunter.css";
 import SocketContext from "../SocketContext";
 import React from "react";
+import Des from "./Des/Des";
 
 
 export default function Action({ rapportAction ,idJoueurLocal}) {
@@ -15,6 +16,7 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         case "jetsDeDés":
             ActComp = (
                 <div>
+                    <Des des1valeur={actV[0]} des2valeur={actV[1]}/>
                 </div>
             )
             break;
@@ -61,14 +63,27 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
             break
            
 
-        case "carteRévélée" : 
+        case "carteRévélée":
             ActComp = (
                 <div>
-    <img key={actV} src={"http://localhost:8888/carteShadow/"+actV.carteRévélée+".png"} alt= {actV} />
+                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV.carteRévélée + ".png"} alt={actV} />
 
                 </div>
             )
-        break
+        break;
+
+        case "vision": 
+
+            ActComp = (
+                <div>
+                    { actV.idJoueur == idJoueurLocal ? 
+                        <img  src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV} />
+
+                    :<div></div>}
+                </div>
+            )
+
+
         default:
             ActComp = (
                 <div>

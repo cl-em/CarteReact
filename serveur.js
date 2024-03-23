@@ -1353,7 +1353,7 @@ io.on('connection', (socket) => {
 
                                           }
 
-                                          jetsDeDés -> valeurs: un tableau de taille 2 avec le jet du dé 6 et celui du D4 (ou 0 si un des deux a pas été lancé)
+                                          
 
                                         break
                                       }
