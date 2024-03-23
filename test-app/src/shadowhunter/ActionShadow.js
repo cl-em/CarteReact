@@ -15,6 +15,7 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         case "jetsDeDés":
             ActComp = (
                 <div>
+                    Les dés se jettent (lol il est ou clem zbi)
                 </div>
             )
             break;
