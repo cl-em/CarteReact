@@ -52,7 +52,7 @@ class JoueurShadowHunter extends Joueur{//Comme le shadow hunter a des règles b
     }
 
     hasItem(objet){//Permet de savoir si le joueur possède l'objet
-        for (var test in this.objets){
+        for (var test of this.objets){
             if (test==objet){return true}
         }
         return false
