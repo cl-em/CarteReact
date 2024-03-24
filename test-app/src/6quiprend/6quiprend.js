@@ -224,7 +224,7 @@ function Jouer(){
     const handleTourPasse = data => {
       console.log("tourPasse");
       if (data.idPartie === idPartie) {
-        setListeLignes(data.lignes);
+        // setListeLignes(data.lignes);
         setChoixNecessaire(data.choixNecessaire);
         setnumeroCarteEval(data.carteEval);
         setJourEval(data.joueurEval);
