@@ -1151,6 +1151,7 @@ io.on('connection', (socket) => {
                               case "Chauve-Souris_Vampire":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché une chauve-souris vampire et choisit à qui voler son énergie vitale...","rapportAction":{type:"cartePiochée",valeur:"Chauve-Souris_Vampire"},"idPartie":partie.id})
                               break
+                            
                               case "Peau_De_Banane_1":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché une peau de banane... L'un de ses équipements lui glisse des mains ! Reste à cliquer pour décider duquel...","rapportAction": {type:"cartePiochée",valeur:"Peau_de_Banane"},"idPartie":partie.id})
                               break
@@ -1160,7 +1161,7 @@ io.on('connection', (socket) => {
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé une poupée étrange et s'amuse avec... Mais l'image d'un autre joueur lui vient en tête. Qui est-ce ?","rapportAction":{type:"cartePiochée",valeur:"Poupée_Démoniaque"},"idPartie":partie.id})
                               break
                               case "Rituel_Diabolique":
-                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" tombe sur les restes d'un vieux rituel maléfique et décide s'il souhaite s'y intéresser de plus près...","rapportAction":{type:"choix",valeur:["S'intéresser au rituel","Le laisser où il est"]},"idPartie":partie.id,"idJoueur":joueur.idJoueur})
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" tombe sur les restes d'un vieux rituel maléfique et décide s'il souhaite s'y intéresser de plus près... mais seul un shadow pourrait en tirer profit, et cela le révèlerait.","rapportAction":{type:"choix",valeur:["S'intéresser au rituel","Le laisser où il est"]},"idPartie":partie.id,"idJoueur":joueur.idJoueur})
                               break
                               case "Succube_Tentatrice":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé une succube qui propose de l'aider à voler l'objet d'un joueur. "+pseudos[partie.joueurCourant]+" clique sur l'objet à voler !","rapportAction":{type:"cartePiochée",valeur:"Succube_Tentatrice"},"idPartie":partie.id})
@@ -1485,8 +1486,32 @@ io.on('connection', (socket) => {
 
                                     }
                                     if (data.type=="stuffOther"){
+                                      if (partie.state=="Succube_Tentatrice" || partie.state=="Sanctuaire_Ancien"){
+                                        for (var joueur of partie.joueurs){
+                                          if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){
+                                            for (var item in joueur.objets){
+                                              if (joueur.objets[item]==data.carte){
+                                                joueur.objets.splice(item,1)
+                                            }
+                                            for (var joueur of partie.joueurs){
+                                              if (joueur.idJoueur==partie.joueurCourant){
+                                                joueur.objets.push()
+                                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a volé un objet à "+data.joueurConcerne,"rapportAction":false,"idPartie":data.idPartie})
 
+                                              }
+                                            }
+                                          }
+                                          partie.state = "phase_Attaque"
+
+                                          }
+                                        }
+                                      }//Fin du cas de vol via succube OU sanctuaire
+
+                                 
                                     }
+
+
+
                                     if (data.type=="stuffSelf"){
                                       if (partie.state=="Peau_De_Banane_1"){
                                         for (var joueur of partie.joueurs){
@@ -1520,19 +1545,33 @@ io.on('connection', (socket) => {
 
                                     if (data.type=="choix"){
                                       
+                                      //Quand on attaque
                                       if (partie.state=="phase_Attaque"){//Cas où le joueur est supposé choisir une personne à attaquer
                                         if (data.text=="personne"){
                                           partie.state="finTour"
-                                          console.log("je mets fin au tour 4")
+                                          
                                           tourPasseDeCirconstance(partie)
                                         }
                                         if (getIdFromPseudo(data.text)!=false){
                                           var resultat = partie.attaquer(socket.data.userId,getIdFromPseudo(data.text))
                                           if (resultat.lg==true){
-                                            io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit s'il souhaite contre-attaquer.","rapportAction":{"type":"choix","valeur":{"boutons":["contre-attaquer !","ne rien faire..."],"idJoueur":partie.variableTemp}},"idPartie":data.idPartie})
+                                            io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" choisit s'il souhaite contre-attaquer.","rapportAction":{"type":"choix","valeur":{"boutons":["contre-attaquer !","ne rien faire..."],"idJoueur":partie.variableTemp}},"idPartie":data.idPartie})
                                             break
                                           }
                                           else{
+                                            var joueurQuiAttaque
+                                            for (var zz of partie.joueurs){
+                                              if (zz.idJoueur==partie.joueurCourant){joueurQuiAttaque=zz}
+                                            }
+                                            if (zz.hasItem("Mitrailleuse_Funeste")){
+                                              io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a infligé "+resultat.dégâts+" dégâts à tout-le-monde à portée","rapportAction":false,"idPartie":data.idPartie})
+                                              partie.state="finTour"
+                                              setTimeout(() => {
+                                                tourPasseDeCirconstance(partie)
+                                              }, 2500);
+                                              break
+                                            }
+                                            else{
                                             var atk,def;
                                             for (var z of partie.joueurs){if (z.idJoueur==socket.data.userId){atk=z} else{if(z.idJoueur==getIdFromPseudo(data.text)){def = z}}}
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a infligé "+resultat.dégâts+" dégâts à "+data.text,"rapportAction":{"type":"attaque","valeur":[((atk.révélé)?atk.character:false),((def.révélé)?def.character:false)]},"idPartie":data.idPartie})
@@ -1543,12 +1582,13 @@ io.on('connection', (socket) => {
                                             break
                                           }
                                         }
+                                        }
 
                                         return
                                       }
 
                                       switch (data.text){
-
+                                        //Cas de la forêt hanté
                                         case "attaquer":
                                           if (partie.state!="Forêt_Hantée_1"){return;}
                                           partie.variableTemp = "attaquer"
@@ -1562,10 +1602,11 @@ io.on('connection', (socket) => {
                                         tourPasseDeCirconstance(partie)
                                         break
 
-
-                                        case "lancer les dés !"://Cas de lancer de dés en début de tour.
+                                                
+                                        case "lancer les dés !"://Cas de lancer de dés en début de tour. Est nécessaire pour laisser le temps à certains personnages, dont le pouvoir marche seulement en début de tour, d'utiliser leur pouvoir
                                           if (partie.state!="débutTour"){return}
                                           var destination;
+                                          var posDébut = partie.zones[joueur.position]
                                           var roll1 = Math.floor(Math.random()*6)+1
                                           var roll2 = Math.floor(Math.random()*4)+1
                                           switch (roll1+roll2){
@@ -1601,8 +1642,11 @@ io.on('connection', (socket) => {
                                                   break
                                           }
                                     
-                                         
+                                         if (destination!=posDébut){
                                           io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" se déplace vers "+destination+" !","rapportAction":{"type":"jetsDeDés","valeur":[roll1,roll2]} ,"idPartie":data.idPartie})
+                                         }
+                                         else{io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" reste sur "+destination+" !","rapportAction":{"type":"jetsDeDés","valeur":[roll1,roll2]} ,"idPartie":data.idPartie})
+                                        }
                                           partie.state = "~"
                                           var g = joueur
                                           setTimeout(() => {
@@ -1611,7 +1655,7 @@ io.on('connection', (socket) => {
                                  
                                         break//Fin du cas où c'est un lancer de dés pour se déplacer.
 
-                           
+                                        //Pour les pouvoirs marchant en fin de tour (principalement grégor)
                                         case "terminer son tour.":
                                           if (partie.state!="finTour"){return}
                                           joueur.turnsToPlay--
@@ -1622,7 +1666,38 @@ io.on('connection', (socket) => {
                                           partie.state = "débutTour"
                                           tourPasseDeCirconstance(partie)
                                           break
+                                      
+                                      case "S'intéresser au rituel":
+                                        for (var joueur of partie.joueurs){
+                                        if (joueur.idJoueur==partie.joueurCourant){
+                                        if (partie.shadows.includes(joueur.character)){
+                                          joueur.hurtPoint=0
+                                          partie.state = "phase_Attaque"
+                                          io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" soigne toutes ses blessures grâce au rituel !","rapportAction":false ,"idPartie":data.idPartie})
+                                          setTimeout(() => {
+                                            tourPasseDeCirconstance(partie)
+                                          }, 2500);
+                                          return
+                                          }
+                                          else{
+                                            socket.emit("tourPasse",{"Message":"Seul un être malveillant y verrait de l'intérêt...","rapportAction":false ,"idPartie":data.idPartie})
+
+                                          }
+                                          }
+                                        }
+                                      break
+
+                                      case "Le laisser où il est":
+                                        partie.state = "phase_Attaque"
+
+                                        io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" passe son chemin...","rapportAction":false ,"idPartie":data.idPartie})
+                                            setTimeout(() => {
+                                            tourPasseDeCirconstance(partie)
+                                          }, 2500);
+                                          return
+                                      break
                                       }
+
                                     }//Fin du cas où data.type == "choix"
 
                         }}}}}})
