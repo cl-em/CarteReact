@@ -539,38 +539,38 @@ class shadowHunter extends Game{
 
         //Création des piles en question
         this.blanches = []
-        this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Bénédiction', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Amulette', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Toge_Sainte', 'équipement'))
-        this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
-        this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'équipement'))
+        this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Premiers_Soins', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
 
         this.noires = []
+        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Peau_De_Banane', 'consommable'))
         this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
         this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Sabre_Hanté_Masamune', 'équipement'))
         this.noires.push(new CarteShadowHunter('Succube_Tentatrice', 'consommable'))
         this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
-        this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
         this.noires.push(new CarteShadowHunter('Hachoir_Maudit', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Mitrailleuse_Funeste', 'équipement'))
-        this.noires.push(new CarteShadowHunter('Sabre_Hanté_Masamune', 'équipement'))
         this.noires.push(new CarteShadowHunter('Tronçonneuse_Du_Mal', 'équipement'))
         
         this.visions = []
@@ -601,13 +601,17 @@ class shadowHunter extends Game{
         if (zo1>zo2){var z1=zo2;var z2 = zo1}
         else{var z1 = zo1;var z2 = zo2}
 
-      return ((z2-z1)==1)
+      return (((z2-z1)==1)&&(z1%2==0))
 
     }
 
-    shuffle(paquet){//fonction de mélange pour les différentes piles de cartes
-        paquet = paquet.sort((a, b) => 0.5 > Math.random());
-    }
+     shuffle(array)  { 
+        for (let i = array.length - 1; i > 0; i--) { 
+          const j = Math.floor(Math.random() * (i + 1)); 
+          [array[i], array[j]] = [array[j], array[i]]; 
+        } 
+        return array; 
+      }; 
 
     getDeath(){
         for (var test of this.joueurs){
@@ -627,17 +631,23 @@ class shadowHunter extends Game{
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
        for (var i=0;i<3;i++){
-        this.shuffle(this.blanches)
-       this.shuffle(this.noires)
-       this.shuffle(this.visions)
+        this.blanches =this.shuffle(this.blanches)
+       this.noires = this.shuffle(this.noires)
+      this.visions = this.shuffle(this.visions)
        this.shuffle(this.zones)
        }
         //Don des PV aux joueurs
 
 //---------------------test----------------------
-this.addPlayer(22222)
-this.addPlayer(33333)
+
+
+this.joueurs.push(new JoueurShadowHunter(12,false,"Allie",8))
+this.joueurs.push(new JoueurShadowHunter(4,false,"Allie",8))
+this.joueurs.push(new JoueurShadowHunter(11,false,"Allie",8))
 this.joueurs[0].objets.push("Mitrailleuse_Funeste")
+this.joueurs[0].objets.push("Lance_De_Longinus")
+this.joueurs[0].objets.push("Hache_Tueuse")
+
 
 
 
@@ -931,8 +941,8 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         }
         if (attaquant==null||défenseur==null){return null}
         var retour = {"dés":null,"dégâts":null,"lg":false}
-        var d6 =  Math.floor(Math.random()*6)
-        var d4 =  Math.floor(Math.random()*4)
+        var d6 =  Math.floor(Math.random()*6)+1
+        var d4 =  Math.floor(Math.random()*4)+1
 
         var baseDamage
         
@@ -940,11 +950,12 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         else{baseDamage = Math.abs(d6-d4);retour.dés = [d4,d6]}
 
         var totalDamage = baseDamage
+        console.log("dégâts:"+baseDamage)
         if (baseDamage>0){
             if (attaquant.hasItem("Hachoir_Maudit")){totalDamage++}
             if (attaquant.hasItem("Tronçonneuse_Du_Mal")){totalDamage++}
             if (attaquant.hasItem("Hache_Tueuse")){totalDamage++}
-            if (attaquant.hasItem("Lance_De_Longinus" && this.hunters.includes(atk.character))){totalDamage+=2}
+            if (attaquant.hasItem("Lance_De_Longinus" && this.hunters.includes(atk.character)) && attaquant.révélé){totalDamage+=2}
             if (attaquant.hasItem("Toge_Sainte")){totalDamage-=1}
         }
 
