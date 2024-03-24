@@ -503,7 +503,7 @@ class shadowHunter extends Game{
         this.variableTemp = undefined
         //Choix des personnages
         this.shadows = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
-        this.hunters = [/*"Gregor","Georges","Fu-ka","Franklin","Emi"*/,"Allie",/*,"Ellen"*/].sort((a, b) => 0.5 - Math.random());
+        this.hunters = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"].sort((a, b) => 0.5 - Math.random());
         this.neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
         this.personnages = []
 
@@ -606,7 +606,7 @@ class shadowHunter extends Game{
     }
 
     shuffle(paquet){//fonction de mélange pour les différentes piles de cartes
-        paquet = paquet.sort((a, b) => 0.5 - Math.random());
+        paquet = paquet.sort((a, b) => 0.5 > Math.random());
     }
 
     getDeath(){
@@ -626,12 +626,21 @@ class shadowHunter extends Game{
 
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
-       this.shuffle(this.blanches)
+       for (var i=0;i<3;i++){
+        this.shuffle(this.blanches)
        this.shuffle(this.noires)
        this.shuffle(this.visions)
        this.shuffle(this.zones)
-
+       }
         //Don des PV aux joueurs
+
+//---------------------test----------------------
+this.addPlayer(22222)
+this.addPlayer(33333)
+this.joueurs[0].objets.push("Mitrailleuse_Funeste")
+
+
+
 
         for (var joueur of this.joueurs){
             var char = joueur.character
@@ -841,15 +850,16 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
 
             case "Rituel_Diabolique":
 
-            if (this.shadows.includes(joueur.character)){
                 this.state = "Rituel_Diabolique"
                 this.joueurCourant = joueur.idJoueur
-            }
+            
 
             break;
             case "Succube_Tentatrice":
+                if (this.canSteal(this.joueurCourant)){
                 this.state = "Succube_Tentatrice"
-                this.joueurCourant = joueur.idJoueur
+                this.joueurCourant = joueur.idJoueur}
+                else{this.state="phase_Attaque"}
             break;
         
             default:
@@ -937,6 +947,22 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             if (attaquant.hasItem("Lance_De_Longinus" && this.hunters.includes(atk.character))){totalDamage+=2}
             if (attaquant.hasItem("Toge_Sainte")){totalDamage-=1}
         }
+
+        if (attaquant.hasItem("Mitrailleuse_Funeste")){
+            for (var défenseur of this.joueurs){
+                var tempDamage = totalDamage
+                if (this.canAttack(attaquant.idJoueur,défenseur.idJoueur && attaquant.idJoueur!=défenseur.idJoueur)){
+            if (défenseur.protected==true){tempDamage=0}
+            if (this.takeDamage(défenseur,tempDamage)==false){
+                if (défenseur.character=="Loup-Garou"&&défenseur.révélé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
+            }
+        }
+    }
+    retour.dégâts = totalDamage
+    return retour
+}
+        else{
+
         if (défenseur.protected==true){totalDamage=0}
         retour.dégâts = totalDamage
         console.log(attaquant.idJoueur+" attaque "+défenseur.idJoueur)
@@ -945,7 +971,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         }
         
         return retour;
-
+    }
 
 
 

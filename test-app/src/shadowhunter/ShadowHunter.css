@@ -270,6 +270,8 @@
     transform: translateX(-50%);
     color: aliceblue;
     text-align: center;
+    font-size: larger;
+    font-family:Georgia, 'Times New Roman', Times, serif
 }
 
 .carte1 img {
