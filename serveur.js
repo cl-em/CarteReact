@@ -1327,6 +1327,28 @@ io.on('connection', (socket) => {
                                           break
 
                                           //Cartes piochées
+
+                                          case "Peau_De_Banane_2":
+                                            if (partie.joueurCourant!=getIdFromPseudo(data.joueurConcerne)){
+                                              for (var test of partie.joueurs){
+                                                if (test.idJoueur==partie.joueurCourant){
+                                                  for (var z in test.objets){
+                                                  if (test.objets[z]==partie.variableTemp){test.objets.splice(z,1)}
+                                                  }
+                                                }
+                                                for (var test of partie.joueurs){
+                                                  if (test.idJoueur==data.joueurConcerne){
+                                                    test.objets.push(partie.variableTemp)
+                                                    partie.state = "phase_Attaque"
+                                                    io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" a donné son objet "+partie.variableTemp+" à "+data.joueurConcerne,"rapportAction":false})
+                                                    setTimeout(() => {tourPasseDeCirconstance(partie)}, 2500);
+                                                    partie.variableTemp=""
+                                                  }
+                                                }
+                                              }
+                                            }
+
+                                          break
                                           
                                         case "Chauve-Souris_Vampire":
                                           for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
@@ -1357,9 +1379,9 @@ io.on('connection', (socket) => {
 
                                             case "Poupée_Démoniaque":
                                               for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
-                                              cible.hurtPoint+=2
+                                              cible.hurtPoint+=3
                                               for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.joueurCourant){cible=joueur}}
-                                              cible.hurtPoint+=2
+                                              cible.hurtPoint+=3
                                               partie.state =  "phase_Attaque"
                                               var chance = Math.floor(Math.random()*6)
                                               if (chance>=4){
@@ -1378,6 +1400,8 @@ io.on('connection', (socket) => {
                                                 tourPasseDeCirconstance(partie)
                                               }, 2500);
                                               break
+
+
 
 
                                             
@@ -1464,7 +1488,16 @@ io.on('connection', (socket) => {
 
                                     }
                                     if (data.type=="stuffSelf"){
+                                      if (partie.state=="Peau_De_Banane_1"){
+                                        for (var joueur of partie.joueurs){
+                                          if (joueur.hasItem(data.idCarte)){
+                                              partie.state="Peau_De_Banane_2"
+                                              partie.variableTemp=data.idCarte
+                                              tourPasseDeCirconstance(partie)
+                                          }
+                                        }
 
+                                      }
                                     }
 
                                     if (data.type=="pioche"){
