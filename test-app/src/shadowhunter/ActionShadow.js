@@ -94,9 +94,5 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
             )
 
     }
-
     return ActComp;
-
-
 }
-

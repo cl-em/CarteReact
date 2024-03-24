@@ -14,6 +14,7 @@ function Chat() {
   useEffect(() => {
     const handleMessage = (msg) => {
       setMessages(prevMessages => {
+        
         const updatedMessages = [...prevMessages, msg];
         if (updatedMessages.length > maxMessages) {
           return updatedMessages.slice(updatedMessages.length - maxMessages);
@@ -22,7 +23,15 @@ function Chat() {
       });
     };
 
+    const handleShadow = (messageShadow)=>{
+      if(messageShadow.idPartie==idPartie){
+        handleMessage(messageShadow.Message);
+      }
+    }
+
     socket.on('message '.concat(idPartie), handleMessage);
+
+    socket.on("tourPasse",handleShadow);
 
     return () => {
       socket.off('message '.concat(idPartie), handleMessage);
@@ -36,23 +45,27 @@ function Chat() {
     }
   };
 
+  const [accessibilite,setAccessibilite] = useState(false);
+
+
   return (
-    <div className="chat">
-  <ul className="messages">
-    {messages.map((msg, index) => (
-      <li key={index}>{msg}</li>
-    ))}
-  </ul>
-  <div className="input-area">
-    <input
-      value={message}
-      onChange={(e) => setMessage(e.target.value)}
-      onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
-      maxLength={maxMessageLength}
-    />
-    <button onClick={sendMessage}>Envoyer</button>
-  </div>
-</div>
+    <div className={accessibilite?"accessibilite":"chat"}>
+      <ul className={"messages"}>
+        {messages.map((msg, index) => (
+          <li key={index}>{msg}</li>
+        ))}
+      </ul>
+      <div className={"input-area"}>
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
+          maxLength={maxMessageLength}
+        />
+        <button onClick={sendMessage}>Envoyer</button><br></br>
+        <button onClick={()=>{setAccessibilite(!accessibilite)}}>Accessibilite</button>
+      </div>
+    </div>
 
   );
 }

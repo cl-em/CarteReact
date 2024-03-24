@@ -1535,11 +1535,6 @@ io.on('connection', (socket) => {
                                           }, 2500);
                                         break//Fin du cas où c'est un lancer de dés pour se déplacer.
 
-<<<<<<< HEAD
-                                          
-
-                                        break
-=======
                            
                                         case "terminer son tour.":
                                           if (partie.state!="finTour"){return}
@@ -1550,7 +1545,6 @@ io.on('connection', (socket) => {
                                           partie.state = "débutTour"
                                           tourPasseDeCirconstance(partie)
                                           break
->>>>>>> d3bd662507e32a7e3d41b95802879b936c43f918
                                       }
                                     }//Fin du cas où data.type == "choix"
 

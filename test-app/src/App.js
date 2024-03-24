@@ -42,7 +42,6 @@ import Leaderboard6 from './6quiprend/Leaderboard6';
 import { SixQuiPrend } from './6quiprend/6quiprend';
 import ShadowHunter from './shadowhunter/ShadowHunter';
 
-import Des from "./shadowhunter/Des/Des";
 
 
 
@@ -83,7 +82,7 @@ function MyApp() {
 
 
           {/* route pour tester des composants */}
-          <Route path='/test' element={<Des des1valeur={3} des2valeur={2}/>} />
+          <Route path='/test' element={<img />} />
 
         </Routes>
       </Router>

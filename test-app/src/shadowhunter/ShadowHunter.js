@@ -81,7 +81,7 @@ function Role({ nomCarte }) {
 
 function Stats({ listeJoueurs }) {
 
-    console.log(listeJoueurs)
+    // console.log(listeJoueurs)
 
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie = urlP.get("idPartie");
@@ -287,8 +287,8 @@ function Jouer() {
     useEffect(() => {
         socket.on("tourPasse", (data) => {
             socket.emit("wantCarte", { idPartie: idPartie })
-            console.log("tourpasse reçu")
-            console.log(data)
+            // console.log("tourpasse reçu")
+            // console.log(data)
             if (data.idPartie == idPartie) {
                 setMessage(data.Message);
                 setAction(data.rapportAction);

@@ -253,7 +253,7 @@ body {
 }
 
 
-.chat{
+.chat,.accessibilite{
   position: absolute;
   color: aliceblue;
   bottom: 0;
@@ -267,6 +267,20 @@ body {
   border-radius: 0%;
   box-shadow: 0 0 10px rgb(0, 0, 0);
   overflow-x: auto;
+
+  display: flex;
+  font-weight: bold;
+  flex-direction: column;
+  height: 30vh;
+  width: 20vw;
+}
+.chat{
+  color: aliceblue;
+  -webkit-text-stroke: crimson 0.4px;
+}
+
+.accessibilite{
+  color: white;
 }
 
 #gagnant{
@@ -483,14 +497,7 @@ top:0;
   right: 0;
 }
 
-.chat {
-  display: flex;
-  font-weight: bold;
-  -webkit-text-stroke: crimson 0.4px;
-  flex-direction: column;
-  height: 30vh;
-  width: 20vw;
-}
+
 
 .messages {
   flex-grow: 1;

@@ -304,6 +304,7 @@ useEffect(()=>{
 useEffect(()=>{
   console.log("listeLignes");
   let nouvelleListeLignes2 = []; //Futur liste de listes d'entiers
+  
   listeLignes.forEach((ligne,index)=>{
     nouvelleListeLignes2.push([]); //Initialisation des sous tableaux
     ligne.forEach((carte,idx)=>{ //Boucle dans chaque ligne
