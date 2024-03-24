@@ -1103,8 +1103,11 @@ io.on('connection', (socket) => {
                           function tourPasseDeCirconstance(partie){//Renvoie un tourPasse selon l'état actuel de la partie. Sert à éviter qu'on soit bloqués si Allie utilise son pouvoir ou si quelqu'un se révèle au mauvais moment
                             //La fonction va être trèèèèès longue
                             switch (partie.state){
+                              case "choixDestination":
+                                io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" est chanceux et peut choisir où aller !","rapportAction":false})
+
+                                break
                               case "débutTour":
-                                console.log("la goat des fonctions emit un tourPasse de début de tour")
                                 io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant}}})
                               break
                               case "choixPioche":
@@ -1130,7 +1133,7 @@ io.on('connection', (socket) => {
                                   }                                  
                                 }
                                 cibles.push("personne")
-                                io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" qui attaquer.","rapportAction":{"type":"choix","valeur":{"boutons":cibles,"idJoueur":partie.joueurCourant}}})
+                                io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit qui attaquer.","rapportAction":{"type":"choix","valeur":{"boutons":cibles,"idJoueur":partie.joueurCourant}}})
                                 break
                                 case "Forêt_Hantée_1":
                                   io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit s'il veut faire le bien... ou faire le mal.","rapportAction":{"type":"choix","valeur":{"boutons":["attaquer","soigner"],"idJoueur":partie.joueurCourant}}})
@@ -1173,16 +1176,22 @@ io.on('connection', (socket) => {
 
                           function piocheNoire(partie,joueur){//Fonction serveur pour faire piocher une carte noire au joueur passé en paramètre dans l'environnement de la partie
                             var cartePiochée = partie.drawNoire(joueur.idJoueur)
-                            switch (cartePiochée.valeur){
-                              case "Dynamite":
-                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a lancé une dynamite sur "+partie.getNameFromZone(cartePiochée.data),"rapportAction":{type:"cartePiochée",valeur:"Dynamite"},"idPartie":data.idPartie})
-                                break
-                                default:
+                              if (cartePiochée.valeur=="Dynamite"){
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a lancé une dynamite sur "+partie.getNameFromZone(partie.zones[cartePiochée.data]),"rapportAction":{type:"cartePiochée",valeur:"Dynamite"},"idPartie":partie.id})
+                                partie.state = "phase_Attaque"
+                                setTimeout(() => {
                                   tourPasseDeCirconstance(partie)
-                                break
-                            }//Fin Switch Cartepiochée
+                                }, 2500);
+                              }
+                                else{
+                                  tourPasseDeCirconstance(partie)
+                                  setTimeout(() => {
+                                    tourPasseDeCirconstance(partie)
+                                  }, 2500);
+                                }
+                            }//Fin piocheNoire
 
-                          }
+                          
 
                           function piocheBlanche(partie,joueur){
 
@@ -1195,10 +1204,12 @@ io.on('connection', (socket) => {
   
   
                           function effetCase(joueur,partie){//Selon la case courante du joueur, fait des effets différents
-                            console.log(joueur)//Problème: c'est pas le bon joueur qui arrive en param, à résoudre elouand
+                            //Problème: c'est pas le bon joueur qui arrive en param, à résoudre elouand
                             switch (partie.zones[joueur.position]){
                               case "zone1":
-                              piocheVerte(joueur,partie)
+
+                              piocheNoire(partie,joueur)
+
                               break
 
                               case "zone2":
@@ -1207,7 +1218,8 @@ io.on('connection', (socket) => {
                                 break
 
                               case "zone3":
-                                piocheBlanche(partie,joueur)
+                                piocheNoire(partie,joueur)
+
                                 break
 
                                 case "zone4":
@@ -1221,7 +1233,7 @@ io.on('connection', (socket) => {
                                 break
 
                                 case "zone6":
-                                  if (partie.canSteal()){
+                                  if (partie.canSteal(joueur.idJoueur)){
                                   partie.state="Sanctuaire_Ancien"}
                                   else {partie.state="phase_Attaque";}
                                   tourPasseDeCirconstance(partie)
@@ -1309,20 +1321,44 @@ io.on('connection', (socket) => {
                                             if (cible.hurtPoint<0){cible.hurtPoint=0}
                                           } 
                                           partie.state = "phase_Attaque"
-                                          tourPasseDeCirconstance(partie)
+                                          setTimeout(() => {
+                                            tourPasseDeCirconstance(partie)
+                                          }, 2500);
                                           break
 
                                           //Cartes piochées
+
+                                          case "Peau_De_Banane_2":
+                                            if (partie.joueurCourant!=getIdFromPseudo(data.joueurConcerne)){
+                                              for (var test of partie.joueurs){
+                                                if (test.idJoueur==partie.joueurCourant){
+                                                  for (var z in test.objets){
+                                                  if (test.objets[z]==partie.variableTemp){test.objets.splice(z,1)}
+                                                  }
+                                                }
+                                                for (var test of partie.joueurs){
+                                                  if (test.idJoueur==data.joueurConcerne){
+                                                    test.objets.push(partie.variableTemp)
+                                                    partie.state = "phase_Attaque"
+                                                    io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" a donné son objet "+partie.variableTemp+" à "+data.joueurConcerne,"rapportAction":false})
+                                                    setTimeout(() => {tourPasseDeCirconstance(partie)}, 2500);
+                                                    partie.variableTemp=""
+                                                  }
+                                                }
+                                              }
+                                            }
+
+                                          break
                                           
                                         case "Chauve-Souris_Vampire":
                                           for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
                                           cible.hurtPoint+=2
-                                          for (var joueur of partie.joueurs){if (joueur.idJoueur==joueurCourant){cible=joueur}}
+                                          for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.joueurCourant){cible=joueur}}
                                           cible.hurtPoint-=1
                                           if (cible.hurtPoint<0){cible.hurtPoint=0}
                                           io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a volé 2 points de vie à "+data.joueurConcerne,"rapportAction":false,"idPartie":partie.id})
-                                          partie.state = "finTour"
-                                          console.log("je mets fin au tour 2")
+                                          partie.state = "phase_Attaque"
+                                
                                           setTimeout(() => {
                                             tourPasseDeCirconstance(partie)
                                           }, 2500);
@@ -1331,16 +1367,44 @@ io.on('connection', (socket) => {
                                           case "Araignée_Sanguinaire":
                                             for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
                                             cible.hurtPoint+=2
-                                            for (var joueur of partie.joueurs){if (joueur.idJoueur==joueurCourant){cible=joueur}}
+                                            for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.joueurCourant){cible=joueur}}
                                             cible.hurtPoint+=2
-                                            partie.state = "finTour"
-                                            console.log("je mets fin au tour 3")
+                                            partie.state = "phase_Attaque"
+                                          
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" et "+data.joueurConcerne+" ont été victimes de l'araignée ! Ils subissent 2 dégâts.","rapportAction":false,"idPartie":partie.id})
                                             setTimeout(() => {
                                               tourPasseDeCirconstance(partie)
                                             }, 2500);
                                             break
 
+                                            case "Poupée_Démoniaque":
+                                              for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
+                                              cible.hurtPoint+=3
+                                              for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.joueurCourant){cible=joueur}}
+                                              cible.hurtPoint+=3
+                                              partie.state =  "phase_Attaque"
+                                              var chance = Math.floor(Math.random()*6)
+                                              if (chance>=4){
+                                              io.emit("tourPasse",{"Message":"La poupée se retourne contre "+pseudos[partie.joueurCourant]+" et lui inflige 3 dégâts !","rapportAction":false,"idPartie":partie.id})
+                                              joueur.hurtPoint+=3
+                                            }
+                                              else{
+                                                for (var jou of partie.joueurs){
+                                                  if (jou.idJoueur==getIdFromPseudo(data.joueurConcerne)){
+                                                    jou.hurtPoint+=3
+                                                  }
+                                                }
+                                              io.emit("tourPasse",{"Message":"La poupée est prise d'une pulsion vengeresse et s'attaque à "+data.joueurConcerne+"  ! Il subit 3 dégâts !","rapportAction":false,"idPartie":partie.id})
+                                              }
+                                              setTimeout(() => {
+                                                tourPasseDeCirconstance(partie)
+                                              }, 2500);
+                                              break
+
+
+
+
+                                            
                                           //Personnages
                                         case "pouvoirFu-ka":
 
@@ -1423,7 +1487,18 @@ io.on('connection', (socket) => {
                                     if (data.type=="stuffOther"){
 
                                     }
-                                    if (data.type=="stuffSelf")
+                                    if (data.type=="stuffSelf"){
+                                      if (partie.state=="Peau_De_Banane_1"){
+                                        for (var joueur of partie.joueurs){
+                                          if (joueur.hasItem(data.idCarte)){
+                                              partie.state="Peau_De_Banane_2"
+                                              partie.variableTemp=data.idCarte
+                                              tourPasseDeCirconstance(partie)
+                                          }
+                                        }
+
+                                      }
+                                    }
 
                                     if (data.type=="pioche"){
                                         if (partie.state!="choixPioche"){return}
@@ -1462,7 +1537,6 @@ io.on('connection', (socket) => {
                                             for (var z of partie.joueurs){if (z.idJoueur==socket.data.userId){atk=z} else{if(z.idJoueur==getIdFromPseudo(data.text)){def = z}}}
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a infligé "+resultat.dégâts+" dégâts à "+data.text,"rapportAction":{"type":"attaque","valeur":[((atk.révélé)?atk.character:false),((def.révélé)?def.character:false)]},"idPartie":data.idPartie})
                                             partie.state="finTour"
-                                            console.log("je mets fin au tour 5")
                                             setTimeout(() => {
                                               tourPasseDeCirconstance(partie)
                                             }, 2500);
@@ -1526,13 +1600,15 @@ io.on('connection', (socket) => {
                                                   joueur.position = partie.getIndexFromZone("zone6")
                                                   break
                                           }
-                                          console.log(joueur.position)
-                                          console.log(partie.getNameFromZone(partie.zones[joueur.position]))
-                                          io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" se déplace vers "+destination+" !","rapportAction":{"type":"jetsDeDés","valeur":[roll1,roll2],"idPartie":data.idPartie}})
+                                    
+                                         
+                                          io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" se déplace vers "+destination+" !","rapportAction":{"type":"jetsDeDés","valeur":[roll1,roll2]} ,"idPartie":data.idPartie})
                                           partie.state = "~"
+                                          var g = joueur
                                           setTimeout(() => {
-                                            effetCase(joueur,partie)
+                                            effetCase(g,partie)
                                           }, 2500);
+                                 
                                         break//Fin du cas où c'est un lancer de dés pour se déplacer.
 
                            
@@ -1541,6 +1617,7 @@ io.on('connection', (socket) => {
                                           joueur.turnsToPlay--
                                           if (joueur.turnsToPlay<=0){
                                             partie.nextPlayer()
+                                            
                                           }
                                           partie.state = "débutTour"
                                           tourPasseDeCirconstance(partie)

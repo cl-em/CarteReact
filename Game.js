@@ -584,6 +584,9 @@ class shadowHunter extends Game{
         this.visions.push(new CarteShadowHunter('Vision_Purificatrice', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Suprême', 'vision'))
         
+        this.défausseNoire = []
+        this.défausseBlanche = []
+        this.défausseVisions = []
         this.zones = []
         for (var i=1;i<=6;i++){
             this.zones.push(("zone"+i))
@@ -593,16 +596,12 @@ class shadowHunter extends Game{
 
     //-------------------------Fonction de gestion de la partie-------------------------------------------
 
-    zonesAdjacentes(z1,z2){
-        if (z1==z2){return true}
+    zonesAdjacentes(zo1,zo2){
+        if (zo1==zo2){return true}
+        if (zo1>zo2){var z1=zo2;var z2 = zo1}
+        else{var z1 = zo1;var z2 = zo2}
 
-        if (z1%2==0){
-            return (z2==z1+1)
-        }
-        
-        else{
-            return (z2==z1-1)
-        }
+      return ((z2-z1)==1)
 
     }
 
@@ -681,7 +680,7 @@ class shadowHunter extends Game{
         getIndexFromZone(zone){
             for (var z in this.zones){
                 if (this.zones[z]==zone){
-                    return z
+                    return parseInt(z)
                 }
             }
             return false
@@ -716,6 +715,7 @@ class shadowHunter extends Game{
             }
             this.joueurCourant = joueur.idJoueur
             this.state = this.vertes.shift().valeur
+            this.défausseVisions.push(this.state)
         }
 
         drawBlanche(idJoueur){
@@ -727,6 +727,7 @@ class shadowHunter extends Game{
             }
 
             var carte = this.blanches.shift()
+            this.défausseBlanche.push(carte.valeur)
             if (carte.type=="équipement"){
                 joueur.objets.push(carte.valeur)//Les inventaires sont juste des listes de string, pas besoin de plus.
             }
@@ -792,9 +793,12 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
     }
 
     var carte = this.noires.shift()
+    this.défausseNoire.push(carte.valeur)
+
     var data;
     if (carte.type=="équipement"){
         joueur.objets.push(carte.valeur)//Les inventaires sont juste des listes de string, pas besoin de plus.
+        this.state = "phase_Attaque"
     }
     else{
         switch (carte.valeur) {
@@ -809,10 +813,11 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             case "Dynamite":
                 var destination = Math.floor(Math.random()*6)
                 for (var test of this.joueurs){
-                    if (test.position==destination||this.zonesAdjacentes(this.position,destination)){
+                    if (parseInt(test.position)==destination||this.zonesAdjacentes(parseInt(test.position),destination)){
                         test.hurtPoint+=3
                     }
                     data = destination
+                    console.log("destination de la dynamite:"+data)
                 }
 
               
@@ -864,42 +869,46 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             return false
         }
 
-    canAttack(atk,def){//Définit si le joueur d'id atk peut attaquer le jouer d'id def
-        var attaquant = null;
-        var défenseur = null;
-        for (var joueur of this.joueurs){
-            if (joueur.idJoueur==atk){attaquant = joueur}
-            if (joueur.idJoueur==def){défenseur= joueur }
+        canAttack(atk,def){//Définit si le joueur d'id atk peut attaquer le jouer d'id def
+          
+            var attaquant = null;
+            var défenseur = null;
+            for (var joueur of this.joueurs){
+                if (joueur.idJoueur==atk){attaquant = joueur}
+                if (joueur.idJoueur==def){défenseur= joueur }
+            }
+            console.log(attaquant)
+            console.log(défenseur)
+            if (attaquant==null||défenseur==null){return false}
+
+            if (attaquant.hasItem("Revolver_Des_Ténèbres")){return !this.zonesAdjacentes(parseInt(attaquant.position),parseInt(défenseur.position))}
+            else{return this.zonesAdjacentes(parseInt(attaquant.position),parseInt(défenseur.position))}
         }
-        if (attaquant==null||défenseur==null){return false}
-
-        return (this.zonesAdjacentes((attaquant.position,défenseur.position)&&!attaquant.hasItem("Revolver_Des_Ténèbres"))||!this.zonesAdjacentes((attaquant.position,défenseur.position)&&attaquant.hasItem("Revolver_Des_Ténèbres")))
-
-    }
 
     existTarget(joueur){
         for (var j of this.joueurs){
-            if (this.canAttack(joueur.idJoueur,j.idJoueur)){return true}
+            if (j.idJoueur!=joueur.idJoueur && this.canAttack(joueur.idJoueur,j.idJoueur)){return true}
         }
         return false
     }
-    canSteal(){
+    canSteal(id){
         for (var joueur of this.joueurs){
-            if (joueur.objets.length>0){return true}
+            if (joueur.idJoueur!=id && joueur.objets.length>0){return true}
         }
         return false
     }
 
     nextPlayer(){//Change le joueur courant au prochain dans la liste
+
     var indexCourant = 0;
-    for (var j in this.joueurs){if (this.joueurs[j]==this.joueurCourant){indexCourant=j}}
-    if (j==this.joueursMax-1){
-        this.joueurCourant=this.joueurs[0].idJoueur
+    for (var j in this.joueurs){if (this.joueurs[j].idJoueur==this.joueurCourant){indexCourant=parseInt(j)}}
+    console.log(indexCourant+1)
+    if (indexCourant==this.joueursMax-1){
+        this.joueurCourant=this.joueurs[0].idJoueur;
     }
     else{
         this.joueurCourant=this.joueurs[indexCourant+1].idJoueur
-    }
-        
+    }   
     
     }
 
@@ -930,6 +939,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         }
         if (défenseur.protected==true){totalDamage=0}
         retour.dégâts = totalDamage
+        console.log(attaquant.idJoueur+" attaque "+défenseur.idJoueur)
         if (this.takeDamage(défenseur,totalDamage)==false){
             if (défenseur.character=="Loup-Garou"&&défenseur.révélé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
         }

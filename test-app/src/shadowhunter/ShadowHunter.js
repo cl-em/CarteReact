@@ -7,6 +7,7 @@ import Chat from '../Chat';
 import { useNavigate } from "react-router-dom";
 import { createPortal } from 'react-dom';
 import Action from "./ActionShadow";
+import Des from "./Des/Des";
 
 
 /*----------------------------------------------Avant jeu + Apres jeu-----------------------------------------------------*/
@@ -308,11 +309,11 @@ function Jouer() {
                     <Role nomCarte={personnage} />
                     <Main listeDeCarte={stuff} />
                     <Plateau carteEnFonctionDeLaZone={zoneDeJeu} listeJoueurs={listeJoueurs}/>
-                    <Action rapportAction={action} idJoueurLocal={idJoueur} />
                     <Stats listeJoueurs={listeJoueurs} />
                     <Pioches />
+                    <Action rapportAction={action} idJoueurLocal={idJoueur} />
                     <div className="messageTourPasse">
-                    {message.length > 0 ? <p>{message}</p> : <div></div>}
+                        {message.length > 0 ? <p>{message}</p> : <div></div>}
                     </div>
 
 

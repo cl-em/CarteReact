@@ -33,10 +33,13 @@ function ListeSauvegardesParties6quiprend(){
         <div>
             <h1>Liste des sauvegardes</h1>
             <ul>
-                {sauvegardes.map((sauvegarde) => (
-                    <li key={sauvegarde.id6}>
-                        Partie ID : {sauvegarde.id6} <button onClick={() => chargerPartie(sauvegarde.id6)}>Charger</button><button onClick={() => supprimerPartie(sauvegarde.id6)}>Supprimer</button>
-                    </li>
+                {sauvegardes.map((sauvegarde, index) => (
+                    <div className={"test".concat(index%2)} key={index}>
+                        <p>Partie ID :</p>
+                        <p>{sauvegarde.id6}</p>
+                        <button class="joliebouton" onClick={() => chargerPartie(sauvegarde.id6)}>Charger</button>
+                        <button class="joliebouton" onClick={() => supprimerPartie(sauvegarde.id6)}>Supprimer</button>
+                    </div>
                 ))}
             </ul>
         </div>

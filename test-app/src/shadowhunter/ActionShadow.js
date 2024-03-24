@@ -11,11 +11,15 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
 
     let actV = rapportAction.valeur;
     let ActComp = (<div>default</div>);
+    console.log(rapportAction)
+    console.log(actV);
+
 
     switch (rapportAction.type) {
         case "jetsDeDés":
+            console.log("lancer de dés"+actV)
             ActComp = (
-                <div>
+                <div id="tourPasse">
                     <Des des1valeur={actV[0]} des2valeur={actV[1]}/>
                 </div>
             )
@@ -43,8 +47,10 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
 
         case "attaque":
             ActComp = (
-                <div>
-                    Le joueur {actV.attaquant.pseudo} a attaqué {actV.défenseur.pseudo}
+                <div className="carte1" id="tourPasse"> 
+                    {/* <img key={actV} src={"http://localhost:8888/carteShadow/"+(actV[0]==false?"Personnage":actV[0])+".png"} alt= {actV} />
+                    <img key={actV} src={"http://localhost:8888/carteShadow/"+(actV[1]==false?"Personnage":actV[1])+".png"} alt= {actV} /> */}
+
                 </div>
             )
             break;
@@ -52,10 +58,10 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         case "choix":
             
             ActComp = idJoueurLocal==actV.idJoueur ?  (
-                <div>
+                <div className="carte1" id="tourPasse">
                     {actV.boutons.map((text, index) => (
                         
-                        <button key={index} onClick={() => {
+                        <button className="joliebouton2" key={index} onClick={() => {
                             socket.emit("choixCarte", { idPartie: idPartie, type: "choix", text: text })
                         }}>{text}</button>
                         ))}
@@ -77,7 +83,7 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         case "vision": 
 
             ActComp = (
-                <div>
+                <div className="carte1" id="tourPasse">
                     { actV.idJoueur == idJoueurLocal ? 
                         <img  src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV} />
 
@@ -89,7 +95,7 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         default:
             ActComp = (
                 <div>
-                    {/* problème */}
+                    problème (laissez ça pour debug plus facilement)
                 </div>
             )
 
