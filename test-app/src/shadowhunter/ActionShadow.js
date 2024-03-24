@@ -95,7 +95,7 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         default:
             ActComp = (
                 <div>
-                    problème (laissez ça pour debug plus facilement)
+                    
                 </div>
             )
 

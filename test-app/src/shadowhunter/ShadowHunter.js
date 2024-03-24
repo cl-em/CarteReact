@@ -59,20 +59,24 @@ function Role({ nomCarte }) {
     const imageSrc = `http://localhost:8888/carteShadow/${nomCarte}.avif`;
     return (
         <div id="role-carte-sh">
-            Votre rôle (gardez-le secret) :
+            <p>Rôle :</p>
             <img src={"http://localhost:8888/carteShadow/" + nomCarte + ".png"} alt={nomCarte} />
-            <div>
+            <div className="role-bouton">
+                <div>
                 <button className="joliebouton2"
                     onClick={() => {
                         socket.emit("reveleCarte", { "idPartie": idPartie, "capacite": nomCarte });
                     }}
+                    
 
-                >Révéler</button>
+                >Révéler</button></div>
+
+                <div>
                 <button className="joliebouton2"
                     onClick={() => {
                         socket.emit("utiliseCapacite", { idPartie: idPartie, capacite: nomCarte });
                     }}
-                >Utiliser sa capacité</button>
+                >Utiliser sa capacité</button></div>
             </div>
         </div>
     )
