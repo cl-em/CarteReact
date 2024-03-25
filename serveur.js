@@ -1318,11 +1318,13 @@ io.on('connection', (socket) => {
                                         case "Forêt_Hantée_2":
                                           for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
                                           if (partie.variableTemp=="attaquer"){
-                                            cible.hurtPoint+=2
+                                            if (cible.protected==false){
+                                              cible.hurtPoint+=2}
                                             io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a blessé "+data.joueurConcerne+" grâce à la forêt.","rapportAction":false,"idPartie":data.idPartie})
                                             
                                           }
                                           if (partie.variableTemp=="soigner"){
+                                            
                                             cible.hurtPoint-=1
                                             if (cible.hurtPoint<0){cible.hurtPoint=0}
                                             io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a soigné "+data.joueurConcerne+" grâce à la forêt.","rapportAction":false,"idPartie":data.idPartie})
@@ -1359,7 +1361,8 @@ io.on('connection', (socket) => {
                                           
                                         case "Chauve-Souris_Vampire":
                                           for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
-                                          cible.hurtPoint+=2
+                                          if (cible.protected==false){
+                                            cible.hurtPoint+=2}
                                           for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.joueurCourant){cible=joueur}}
                                           cible.hurtPoint-=1
                                           if (cible.hurtPoint<0){cible.hurtPoint=0}
@@ -1373,9 +1376,11 @@ io.on('connection', (socket) => {
 
                                           case "Araignée_Sanguinaire":
                                             for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
-                                            cible.hurtPoint+=2
+                                            if (joueur.protected==false){
+                                              cible.hurtPoint+=2}
                                             for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.joueurCourant){cible=joueur}}
-                                            cible.hurtPoint+=2
+                                            if (joueur.protected==false){
+                                            cible.hurtPoint+=2}
                                             partie.state = "phase_Attaque"
                                           
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" et "+data.joueurConcerne+" ont été victimes de l'araignée ! Ils subissent 2 dégâts.","rapportAction":false,"idPartie":partie.id})
@@ -1391,12 +1396,14 @@ io.on('connection', (socket) => {
                                                 for (var joueur of partie.joueurs){
                                                   if (joueur.idJoueur==partie.joueurCourant){
                                               io.emit("tourPasse",{"Message":"La poupée se retourne contre "+pseudos[partie.joueurCourant]+" et lui inflige 3 dégâts !","rapportAction":false,"idPartie":partie.id})
-                                              joueur.hurtPoint+=3
+                                              if (joueur.protected==false){
+                                              joueur.hurtPoint+=3}
                                             }}}
                                               else{
                                                 for (var jou of partie.joueurs){
                                                   if (jou.idJoueur==getIdFromPseudo(data.joueurConcerne)){
-                                                    jou.hurtPoint+=3
+                                                    if (jou.protected==false){
+                                                    jou.hurtPoint+=3}
                                                   }
                                                 }
                                               io.emit("tourPasse",{"Message":"La poupée est prise d'une pulsion vengeresse et s'attaque à "+data.joueurConcerne+"  ! Il subit 3 dégâts !","rapportAction":false,"idPartie":partie.id})
@@ -1500,12 +1507,12 @@ io.on('connection', (socket) => {
                                             }
                                           }
                                         }
+                                      }
                                             for (var joueur of partie.joueurs){
                                               if (joueur.idJoueur==partie.joueurCourant){
                                                 joueur.objets.push(data.carte)
                                               }
                                             }
-                                          }
                                           io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a volé un objet à "+data.joueurConcerne,"rapportAction":false,"idPartie":data.idPartie})
                                           partie.state = "phase_Attaque"
                                           setTimeout(() => {
@@ -1612,6 +1619,7 @@ io.on('connection', (socket) => {
                                                 
                                         case "lancer les dés !"://Cas de lancer de dés en début de tour. Est nécessaire pour laisser le temps à certains personnages, dont le pouvoir marche seulement en début de tour, d'utiliser leur pouvoir
                                           if (partie.state!="débutTour"){return}
+                                          joueur.protected = false
                                           var destination;
                                           var posDébut = partie.zones[joueur.position]
                                           var roll1 = Math.floor(Math.random()*6)+1
@@ -1792,12 +1800,26 @@ io.on('connection', (socket) => {
                                         for (var joueur of partie.joueurs){if (joueur.éliminé==true){t++}}
                                         j.turnsToPlay+=t
                                         io.emit("tourPasse", { "Message": pseudos[socket.data.userId] + " relève les morts et rejouera "+t+" fois.", "rapportAction": false, "idPartie": data.idPartie })
-
+                                        setTimeout(() => {
+                                          tourPasseDeCirconstance(partie)
+                                        }, 2500);
 
                                       }
-
                                     break
 
+                                    case "Gregor":
+                                      if (partie.joueurCourant==socket.data.userId && partie.state=="finTour"){
+                                        for (var joueur of partie.joueurs){
+                                          if (joueur.idJoueur==partie.joueurCourant){
+                                            joueur.protected=true
+                                            io.emit("tourPasse", { "Message": pseudos[socket.data.userId] + " se protège jusqu'à son prochain tour", "rapportAction": false, "idPartie": data.idPartie })
+                                            setTimeout(() => {
+                                              tourPasseDeCirconstance(partie)
+                                            }, 2500);
+                                          }
+                                        }
+                                      }
+                                    break
 
 
                               }

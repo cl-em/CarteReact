@@ -42,13 +42,6 @@
     z-index: 1;
 }
 
-#main-cartes-sh img:hover {
-    transform: scale(3) translateY(-70%);
-    z-index: 1000;
-    transition-delay: 0.2s;
-    position: relative;
-}
-
 
 .plateau-container {
     color: aliceblue;

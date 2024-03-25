@@ -560,14 +560,14 @@ class shadowHunter extends Game{
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
         this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
-        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))*/
+        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Peau_De_Banane', 'consommable'))
-        /*this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
         this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Sabre_Hanté_Masamune', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Sabre_Hanté_Masamune', 'équipement'))*/
         this.noires.push(new CarteShadowHunter('Succube_Tentatrice', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
+        /*this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
         this.noires.push(new CarteShadowHunter('Hachoir_Maudit', 'équipement'))
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Mitrailleuse_Funeste', 'équipement'))
@@ -631,7 +631,7 @@ class shadowHunter extends Game{
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
         this.joueurs.push(new JoueurShadowHunter(3,false,"Allie",10))
-        this.joueurs.push(new JoueurShadowHunter(4,false,"Allie",10))
+        this.joueurs.push(new JoueurShadowHunter(2,false,"Allie",10))
         for (var i=0;i<3;i++){  
         this.joueurs[i].objets.push("Tronçonneuse_Du_Mal")
         this.blanches =this.shuffle(this.blanches)
@@ -802,6 +802,7 @@ class shadowHunter extends Game{
 
 
 drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et data les trucs en plus, surtout pour la dynamite
+   if (this.noires.length<=0){this.noires = this.défausseNoire;this.défausseNoire=[];this.noires = this.shuffle(this.noires)}
     var joueur
     for (var test of this.joueurs){//Trouver le joueur concerné
         if (test.idJoueur == idJoueur){
@@ -810,7 +811,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
     }
 
     var carte = this.noires.shift()
-    this.défausseNoire.push(carte.valeur)
+    this.défausseNoire.push(carte)
 
     var data;
     if (carte.type=="équipement"){
@@ -966,6 +967,8 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             }
         }
     }
+    if (attaquant.character=="Vampire"&&attaquant.révélé==true){attaquant.hurtPoint-=2}
+    if (attaquant.hurtPoint<=0){attaquant.hurtPoint==0}
     retour.dégâts = totalDamage
     return retour
 }
