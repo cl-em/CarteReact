@@ -101,11 +101,13 @@ function Connecte() {
     const [pseudo, setPseudo] = useState("...");
 
     useEffect(() => {
-        socket.on("quisuisje?", (data) => {
-                setPseudo(data.pseudo);
+        socket.emit("quisuisje?");
+        socket.on("quisuisje", (data) => {
+            console.log("Pseudo reçu :", data.pseudos);
+            setPseudo(data);
         })
         return () => {
-            socket.off("quisuisje?");
+            socket.off("quisuisje");
         };
     }, [])
 
@@ -361,7 +363,6 @@ function Jouer() {
             if (data.idPartie === idPartie) {
                 setgameStart(true);
                 socket.emit("wantCarte", { idPartie: idPartie });
-                socket.emit("quisuisje?");
 
                 setZoneDeJeu(data.zones);
             }
@@ -427,7 +428,7 @@ function Jouer() {
                 <div>
                     <ImageProvider>
                         <div className="droite">
-                            <Connecte/>
+                            <Connecte />
                             <ChatSH />
                             <Stats listeJoueurs={listeJoueurs} />
                         </div>
