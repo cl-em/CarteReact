@@ -32,6 +32,16 @@ function Main({ listeDeCarte }) { // liste de string
 
     let socket = React.useContext(SocketContext);
 
+    const [hoveredImage, setHoveredImage] = useState(null);
+    const handleMouseEnter = (imageId) => {
+        setHoveredImage(imageId);
+        // console.log(`L'utilisateur survole l'image ${imageId}`);
+      };
+    // const handleMouseLeave = () => {
+        // setHoveredImage(null); // si tu veux que l'image degage
+        // console.log(`L'utilisateur a quitté l'image`);
+    //   };
+    
     return (
         <div id="main-cartes-sh">
             <div>Vos items :</div> <br></br>
@@ -39,10 +49,19 @@ function Main({ listeDeCarte }) { // liste de string
                 <img key={index} src={"http://localhost:8888/carteShadow/" + element + ".png"} alt={element}
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, idCarte: element, type: "stuffSelf" });
-
                     }}
+                    onMouseEnter={() => handleMouseEnter(index)}
+                    // onMouseLeave={handleMouseLeave}
+                    className={hoveredImage === index ? 'hovered' : ''}
                 />
             ))}
+            <div className="hovered-image">
+                {hoveredImage !== null && <img src={"http://localhost:8888/carteShadow/" + listeDeCarte[hoveredImage]+ ".png"} alt={listeDeCarte[hoveredImage]} 
+                    // onClick={() => {
+                    //     socket.emit("choixCarte", { idPartie: idPartie, idCarte: listeDeCarte[hoveredImage], type: "stuffSelf" });
+                    // }} 
+                    />}
+            </div>
         </div>
     )
 }
