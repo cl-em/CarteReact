@@ -1108,7 +1108,7 @@ io.on('connection', (socket) => {
                             switch (partie.state){
                               //Les dés et système
                               case "choixStuff":
-                                io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" choisit quel objet récupérer.","rapportAction":{"type":"choix","valeur":{"boutons":partie.variableTemp,"défaut":false,"idJoueur":partie.variableTemp}},"idPartie":partie.id})
+                                io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" choisit quel objet récupérer.","rapportAction":{"type":"choix","valeur":{"boutons":partie.variableTemp,"défaut":false,"idJoueur":partie.joueurCourant}},"idPartie":partie.id})
                               break
                               case "contre-attaque":
                                 io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" choisit s'il souhaite contre-attaquer.","rapportAction":{"type":"choix","valeur":{"boutons":["contre-attaquer !","ne rien faire..."],"défaut":"Loup_Garou","idJoueur":partie.variableTemp}},"idPartie":partie.id})
@@ -1369,7 +1369,7 @@ io.on('connection', (socket) => {
                                   for (var cible of partie.joueurs){
                                   var dmg = Math.floor(Math.random()*6)+1
                                   if (partie.takeDamage(cible,dmg)==false){//ça ne tue pas
-                                  if (cible.révélé){io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+data.joueurConcerne,"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})}
+                                  if (cible.révélé){io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+pseudos[partie.joueurCourant],"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})}
                                   else{io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+data.joueurConcerne,"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,false]}},"idPartie":data.idPartie})}
                                   partie.variableTemp=""
                                   partie.state = "finTour"
@@ -1402,7 +1402,7 @@ io.on('connection', (socket) => {
                                       }
                                   }//Fin renvoi
                                   cible.éliminé=true
-                                  io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" qui était" +cible.character.replace(/_/g," ")+ "lors de la contre-attaque. Ses objets partent à la défausse.","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})
+                                  io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" qui était " +cible.character.replace(/_/g," ")+ "lors de la contre-attaque. Ses objets partent à la défausse.","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})
                                   partie.nextPlayer()
                                   partie.state = débutTour
 
@@ -1765,7 +1765,7 @@ io.on('connection', (socket) => {
                                       
                                       if (partie.state=="choixStuff"){
                                           if (partie.variableTemp.includes(data.text)){
-                                            joueur.objets.push(partie.text)
+                                            joueur.objets.push(data.text)
                                             io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" a récupéré l'objet "+data.text.replace(/_/g," "),"rapportAction":{"type":"cartePiochée","valeur":data.text},"idPartie":partie.id})
                                             partie.state = "finTour"
                                             setTimeout(() => {
@@ -1817,7 +1817,7 @@ io.on('connection', (socket) => {
                                                       joueur.objets.push(z)
                                                     }
                                                     test.éliminé=true
-                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était" +cible.character.replace(/_/g," ")+ " et volé tous ses objets","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
+                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était " +cible.character.replace(/_/g," ")+ " et volé tous ses objets","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
                                                     partie.state = "finTour"
                                                     setTimeout(() => {
                                                       tourPasseDeCirconstance(partie)
@@ -1836,13 +1836,13 @@ io.on('connection', (socket) => {
                                                     }
                                                     partie.variableTemp=boutons
                                                     partie.state="choixStuff"
-                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était" +cible.character.replace(/_/g," ")+".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
+                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était " +test.character.replace(/_/g," ")+".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
                                                     setTimeout(() => {
                                                       tourPasseDeCirconstance(partie)                                                    
                                                     }, 2500);
                                                   }
                                                   else{
-                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était" +cible.character.replace(/_/g," ")+".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
+                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était " +test.character.replace(/_/g," ")+".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
                                                     partie.state = "finTour"
                                                   setTimeout(() => {
                                                     tourPasseDeCirconstance(partie)
@@ -2074,7 +2074,7 @@ io.on('connection', (socket) => {
                                             }
                                           break
     
-                                          case "Le laisser où il est":
+                                          case "poursuivre son chemin":
                                             if (partie.state!="Avènement_Suprême"){return}
                                             partie.state = "phase_Attaque"
     

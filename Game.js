@@ -638,7 +638,6 @@ class shadowHunter extends Game{
 
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
-        this.joueurs[0].objets.push("Boussole_Mystique")
         for (var i=0;i<3;i++){  
         this.blanches =this.shuffle(this.blanches)
        this.noires = this.shuffle(this.noires)
@@ -668,7 +667,7 @@ class shadowHunter extends Game{
                 if (char=="Liche"||char=="Loup-Garou"||char=="Georges"||char=="Gregor"){hp=13}
 
 
-            joueur.hp = hp
+            joueur.hp = 1
         }
         this.hasStarted = true;
         this.joueurCourant = this.joueurs[0].idJoueur
@@ -940,7 +939,8 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
     else{
         this.joueurCourant=this.joueurs[indexCourant+1].idJoueur
     }   
-    
+
+    if (this.joueurs[indexCourant+1].éliminé){this.nextPlayer()}
     }
 
     attaquer(atk,def){
@@ -995,6 +995,9 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
   
         if (this.takeDamage(défenseur,totalDamage)==false){
             if (défenseur.character=="Loup-Garou"&&défenseur.révélé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
+        }
+        else{
+            retour.killed = true;
         }
         if (attaquant.character=="Vampire"&&attaquant.révélé){attaquant.hurtPoint-=2}
         if (attaquant.hurtPoint<=0){attaquant.hurtPoint==0}
