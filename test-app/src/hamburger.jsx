@@ -19,13 +19,13 @@ const HamburgerMenu = () => {
                 <div className='menu-button'></div>
             </label>
                 <ul className="menu">
-                <li><a href='/'>Login</a></li>
-                <li><a href='/games'>Games</a></li>
+                <li><a href='/'>Connexion</a></li>
+                <li><a href='/games'>Menu de sélection</a></li>
                 <li><a href='/bataille'>Bataille</a></li>
                 <li><a href='/6quiprend'>6QuiPrend</a></li>
-                <li><a href="/magic">magic</a> </li>
-                <li><a href='/leaderboardbataille'>Leaderboard Bataille</a></li>
-                <li><a href='/leaderboard6quiprend'>Leaderboard 6QuiPrend</a></li>
+                <li><a href="/magic">Shadow hunter</a> </li>
+                <li><a href='/leaderboardbataille'>Classement bataille</a></li>
+                <li><a href='/leaderboard6quiprend'>Classement 6QuiPrend</a></li>
                 </ul>
             </section>
         </div>

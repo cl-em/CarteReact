@@ -223,7 +223,7 @@ body {
 }
 
 .divCartes {
-  margin-top: 4vh;
+  margin-top: 3vh;
   display: flex;
   background-color: transparent;
   height: 15vh;
@@ -394,8 +394,8 @@ top:0;
 
 .choixJeu1, .choixJeu2, .choixJeu3{
   cursor: pointer;
-  width: 335px;
-  height: 510px;
+  width: 315px;
+  height: 490px;
   position:relative;
       overflow: hidden;
       border-radius:12px;
@@ -659,6 +659,11 @@ top:0;
   left: 50%;
   transform: translateX(-50%);
   margin-top: 10px;
+}
+
+#sauvegarde-btn p{
+  margin-top: 40px;
+  color: aqua;
 }
 
 .input-area {

@@ -7,6 +7,30 @@ import {
 } from "react-router-dom";
 import CarteJeu from './boeuf.js';
 
+function Connecte() {
+  let urlP = new URL(document.location).searchParams;
+  let idPartie = urlP.get("idPartie");
+  let socket = React.useContext(SocketContext);
+
+  const [pseudo, setPseudo] = useState("...");
+
+  useEffect(() => {
+      socket.emit("quisuisje?");
+      socket.on("quisuisje", (data) => {
+          console.log("Pseudo reçu :", data.pseudos);
+          setPseudo(data);
+      })
+      return () => {
+          socket.off("quisuisje");
+      };
+  }, [])
+
+  return (
+      <div id="sauvegarde-btn" className="quisuisje">
+          <p>Connecté en tant que {pseudo}</p>
+      </div>
+  )
+}
 
 function ProgressBar({progress}){
 
@@ -334,6 +358,7 @@ useEffect(()=>{
           <ApresJeu tableauFin={infosFinPartie}/>
         ) : (
           <>
+            <Connecte/>
             <Chat/>
             <AfficherStats infosJoueursFun={infosJoueurs} />
             <AfficherLigne listeLignes={nouvelleListeLignes} />
