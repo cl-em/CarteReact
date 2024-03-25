@@ -409,6 +409,9 @@ function Jouer() {
                                 <Pioches />
                                 <Main listeDeCarte={stuff} />
                                 <Role nomCarte={personnage} />
+                                <div className="carte-hover">
+                                <ImageComponent />
+                                </div>
                             </div>
                         </div>
                         <Plateau carteEnFonctionDeLaZone={zoneDeJeu} listeJoueurs={listeJoueurs} />
@@ -416,7 +419,6 @@ function Jouer() {
                         <div className="messageTourPasse">
                             {message.length > 0 ? <p>{message}</p> : <div></div>}
                         </div>
-                        <ImageComponent />
                     </ImageProvider>
 
 
