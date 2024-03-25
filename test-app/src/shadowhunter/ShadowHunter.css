@@ -29,7 +29,7 @@
 
 /*----------------------------------------------Plateau-----------------------------------------------------*/
 
-.plateau-container,
+/* .plateau-container,
 .plateau,
 .carte {
     position: relative;
@@ -55,19 +55,57 @@
 .plateau {
     display: flex;
     gap: 1vw;
+} */
+
+.plateau-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    height: 100%;
+    gap: 20px; /* Ajustez cette valeur selon l'espacement désiré entre les duos */
 }
 
+  .plateau {
+    gap: 3vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
 .carte img {
-    max-height: 150px;
+    max-height: 180px;
     display: block;
 }
+
+.duo1 {
+    position: fixed;
+    left: 42.5%;
+    top: 4.5vh;
+}
+
+.duo2 {
+    position: fixed;
+    left: 54.5vw;
+    top: 40vh;
+    transform: rotate(110deg);
+}
+
+.duo3 {
+    position: fixed;
+    right:54vw;
+    top: 43vh;
+    transform: rotate(-110deg);
+}
+
+
+
 
 .joueurPseudo {
     position: absolute;
     bottom: 10px;
     left: 10px;
     color: white;
-    background-color: rgba(0, 0, 0, 1);
     padding: 2px 5px;
     border-radius: 5px;
 }
@@ -187,7 +225,7 @@
 
 /*----------------------------------------------TourPasse-----------------------------------------------------*/
 
-#tourPasse {
+/* #tourPasse {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -210,7 +248,7 @@
     font-size: larger;
     font-family: Georgia, 'Times New Roman', Times, serif;
     z-index:1000;
-}
+} */
 
 .carte1 img {
     height: 150px;
@@ -261,7 +299,7 @@
     padding: 5px;
 }
 
-.quisuisje p{
+.quisuisje p {
     margin-top: 2vh;
     color: blue;
 }
@@ -284,8 +322,8 @@
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
 }
 
-.elements-gauche-haut{
-    gap: 3vh ;
+.elements-gauche-haut {
+    gap: 3vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -294,6 +332,62 @@
     width: 100%;
 }
 
-.carte-hover img{
+.carte-hover img {
     height: 30vh;
+}
+
+/*----------------------------------------------Bas-----------------------------------------------------*/
+
+.bas {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 56%;
+    height: 30vh;
+    background-color: #154251;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.bas>div {
+    flex: 1;
+    /* Cela permet à chaque div d'occuper une part égale de l'espace disponible */
+    display: flex;
+    align-items: center;
+    /* Centrer le contenu verticalement à l'intérieur de chaque div */
+    justify-content: center;
+    /* Centrer le contenu horizontalement à l'intérieur de chaque div */
+    height: 100%;
+    /* S'assure que chaque div interne prend toute la hauteur de .bas */
+    overflow: auto;
+    /* Ajoute un défilement si le contenu dépasse la hauteur de la div */
+    padding: 50px;
+}
+
+/*----------------------------------------------milieu-sh-----------------------------------------------------*/
+
+.milieu-sh {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 56%;
+    height: 70vh;
+    background-image: url('http://localhost:8888/fichier/shadoter.png'); /* Remplacez chemin_vers_votre_image.jpg par l'URL de votre image */
+    background-size: cover; /* Assure que l'image de fond couvre entièrement la div sans perdre ses proportions */
+    background-position: center; /* Centre l'image de fond dans la div */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #000a09;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    z-index: 10;
 }

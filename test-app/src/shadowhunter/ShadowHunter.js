@@ -259,13 +259,17 @@ function CartePlateau({ deuxCarte, position, listeJoueurs }) {
     let idPartie = urlP.get("idPartie");
     let socket = React.useContext(SocketContext);
 
+    useEffect(() => {
+        console.log(listeJoueurs)
+    }, [])
+
 
     const joueursDansCetteZone = (zone) => { //On cherche tout les joueurs qui se trouvent dans la zone en parmètres.
         return listeJoueurs.filter(joueur => "zone" + joueur.position === zone);
     };
 
     return (
-        <div className={"plateau plateau-" + position}>
+        <div className={"plateau"}>
             {deuxCarte.map((carte, index) => (
                 <div className={`carte ${carte}`} key={index}>
                     <img src={"http://localhost:8888/carteShadow/" + carte + ".png"} alt={carte}
@@ -276,6 +280,7 @@ function CartePlateau({ deuxCarte, position, listeJoueurs }) {
                     />
                     {joueursDansCetteZone(carte).map((joueur, joueurIndex) => (
                         <div key={joueurIndex} className="joueurPseudo" style={{
+                            backgroundColor: "black",
                             bottom: `${10 + joueurIndex * 25}px`, // Evite la superposition des joueurs (c'est sacrément embetant sinon)
                         }}>
                             {joueur.pseudo}
@@ -292,9 +297,15 @@ function Plateau({ carteEnFonctionDeLaZone, listeJoueurs }) {
     return (
         <div className="plateau-container">
 
+            <div className="duo1">
             <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0, 2)} position={"droite"} listeJoueurs={listeJoueurs} />
+            </div>
+            <div className="duo2">
             <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(2, 4)} position={"droite"} listeJoueurs={listeJoueurs} />
+            </div>
+            <div className="duo3">
             <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(4)} position={"base"} listeJoueurs={listeJoueurs} />
+            </div>
         </div>
     );
 }
@@ -442,10 +453,14 @@ function Jouer() {
                                 </div>
                             </div>
                         </div>
+                        <div className="milieu-sh">
                         <Plateau carteEnFonctionDeLaZone={zoneDeJeu} listeJoueurs={listeJoueurs} />
-                        <Action rapportAction={action} idJoueurLocal={idJoueur} />
-                        <div className="messageTourPasse">
-                            {message.length > 0 ? <p>{message}</p> : <div></div>}
+                        </div>
+                        <div className="bas">
+                            <div className="messageTourPasse">
+                                {message.length > 0 ? <p>{message}</p> : <div></div>}
+                            </div>
+                            <Action rapportAction={action} idJoueurLocal={idJoueur} />
                         </div>
                     </ImageProvider>
 
