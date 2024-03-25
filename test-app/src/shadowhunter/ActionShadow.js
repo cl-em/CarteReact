@@ -4,7 +4,7 @@ import React from "react";
 import Des from "./Des/Des";
 
 
-export default function Action({ rapportAction ,idJoueurLocal}) {
+export default function Action({ rapportAction, idJoueurLocal }) {
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie = urlP.get("idPartie");
     const socket = React.useContext(SocketContext);
@@ -17,10 +17,10 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
 
     switch (rapportAction.type) {
         case "jetsDeDés":
-            console.log("lancer de dés"+actV)
+            console.log("lancer de dés" + actV)
             ActComp = (
                 <div id="tourPasse">
-                    <Des des1valeur={actV[0]} des2valeur={actV[1]}/>
+                    <Des des1valeur={actV[0]} des2valeur={actV[1]} />
                 </div>
             )
             break;
@@ -28,9 +28,9 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         case "dégatSubits":
             ActComp = (
                 <div className="carte1" id="tourPasse">
-                  {actV.personnages.map((carte,index)=>(
-                    <img key={index} src={"http://localhost:8888/carteShadow/"+carte+".png"} alt= {carte} />
-                  ))}
+                    {actV.personnages.map((carte, index) => (
+                        <img key={index} src={"http://localhost:8888/carteShadow/" + carte + ".png"} alt={carte} />
+                    ))}
                 </div>
             )
             break;
@@ -38,7 +38,7 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
         case "cartePiochée":
             ActComp = (
                 <div className="carte1" id="tourPasse">
-                    <img key={actV} src={"http://localhost:8888/carteShadow/"+actV+".png"} alt= {actV} />
+                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV + ".png"} alt={actV} />
 
 
                 </div>
@@ -47,7 +47,7 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
 
         case "attaque":
             ActComp = (
-                <div className="carte1" id="tourPasse"> 
+                <div className="carte1" id="tourPasse">
                     {/* <img key={actV} src={"http://localhost:8888/carteShadow/"+(actV[0]==false?"Personnage":actV[0])+".png"} alt= {actV} />
                     <img key={actV} src={"http://localhost:8888/carteShadow/"+(actV[1]==false?"Personnage":actV[1])+".png"} alt= {actV} /> */}
 
@@ -56,19 +56,19 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
             break;
 
         case "choix":
-            
-            ActComp = idJoueurLocal==actV.idJoueur ?  (
+
+            ActComp = idJoueurLocal == actV.idJoueur ? (
                 <div className="carte1" id="tourPasse">
                     {actV.boutons.map((text, index) => (
-                        
+
                         <button className="joliebouton2" key={index} onClick={() => {
                             socket.emit("choixCarte", { idPartie: idPartie, type: "choix", text: text })
                         }}>{text}</button>
-                        ))}
+                    ))}
                 </div>
-            ) :<div></div>
+            ) : <div></div>
             break
-           
+
 
         case "carteRévélée":
             ActComp = (
@@ -80,22 +80,22 @@ export default function Action({ rapportAction ,idJoueurLocal}) {
             )
             break;
 
-        case "vision": 
+        case "vision":
 
             ActComp = (
                 <div className="carte1" id="tourPasse">
-                    { actV.idJoueur == idJoueurLocal ? 
-                        <img  src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV} />
+                    {actV.idJoueur == idJoueurLocal ?
+                        <img src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV} />
 
-                    :<div></div>}
+                        : <div></div>}
                 </div>
             )
-            break;   
+            break;
 
         default:
             ActComp = (
                 <div>
-                    
+
                 </div>
             )
 

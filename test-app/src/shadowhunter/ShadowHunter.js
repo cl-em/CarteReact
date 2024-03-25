@@ -91,6 +91,31 @@ function AvantJeu() {
 function ApresJeu({ tableauFin }) {
 }
 
+/*----------------------------------------------Connecté-----------------------------------------------------*/
+
+function Connecte() {
+    let urlP = new URL(document.location).searchParams;
+    let idPartie = urlP.get("idPartie");
+    let socket = React.useContext(SocketContext);
+
+    const [pseudo, setPseudo] = useState("...");
+
+    useEffect(() => {
+        socket.on("quisuisje?", (data) => {
+                setPseudo(data.pseudo);
+        })
+        return () => {
+            socket.off("quisuisje?");
+        };
+    }, [])
+
+    return (
+        <div className="quisuisje">
+            <p>Connecté en tant que {pseudo}</p>
+        </div>
+    )
+}
+
 /*----------------------------------------------Main-----------------------------------------------------*/
 
 function Main({ listeDeCarte }) { // liste de string 
@@ -113,10 +138,10 @@ function Main({ listeDeCarte }) { // liste de string
     return (
         <div id="main-cartes-sh">
             {listeDeCarte.length === 0 ? (
-        <p>Vous n'avez pas encore d'équipements</p>
-    ) : (
-        <p>Vos équipements :</p>
-    )}
+                <p>Vous n'avez pas encore d'équipements</p>
+            ) : (
+                <p>Vos équipements :</p>
+            )}
             <br></br>
             {listeDeCarte.map((element, index) => (
                 <img key={index} src={"http://localhost:8888/carteShadow/" + element + ".png"} alt={element}
@@ -336,6 +361,7 @@ function Jouer() {
             if (data.idPartie === idPartie) {
                 setgameStart(true);
                 socket.emit("wantCarte", { idPartie: idPartie });
+                socket.emit("quisuisje?");
 
                 setZoneDeJeu(data.zones);
             }
@@ -401,6 +427,7 @@ function Jouer() {
                 <div>
                     <ImageProvider>
                         <div className="droite">
+                            <Connecte/>
                             <ChatSH />
                             <Stats listeJoueurs={listeJoueurs} />
                         </div>
@@ -410,7 +437,7 @@ function Jouer() {
                                 <Main listeDeCarte={stuff} />
                                 <Role nomCarte={personnage} />
                                 <div className="carte-hover">
-                                <ImageComponent />
+                                    <ImageComponent />
                                 </div>
                             </div>
                         </div>
