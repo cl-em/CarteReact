@@ -1675,13 +1675,13 @@ io.on('connection', (socket) => {
                                       //cas de la boussole 
 
                                       if (partie.state=="Boussole_Mystique"){
-                                        if (!partie.variableTemp.includes[data.text]){return}
+                                        if (!partie.variableTemp.includes(data.text)){console.log(data.text);console.log(partie.variableTemp);return}
                                         var destination
 
-                                        for (var i in partie.zones){
-                                          if (getNameFromZone(partie.zones[i])==data.text){
+                                        for (var i in partie.zones){ 
+                                          if (partie.getNameFromZone(partie.zones[i])==data.text){
                                             joueur.position=i
-                                            destination = getNameFromZone(partie.zones[i])
+                                            destination = partie.getNameFromZone(partie.zones[i])
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a été guidé vers "+destination,"rapportAction":false,"idPartie":data.idPartie})
                                             effetCase(joueur,partie)
                                             return
