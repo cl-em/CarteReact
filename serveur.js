@@ -977,6 +977,9 @@ io.on('connection', (socket) => {
                 
               })
               
+              socket.on("quisuisje?",data=>{
+                socket.emit("quisuisje",pseudos[socket.data.userId])
+              });
 
               //------------------------------FONCTIONS POUR LE 6QUIPREND--------------------------------------------------
             
@@ -1125,7 +1128,6 @@ io.on('connection', (socket) => {
 
                               if (!partie.existTarget(joueur)){
                                   partie.state = "finTour"
-                                  console.log("je mets fin au tour 1")
                                   io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit s'il veut terminer son tour.","rapportAction":{"type":"choix","valeur":{"boutons":["terminer son tour."],"idJoueur":partie.joueurCourant}}})
                                   return
                                 }
@@ -1183,6 +1185,11 @@ io.on('connection', (socket) => {
                                 break
                                 case "Bénédiction":
                                   io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" offre sa bénédiction à un joueur... mais lequel ?","rapportAction": {type:"cartePiochée",valeur:"Bénédiction"},"idPartie":partie.id})
+                                break
+
+                                case "Premiers_Secours":
+                                  io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit sur qui utiliser la trousse de premiers soins.","rapportAction": {type:"cartePiochée",valeur:"Premiers_Secours"},"idPartie":partie.id})
+
                                 break
 
 
@@ -1283,6 +1290,7 @@ io.on('connection', (socket) => {
 
                                 case "zone4":
                                   piocheNoire(partie,joueur)
+
                                   break
                                   
                                 
@@ -1505,6 +1513,20 @@ io.on('connection', (socket) => {
                                                 }
                                                 break//Fin cas bénédiction
 
+                                                case "Premiers_Secours":
+                                                  for (var joueur of partie.joueurs){
+                                                    if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){
+                                                      joueur.hurtPoint=7
+                                                      partie.state="phase_Attaque"
+                                                      io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a fixé les dégâts de "+data.joueurConcerne+" à 7.","rapportAction":false,"idPartie":partie.id})
+
+                                                      setTimeout(() => {
+                                                        tourPasseDeCirconstance(partie)
+                                                      }, 2500);
+                                                    }
+                                                  }
+                                                break//Fin cas premiers soins
+
 
                                             
                                           //Personnages
@@ -1650,6 +1672,23 @@ io.on('connection', (socket) => {
                                     }
 
                                     if (data.type=="choix"){
+                                      //cas de la boussole 
+
+                                      if (partie.state=="Boussole_Mystique"){
+                                        if (!partie.variableTemp.includes[data.text]){return}
+                                        var destination
+
+                                        for (var i in partie.zones){
+                                          if (getNameFromZone(partie.zones[i])==data.text){
+                                            joueur.position=i
+                                            destination = getNameFromZone(partie.zones[i])
+                                            io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a été guidé vers "+destination,"rapportAction":false,"idPartie":data.idPartie})
+                                            effetCase(joueur,partie)
+                                            return
+                                          }
+                                        }
+                                        
+                                      }
                                       
                                       //Quand on attaque
                                       if (partie.state=="phase_Attaque"){//Cas où le joueur est supposé choisir une personne à attaquer
@@ -1712,6 +1751,7 @@ io.on('connection', (socket) => {
                                         case "lancer les dés !"://Cas de lancer de dés en début de tour. Est nécessaire pour laisser le temps à certains personnages, dont le pouvoir marche seulement en début de tour, d'utiliser leur pouvoir
                                           if (partie.state!="débutTour"){return}
                                           joueur.protected = false
+                                          if (!joueur.hasItem("Boussole_Mystique")){
                                           var destination;
                                           var posDébut = partie.getNameFromZone(partie.zones[joueur.position])
                                           var roll1 = Math.floor(Math.random()*6)+1
@@ -1759,6 +1799,48 @@ io.on('connection', (socket) => {
                                           setTimeout(() => {
                                             effetCase(g,partie)
                                           }, 2500);
+                                        }
+                                        else{//cas de la boussole mystique JE VAIS ME TUER
+
+
+                                          var destinations = []
+                                         
+                                          for (var i=0;i<=1;i++){
+                                            var roll1 = Math.floor(Math.random()*6)+1
+                                            var roll2 = Math.floor(Math.random()*4)+1
+                                          switch (roll1+roll2){
+                                            case 2:
+                                            case 3:
+                                              destination = partie.getNameFromZone("zone1")
+                                              break
+                                            case 4:
+                                            case 5:
+                                              destination = partie.getNameFromZone("zone2")
+                                            break
+                                            case 6:
+                                              destination = partie.getNameFromZone("zone3")                                              
+                                              break
+                                            case 7:
+                                            partie.state = "choixDestination"
+                                            io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" est chanceux et peut choisir où aller !","rapportAction":{"type":"jetsDeDés","valeur":[roll1,roll2]} ,"idPartie":data.idPartie})
+                                            return
+                                            case 8:
+                                              destination = partie.getNameFromZone("zone4")
+
+                                              break
+                                            case 9:
+                                                destination = partie.getNameFromZone("zone5")
+                                                break
+                                            case 10:
+                                                  destination = partie.getNameFromZone("zone6")
+                                                  break
+                                          }
+                                            destinations.push(destination)
+                                        }
+                                        partie.variableTemp=destinations
+                                        io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit où la boussole le mènera","rapportAction":{"type":"choix","valeur":{"boutons":[destinations[0],destinations[1]],"idJoueur":partie.joueurCourant,"défaut":"Boussole_Mystique"}},"idPartie":data.idPartie})
+                                        partie.state = "Boussole_Mystique"
+                                        }
                                  
                                         break//Fin du cas où c'est un lancer de dés pour se déplacer.
 

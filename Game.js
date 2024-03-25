@@ -550,15 +550,16 @@ class shadowHunter extends Game{
 
         //Création des piles en question
         this.blanches = []
-        /*this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
        
         this.blanches.push(new CarteShadowHunter('Bénédiction', 'consommable'))
           this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
-          */
-         this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))
-         /*
+          this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))
+          
+         this.blanches.push(new CarteShadowHunter('Premiers_Secours', 'consommable'))
+         
          this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
@@ -567,8 +568,7 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Toge_Sainte', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
-        this.blanches.push(new CarteShadowHunter('Premiers_Soins', 'consommable'))*/
-
+                
         this.noires = []
        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
@@ -638,7 +638,7 @@ class shadowHunter extends Game{
 
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
-
+        this.joueurs[0].objets.push("Boussole_Mystique")
         for (var i=0;i<3;i++){  
         this.blanches =this.shuffle(this.blanches)
        this.noires = this.shuffle(this.noires)
@@ -790,19 +790,20 @@ class shadowHunter extends Game{
                                 if (joueur.hurtPoint<=0){joueur.hurtPoint=0}
                                 this.state="phase_Attaque"
                                 break
-                                //LIGNE QUI DELIMITE CE QUE J'AI FAIT COMPLETEMENT
-            case "Miroir_Divin":
-                if (this.shadowsBase.includes(joueur.character)&&joueur.character!="Métamorphe"){
-                    joueur.révélé=true
-                    data = true
-                }
-                else { data = false}
-                
-                this.state="phase_Attaque"
-                break
-                case "Premiers_Soins":
-                    this.state="Premiers_Soins"
-
+                                case "Miroir_Divin":
+                                    if (this.shadowsBase.includes(joueur.character)&&joueur.character!="Métamorphe"){
+                                        joueur.révélé=true
+                                        data = true
+                                    }
+                                    else { data = false}
+                                    
+                                    this.state="phase_Attaque"
+                                    break
+                                    
+                                    case "Premiers_Secours":
+                                        this.state="Premiers_Secours"
+                                        
+                                        //LIGNE QUI DELIMITE CE QUE J'AI FAIT COMPLETEMENT
     }
    }
    return {"valeur":carte.valeur,"data":data}
