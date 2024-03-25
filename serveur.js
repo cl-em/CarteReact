@@ -1621,7 +1621,7 @@ io.on('connection', (socket) => {
                                           if (partie.state!="débutTour"){return}
                                           joueur.protected = false
                                           var destination;
-                                          var posDébut = partie.zones[joueur.position]
+                                          var posDébut = partie.getNameFromZone(partie.zones[joueur.position])
                                           var roll1 = Math.floor(Math.random()*6)+1
                                           var roll2 = Math.floor(Math.random()*4)+1
                                           switch (roll1+roll2){
@@ -1684,8 +1684,10 @@ io.on('connection', (socket) => {
                                       
                                       case "S'intéresser au rituel":
                                         for (var joueur of partie.joueurs){
-                                        if (joueur.idJoueur==partie.joueurCourant){
-                                        if (partie.shadows.includes(joueur.character)){
+                                          if (joueur.idJoueur==partie.joueurCourant){
+                                          console.log(joueur.character)
+                                          console.log(partie.shadowsBase)
+                                        if (partie.shadowsBase.includes(joueur.character)){
                                           joueur.hurtPoint=0
                                           partie.state = "phase_Attaque"
                                           io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" soigne toutes ses blessures grâce au rituel !","rapportAction":false ,"idPartie":data.idPartie})
@@ -1696,7 +1698,9 @@ io.on('connection', (socket) => {
                                           }
                                           else{
                                             socket.emit("tourPasse",{"Message":"Seul un être malveillant y verrait de l'intérêt...","rapportAction":false ,"idPartie":data.idPartie})
-
+                                            setTimeout(() => {
+                                              tourPasseDeCirconstance(partie)
+                                            }, 2500);
                                           }
                                           }
                                         }

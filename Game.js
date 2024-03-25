@@ -23,6 +23,13 @@ class Game {
     shuffleDeck(){
         this.deck = this.deck.sort((a, b) => 0.5 - Math.random());
     }
+    shuffle(array)  { 
+        for (let i = array.length - 1; i > 0; i--) { 
+          const j = Math.floor(Math.random() * (i + 1)); 
+          [array[i], array[j]] = [array[j], array[i]]; 
+        } 
+        return array; 
+      }; 
 
     createDeck(){//Crée un deck selon les spécifications de l'instance (valeurs et couleurs), puis le mélange
         for (var couleur of this.couleurs){
@@ -502,10 +509,14 @@ class shadowHunter extends Game{
         this.state = undefined
         this.variableTemp = undefined
         //Choix des personnages
-        this.shadows = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"].sort((a, b) => 0.5 - Math.random());
-        this.hunters = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"].sort((a, b) => 0.5 - Math.random());
-        this.neutres = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"].sort((a, b) => 0.5 - Math.random());
+        this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
+        this.shadows = this.shuffle(Array.from(this.shadowsBase))
+        this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"]
+        this.hunters = this.shuffle(Array.from(this.hunterBase))
+        this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
+        this.neutres = this.shuffle(Array.from(this.neutresBase))  
         this.personnages = []
+        
 
         var s = 0
         var h = 0
@@ -556,22 +567,22 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
 
         this.noires = []
-       /* this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
+       this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
         this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Peau_De_Banane', 'consommable'))
         this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Sabre_Hanté_Masamune', 'équipement'))*/
+        this.noires.push(new CarteShadowHunter('Sabre_Hanté_Masamune', 'équipement'))
         this.noires.push(new CarteShadowHunter('Succube_Tentatrice', 'consommable'))
-        /*this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
         this.noires.push(new CarteShadowHunter('Hachoir_Maudit', 'équipement'))
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Mitrailleuse_Funeste', 'équipement'))
-        this.noires.push(new CarteShadowHunter('Tronçonneuse_Du_Mal', 'équipement'))*/
+        this.noires.push(new CarteShadowHunter('Tronçonneuse_Du_Mal', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
         
         this.visions = []
         this.visions.push(new CarteShadowHunter('Vision_Cupide', 'vision'))
@@ -605,13 +616,7 @@ class shadowHunter extends Game{
 
     }
 
-     shuffle(array)  { 
-        for (let i = array.length - 1; i > 0; i--) { 
-          const j = Math.floor(Math.random() * (i + 1)); 
-          [array[i], array[j]] = [array[j], array[i]]; 
-        } 
-        return array; 
-      }; 
+    
 
     getDeath(){
         for (var test of this.joueurs){
@@ -630,13 +635,12 @@ class shadowHunter extends Game{
 
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
-        this.joueurs.push(new JoueurShadowHunter(3,false,"Allie",10))
-        this.joueurs.push(new JoueurShadowHunter(2,false,"Allie",10))
+
         for (var i=0;i<3;i++){  
-        this.joueurs[i].objets.push("Tronçonneuse_Du_Mal")
         this.blanches =this.shuffle(this.blanches)
        this.noires = this.shuffle(this.noires)
       this.visions = this.shuffle(this.visions)
+      
        this.shuffle(this.zones)
        }
         //Don des PV aux joueurs
@@ -754,7 +758,7 @@ class shadowHunter extends Game{
                         joueur.protected = true;
                         break;
                     case "Avènement_Suprême":
-                        if (this.hunters.includes(joueur.character)){
+                        if (this.huntersBase.includes(joueur.character)){
                         this.joueurCourant = joueur.idJoueur
                         this.state = "Avènement_Suprême"
                         }
@@ -777,7 +781,7 @@ class shadowHunter extends Game{
                         if (joueur.hurtPoint<0){joueur.hurtPoint = 0}
                     break;
                     case "Miroir_Divin":
-                      if (this.shadows.includes(joueur.character)){
+                      if (this.shadowsBase.includes(joueur.character)){
                         joueur.révélé = true
                       }
                     break;
@@ -953,7 +957,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             if (attaquant.hasItem("Hachoir_Maudit")){totalDamage++}
             if (attaquant.hasItem("Tronçonneuse_Du_Mal")){totalDamage++}
             if (attaquant.hasItem("Hache_Tueuse")){totalDamage++}
-            if (attaquant.hasItem("Lance_De_Longinus" && this.hunters.includes(atk.character)) && attaquant.révélé){totalDamage+=2}
+            if (attaquant.hasItem("Lance_De_Longinus" && this.hunterBase.includes(atk.character)) && attaquant.révélé){totalDamage+=2}
             if (attaquant.hasItem("Toge_Sainte")){totalDamage-=1}
         }
 
@@ -967,7 +971,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             }
         }
     }
-    if (attaquant.character=="Vampire"&&attaquant.révélé==true){attaquant.hurtPoint-=2}
+    if (attaquant.character=="Vampire"&&attaquant.révélé){attaquant.hurtPoint-=2}
     if (attaquant.hurtPoint<=0){attaquant.hurtPoint==0}
     retour.dégâts = totalDamage
     return retour
@@ -980,7 +984,8 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         if (this.takeDamage(défenseur,totalDamage)==false){
             if (défenseur.character=="Loup-Garou"&&défenseur.révélé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
         }
-        
+        if (attaquant.character=="Vampire"&&attaquant.révélé){attaquant.hurtPoint-=2}
+        if (attaquant.hurtPoint<=0){attaquant.hurtPoint==0}
         return retour;
     }
 
