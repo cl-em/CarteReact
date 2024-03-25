@@ -10,6 +10,72 @@ import Action from "./ActionShadow";
 import Des from "./Des/Des";
 
 
+function ChatSH() {
+    const currentUrl = window.location.href;
+    const urlParts = currentUrl.split('?idPartie=');
+    const idPartie = urlParts[urlParts.length - 1];
+    const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState([]);
+    const maxMessages = 50;
+    const maxMessageLength = 250;
+    const socket = React.useContext(SocketContext);
+
+    useEffect(() => {
+        const handleMessage = (msg) => {
+            setMessages(prevMessages => {
+
+                const updatedMessages = [...prevMessages, msg];
+                if (updatedMessages.length > maxMessages) {
+                    return updatedMessages.slice(updatedMessages.length - maxMessages);
+                }
+                return updatedMessages;
+            });
+        };
+
+        const handleShadow = (messageShadow) => {
+            if (messageShadow.idPartie == idPartie) {
+                handleMessage(messageShadow.Message);
+            }
+        }
+
+        socket.on('message '.concat(idPartie), handleMessage);
+
+        return () => {
+            socket.off('message '.concat(idPartie), handleMessage);
+        };
+    }, [idPartie, socket]);
+
+    const sendMessage = () => {
+        if (message.trim() !== '' && message.length <= maxMessageLength) {
+            socket.emit('message', { message, idPartie });
+            setMessage('');
+        }
+    };
+
+    const [accessibilite, setAccessibilite] = useState(false);
+
+
+    return (
+        <div className={`container-chat ${accessibilite ? "accessibilite" : ""}`}>
+            <ul className="messages">
+                {messages.map((msg, index) => (
+                    <li key={index}>{msg}</li>
+                ))}
+            </ul>
+
+            <div className="input-area">
+                <input className="input1"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
+                    maxLength={maxMessageLength}
+                />
+            </div>
+        </div>
+    );
+
+}
+
 /*----------------------------------------------Avant jeu + Apres jeu-----------------------------------------------------*/
 
 function AvantJeu() {
@@ -36,15 +102,20 @@ function Main({ listeDeCarte }) { // liste de string
     const handleMouseEnter = (imageId) => {
         setHoveredImage(imageId);
         // console.log(`L'utilisateur survole l'image ${imageId}`);
-      };
+    };
     // const handleMouseLeave = () => {
-        // setHoveredImage(null); // si tu veux que l'image degage
-        // console.log(`L'utilisateur a quitté l'image`);
+    // setHoveredImage(null); // si tu veux que l'image degage
+    // console.log(`L'utilisateur a quitté l'image`);
     //   };
-    
+
     return (
         <div id="main-cartes-sh">
-            <div>Vos items :</div> <br></br>
+            {listeDeCarte.length === 0 ? (
+        <p>Vous n'avez pas encore d'équipements</p>
+    ) : (
+        <p>Vos équipements :</p>
+    )}
+            <br></br>
             {listeDeCarte.map((element, index) => (
                 <img key={index} src={"http://localhost:8888/carteShadow/" + element + ".png"} alt={element}
                     onClick={() => {
@@ -56,11 +127,11 @@ function Main({ listeDeCarte }) { // liste de string
                 />
             ))}
             <div className="hovered-image">
-                {hoveredImage !== null && <img src={"http://localhost:8888/carteShadow/" + listeDeCarte[hoveredImage]+ ".png"} alt={listeDeCarte[hoveredImage]} 
-                    // onClick={() => {
-                    //     socket.emit("choixCarte", { idPartie: idPartie, idCarte: listeDeCarte[hoveredImage], type: "stuffSelf" });
-                    // }} 
-                    />}
+                {hoveredImage !== null && <img src={"http://localhost:8888/carteShadow/" + listeDeCarte[hoveredImage] + ".png"} alt={listeDeCarte[hoveredImage]}
+                // onClick={() => {
+                //     socket.emit("choixCarte", { idPartie: idPartie, idCarte: listeDeCarte[hoveredImage], type: "stuffSelf" });
+                // }} 
+                />}
             </div>
         </div>
     )
@@ -78,24 +149,23 @@ function Role({ nomCarte }) {
     const imageSrc = `http://localhost:8888/carteShadow/${nomCarte}.avif`;
     return (
         <div id="role-carte-sh">
-            <p>Rôle :</p>
             <img src={"http://localhost:8888/carteShadow/" + nomCarte + ".png"} alt={nomCarte} />
             <div className="role-bouton">
                 <div>
-                <button className="joliebouton2"
-                    onClick={() => {
-                        socket.emit("reveleCarte", { "idPartie": idPartie, "capacite": nomCarte });
-                    }}
-                    
+                    <button className="joliebouton2"
+                        onClick={() => {
+                            socket.emit("reveleCarte", { "idPartie": idPartie, "capacite": nomCarte });
+                        }}
 
-                >Révéler</button></div>
+
+                    >Révéler</button></div>
 
                 <div>
-                <button className="joliebouton2"
-                    onClick={() => {
-                        socket.emit("utiliseCapacite", { idPartie: idPartie, capacite: nomCarte });
-                    }}
-                >Utiliser sa capacité</button></div>
+                    <button className="joliebouton2"
+                        onClick={() => {
+                            socket.emit("utiliseCapacite", { idPartie: idPartie, capacite: nomCarte });
+                        }}
+                    >Utiliser sa capacité</button></div>
             </div>
         </div>
     )
@@ -192,14 +262,13 @@ function CartePlateau({ deuxCarte, position, listeJoueurs }) {
 }
 
 
-function Plateau({ carteEnFonctionDeLaZone, listeJoueurs}) {
+function Plateau({ carteEnFonctionDeLaZone, listeJoueurs }) {
     return (
         <div className="plateau-container">
-            <div>Plateau de jeu :</div>
 
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0, 2)} position={"droite"} listeJoueurs={listeJoueurs}/>
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(2, 4)} position={"droite"} listeJoueurs={listeJoueurs}/>
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(4)} position={"base"} listeJoueurs={listeJoueurs}/>
+            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0, 2)} position={"droite"} listeJoueurs={listeJoueurs} />
+            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(2, 4)} position={"droite"} listeJoueurs={listeJoueurs} />
+            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(4)} position={"base"} listeJoueurs={listeJoueurs} />
         </div>
     );
 }
@@ -213,7 +282,6 @@ function Pioches() {
 
     return (
         <div id="pioches">
-            <div>Pioches :</div> <br></br>
             <div>
                 <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"}
                     onClick={() => {
@@ -328,12 +396,18 @@ function Jouer() {
         <div>
             {gameStart ?
                 <div>
-                    <Chat />
-                    <Role nomCarte={personnage} />
-                    <Main listeDeCarte={stuff} />
-                    <Plateau carteEnFonctionDeLaZone={zoneDeJeu} listeJoueurs={listeJoueurs}/>
-                    <Stats listeJoueurs={listeJoueurs} />
-                    <Pioches />
+                    <div className="droite">
+                        <ChatSH />
+                        <Stats listeJoueurs={listeJoueurs} />
+                    </div>
+                    <div className="gauche">
+                        <div class="elements-gauche-haut">
+                            <Pioches />
+                            <Main listeDeCarte={stuff} />
+                            <Role nomCarte={personnage} />
+                        </div>
+                    </div>
+                    <Plateau carteEnFonctionDeLaZone={zoneDeJeu} listeJoueurs={listeJoueurs} />
                     <Action rapportAction={action} idJoueurLocal={idJoueur} />
                     <div className="messageTourPasse">
                         {message.length > 0 ? <p>{message}</p> : <div></div>}
