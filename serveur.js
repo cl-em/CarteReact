@@ -701,16 +701,16 @@ io.on('connection', (socket) => {
               for (var joueur of partie.joueurs){//Renvoi de la main du joueur
 
                 if (joueur.idJoueur==socket.data.userId){//Joueur courant
-                  joueurCourant = {"idJoueur":joueur.idJoueur,"dégats":joueur.hurtPoint,"révélé":joueur.révélé,"position":partie.zones[joueur.position][4],"personnage":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé}
+                  joueurCourant = {"idJoueur":joueur.idJoueur,"dégats":joueur.hurtPoint,"révélé":joueur.révélé,"position":partie.zones[joueur.position][4],"personnage":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé,"couleur":joueur.couleur}
                   if (joueur.éliminé==false){
-                  if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"position":partie.zones[joueur.position][4],"révélé":false,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé})}
-                  else{joueurs.push({"pseudo":pseudos[joueur.idJoueur],"position":partie.zones[joueur.position][4],"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé})}
+                  if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"position":partie.zones[joueur.position][4],"révélé":false,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé,"couleur":joueur.couleur})}
+                  else{joueurs.push({"pseudo":pseudos[joueur.idJoueur],"position":partie.zones[joueur.position][4],"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé,"couleur":joueur.couleur})}
                   }
                 }
                 else{//Autres joueurs
                   if (joueur.éliminé==false){
-                  if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"position":partie.zones[joueur.position][4],"révélé":false,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé})}
-                  else{joueurs.push({"pseudo":pseudos[joueur.idJoueur],"position":partie.zones[joueur.position][4],"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé})
+                  if (joueur.révélé==false){joueurs.push({"pseudo":pseudos[joueur.idJoueur],"dégats":joueur.hurtPoint,"position":partie.zones[joueur.position][4],"révélé":false,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé,"couleur":joueur.couleur})}
+                  else{joueurs.push({"pseudo":pseudos[joueur.idJoueur],"position":partie.zones[joueur.position][4],"dégats":joueur.hurtPoint,"révélé":joueur.character,"stuff":joueur.objets,"pouvoirUtilisé":joueur.pouvoirUtilisé,"couleur":joueur.couleur})
                   }
                 }
               }
@@ -1106,7 +1106,14 @@ io.on('connection', (socket) => {
                           function tourPasseDeCirconstance(partie){//Renvoie un tourPasse selon l'état actuel de la partie. Sert à éviter qu'on soit bloqués si Allie utilise son pouvoir ou si quelqu'un se révèle au mauvais moment
                             //La fonction va être trèèèèès longue
                             switch (partie.state){
-                              //Les dés
+                              //Les dés et système
+                              case "choixStuff":
+                                io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" choisit quel objet récupérer.","rapportAction":{"type":"choix","valeur":{"boutons":partie.variableTemp,"défaut":false,"idJoueur":partie.variableTemp}},"idPartie":partie.id})
+                              break
+                              case "contre-attaque":
+                                io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" choisit s'il souhaite contre-attaquer.","rapportAction":{"type":"choix","valeur":{"boutons":["contre-attaquer !","ne rien faire..."],"défaut":"Loup_Garou","idJoueur":partie.variableTemp}},"idPartie":partie.id})
+                              break
+
                               case "choixDestination":
                                 io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" est chanceux et peut choisir où aller !","rapportAction":false})
 
@@ -1346,9 +1353,75 @@ io.on('connection', (socket) => {
 
 
                         socket.on("choixCarte",data=>{
+
                           console.log(data)
                           for (var partie of partiesEnCours){
                             if (partie.id == data.idPartie){
+
+
+
+                              if (socket.data.userId==partie.variableTemp &&data.type=="choix"&&partie.state=="contre-attaque"){//Cas de contre-attaque tra^tié avant le reste
+                               
+
+                                for (var joueur of partie.joueurs){
+                                  if (joueur.idJoueur==socket.data.userId){
+                                if (data.text=="contre-attaquer !"){//Cas de contre-attaque
+                                  for (var cible of partie.joueurs){
+                                  var dmg = Math.floor(Math.random()*6)+1
+                                  if (partie.takeDamage(cible,dmg)==false){//ça ne tue pas
+                                  if (cible.révélé){io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+data.joueurConcerne,"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})}
+                                  else{io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+data.joueurConcerne,"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,false]}},"idPartie":data.idPartie})}
+                                  partie.variableTemp=""
+                                  partie.state = "finTour"
+                                  setTimeout(() => {
+                                    tourPasseDeCirconstance(partie)
+                                  }, 2500);
+                                  return
+                                }
+                                else{//Cas où on a tué
+                                  for (var z of cible.objets){//Renvoi objets dans la défausse
+                                      switch (z){
+
+                                        case "Hache_Tueuse":
+                                        case "Sabre_Hanté_Masamune":
+                                        case "Revolver_Des_Ténèbres":
+                                        case "Hachoir_Maudit":
+                                        case "Mitrailleuse_Funeste":
+                                        case "Tronçonneuse_Du_Mal":
+                                          partie.défausseNoire.push(z)
+                                          break
+
+                                        case "Boussole_Mystique":
+                                        case "Broche_De_Chance":
+                                        case "Amulette":
+                                        case "Toge_Sainte":
+                                        case "Lance_De_Longinus":
+                                        case "Crucifix_En_Argent":
+                                          partie.défausseBlanche.push(z)
+                                        break
+                                      }
+                                  }//Fin renvoi
+                                  cible.éliminé=true
+                                  io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" qui était" +cible.character.replace(/_/g," ")+ "lors de la contre-attaque. Ses objets partent à la défausse.","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})
+                                  partie.nextPlayer()
+                                  partie.state = débutTour
+
+                                  setTimeout(() => {
+                                      tourPasseDeCirconstance(partie)
+                                    }, 2500);
+                                }//Fin cas de kill
+                              }
+                                }
+                                else{//Cas de non contre-attaque
+                                  partie.state = "finTour"
+                                  tourPasseDeCirconstance(partie)
+                                  return
+                                }
+                              }
+                              }}//Fin du cas contre-attaque
+                             
+
+
                               if (partie.type=="shadowHunter" && partie.joueurCourant==socket.data.userId){
                                 for (var joueur of partie.joueurs){//Renvoi de la main du joueur
                                   if (joueur.idJoueur==socket.data.userId){
@@ -1690,15 +1763,99 @@ io.on('connection', (socket) => {
                                         
                                       }
                                       
+                                      if (partie.state=="choixStuff"){
+                                          if (partie.variableTemp.includes(data.text)){
+                                            joueur.objets.push(partie.text)
+                                            io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" a récupéré l'objet "+data.text.replace(/_/g," "),"rapportAction":{"type":"cartePiochée","valeur":data.text},"idPartie":partie.id})
+                                            partie.state = "finTour"
+                                            setTimeout(() => {
+                                              tourPasseDeCirconstance(partie)
+                                            }, 2500);
+                                            for (var z of partie.variableTemp){//Renvoi objets dans la défausse
+                                              if (z!=data.text){
+                                                switch (z){
+
+                                                  case "Hache_Tueuse":
+                                                  case "Sabre_Hanté_Masamune":
+                                                  case "Revolver_Des_Ténèbres":
+                                                  case "Hachoir_Maudit":
+                                                  case "Mitrailleuse_Funeste":
+                                                  case "Tronçonneuse_Du_Mal":
+                                                    partie.défausseNoire.push(z)
+                                                    break
+
+                                                  case "Boussole_Mystique":
+                                                  case "Broche_De_Chance":
+                                                  case "Amulette":
+                                                  case "Toge_Sainte":
+                                                  case "Lance_De_Longinus":
+                                                  case "Crucifix_En_Argent":
+                                                    partie.défausseBlanche.push(z)
+                                                  break
+                                                }
+                                              }
+                                            }//Fin renvoi
+                                            return
+                                          }//fin du cas
+                                      }
+
                                       //Quand on attaque
                                       if (partie.state=="phase_Attaque"){//Cas où le joueur est supposé choisir une personne à attaquer
                                         if (data.text=="personne"){
                                           partie.state="finTour"
                                           
                                           tourPasseDeCirconstance(partie)
+                                          return
                                         }
                                         if (getIdFromPseudo(data.text)!=false){
                                           var resultat = partie.attaquer(socket.data.userId,getIdFromPseudo(data.text))
+                                          if (resultat.killed==true){//Cas où on a tué
+                                            if (joueur.hasItem("Crucifix_En_Argent")){//On raffle la mise
+                                              for (var test of partie.joueurs){
+                                                if (getIdFromPseudo(data.text)==test.idJoueur){
+                                                    for (var z of test.objets){
+                                                      joueur.objets.push(z)
+                                                    }
+                                                    test.éliminé=true
+                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était" +cible.character.replace(/_/g," ")+ " et volé tous ses objets","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
+                                                    partie.state = "finTour"
+                                                    setTimeout(() => {
+                                                      tourPasseDeCirconstance(partie)
+                                                    }, 2500);
+                                                    return
+                                                }
+                                              }
+                                            }
+                                            else{//Pas de crucifix, le joueur choisit un item
+                                              for (var test of partie.joueurs){
+                                                if (getIdFromPseudo(data.text)==test.idJoueur){
+                                                    var boutons = []
+                                                    if (test.objets.length>0){
+                                                      for (var z of test.objets){
+                                                      boutons.push(z)
+                                                    }
+                                                    partie.variableTemp=boutons
+                                                    partie.state="choixStuff"
+                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était" +cible.character.replace(/_/g," ")+".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
+                                                    setTimeout(() => {
+                                                      tourPasseDeCirconstance(partie)                                                    
+                                                    }, 2500);
+                                                  }
+                                                  else{
+                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était" +cible.character.replace(/_/g," ")+".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
+                                                    partie.state = "finTour"
+                                                  setTimeout(() => {
+                                                    tourPasseDeCirconstance(partie)
+                                                  }, 2500);
+                                                  }
+                                                  test.éliminé=true
+                                                    
+                                                    return
+                                                }
+                                              }
+                                            }
+                                          }
+
                                           if (resultat.lg==true){
                                             io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" choisit s'il souhaite contre-attaquer.","rapportAction":{"type":"choix","valeur":{"boutons":["contre-attaquer !","ne rien faire..."],"défaut":"Loup_Garou","idJoueur":partie.variableTemp}},"idPartie":data.idPartie})
                                             break

@@ -138,7 +138,9 @@ class Bataille extends Game{
 //-----------------------Fonctions gestion jeu----------------------------------------------
 
 initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
-
+for (var joueur of this.joueurs){
+    joueur.couleur = this.couleurs.shift()
+}
 while (this.deck.length>=this.joueurs.length){//Distribution équitable des cartes
         for (var joueur of this.joueurs){
             joueur.main.push(this.drawCarte());
@@ -508,6 +510,7 @@ class shadowHunter extends Game{
         this.joueurCourant = undefined
         this.state = undefined
         this.variableTemp = undefined
+        this.couleurs = ["Rouge","Jaune","Vert","Bleu","Rose","Orange","Blanc","Noir"]
         //Choix des personnages
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
@@ -553,13 +556,10 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
-       
         this.blanches.push(new CarteShadowHunter('Bénédiction', 'consommable'))
           this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
-          this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))
-          
+          this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))          
          this.blanches.push(new CarteShadowHunter('Premiers_Secours', 'consommable'))
-         
          this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
@@ -892,7 +892,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         //---------------------------------FONCTIONS DE JEU---------------------------------------------
 
         takeDamage(player,damage){//Attention, player est un objet joueur à qui faire les dégâts, pas un idJoueur
-            if (damage==0){return false}
+            if (damage==0 || player.protected){return false}
             if (player.hasItem("Toge_Sainte")){player.hurtPoint+=damage-1}
             else{player.hurtPoint+=damage}
 
@@ -900,6 +900,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             return false
         }
 
+        
         canAttack(atk,def){//Définit si le joueur d'id atk peut attaquer le jouer d'id def
           
             var attaquant = null;
@@ -950,7 +951,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             if (joueur.idJoueur==def){défenseur= joueur }
         }
         if (attaquant==null||défenseur==null){return null}
-        var retour = {"dés":null,"dégâts":null,"lg":false}
+        var retour = {"dés":null,"dégâts":null,"lg":false,"killed":false}
         var d6 =  Math.floor(Math.random()*6)+1
         var d4 =  Math.floor(Math.random()*4)+1
 
@@ -976,6 +977,9 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             if (défenseur.protected==true){tempDamage=0}
             if (this.takeDamage(défenseur,tempDamage)==false){
                 if (défenseur.character=="Loup-Garou"&&défenseur.révélé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
+            }
+            else{
+                retour.killed = true;
             }
         }
     }
