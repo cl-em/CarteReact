@@ -1402,7 +1402,7 @@ io.on('connection', (socket) => {
                                       }
                                   }//Fin renvoi
                                   cible.éliminé=true
-                                  io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" qui était " +cible.character.replace(/_/g," ")+ "lors de la contre-attaque. Ses objets partent à la défausse.","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})
+                                  io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" qui était " +cible.character.replace(/_/g," ")+ " lors de la contre-attaque. Ses objets partent à la défausse.","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})
                                   partie.nextPlayer()
                                   partie.state = débutTour
 
@@ -1502,17 +1502,52 @@ io.on('connection', (socket) => {
                                           break
                                           
                                         case "Chauve-Souris_Vampire":
-                                          for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
+                                          
+                                          for (var joueu of partie.joueurs){if (joueu.idJoueur==partie.joueurCourant){cible=joueu}}
+                                          cible.hurtPoint-=1
+                                          if (cible.hurtPoint<0){cible.hurtPoint=0}
+                                          
+                                          for (var joueu of partie.joueurs){if (joueu.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueu}}
                                           if (cible.protected==false  && !cible.hasItem("Amulette")){
                                             cible.hurtPoint+=2
                                             if (cible.hasItem("Toge_Sainte")){cible.hurtPoint--}
                                           }
-                                          for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.joueurCourant){cible=joueur}}
-                                          cible.hurtPoint-=1
-                                          if (cible.hurtPoint<0){cible.hurtPoint=0}
-                                          io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a volé de la vie à "+data.joueurConcerne,"rapportAction":false,"idPartie":partie.id})
                                           partie.state = "phase_Attaque"
                                 
+
+
+                                          if (cible.isDead()){
+                                            for (var z of cible.objets){//Renvoi objets dans la défausse
+                                              switch (z){
+        
+                                                case "Hache_Tueuse":
+                                                case "Sabre_Hanté_Masamune":
+                                                case "Revolver_Des_Ténèbres":
+                                                case "Hachoir_Maudit":
+                                                case "Mitrailleuse_Funeste":
+                                                case "Tronçonneuse_Du_Mal":
+                                                  partie.défausseNoire.push(z)
+                                                  break
+        
+                                                case "Boussole_Mystique":
+                                                case "Broche_De_Chance":
+                                                case "Amulette":
+                                                case "Toge_Sainte":
+                                                case "Lance_De_Longinus":
+                                                case "Crucifix_En_Argent":
+                                                  partie.défausseBlanche.push(z)
+                                                break
+                                              }
+                                          }//Fin renvoi
+                                          cible.éliminé=true
+                                          io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" qui était " +cible.character.replace(/_/g," ")+ " avec la chauve-souris. Ses objets partent à la défausse.","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})
+                                          if (cible.idJoueur==partie.joueurCourant){partie.state="débutTour"; partie.nextPlayer()}  
+                                        }
+                                          else{
+                                            io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a volé de la vie à "+data.joueurConcerne,"rapportAction":false,"idPartie":partie.id})
+                                          }
+
+
                                           setTimeout(() => {
                                             tourPasseDeCirconstance(partie)
                                           }, 2500);

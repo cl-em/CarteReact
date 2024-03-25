@@ -570,7 +570,7 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
                 
         this.noires = []
-       this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
+       this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))/*
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
         this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
@@ -585,7 +585,7 @@ class shadowHunter extends Game{
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Mitrailleuse_Funeste', 'équipement'))
         this.noires.push(new CarteShadowHunter('Tronçonneuse_Du_Mal', 'équipement'))
-        this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))*/
         
         this.visions = []
         this.visions.push(new CarteShadowHunter('Vision_Cupide', 'vision'))
@@ -939,8 +939,9 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
     else{
         this.joueurCourant=this.joueurs[indexCourant+1].idJoueur
     }   
-
-    if (this.joueurs[indexCourant+1].éliminé){this.nextPlayer()}
+    for (var z of this.joueurs){
+    if (z.éliminé && z.idJoueur==this.joueurCourant){this.nextPlayer()}
+    }
     }
 
     attaquer(atk,def){
