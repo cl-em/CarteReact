@@ -1215,7 +1215,11 @@ io.on('connection', (socket) => {
                             switch (cartePiochée.valeur){
                               
                               case "Eau_Bénite":
-                                
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" est soigné de deux points de vie.","rapportAction":{type:"cartePiochée",valeur:"Eau_Bénite"},"idPartie":partie.id})
+                                partie.state = "phase_Attaque"
+                              setTimeout(() => {
+                                tourPasseDeCirconstance(partie)
+                              }, 2500);
                               break
                               case "Savoir_Ancestral":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" obtient un savoir ancestral lui permettant de rejouer un tour.","rapportAction":{type:"cartePiochée",valeur:"Savoir_Ancestral"},"idPartie":partie.id})
@@ -1446,7 +1450,7 @@ io.on('connection', (socket) => {
                                                 for (var joueur of partie.joueurs){
                                                   if (joueur.idJoueur==partie.joueurCourant){
                                               io.emit("tourPasse",{"Message":"La poupée se retourne contre "+pseudos[partie.joueurCourant]+" et lui inflige 3 dégâts !","rapportAction":false,"idPartie":partie.id})
-                                              if (joueur.protected==false && !cible.hasItem("Amulette")){
+                                              if (joueur.protected==false && !joueur.hasItem("Amulette")){
                                               joueur.hurtPoint+=3}
                                               else{
                                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a été de la poupée !","rapportAction":false,"idPartie":partie.id})
@@ -1456,7 +1460,7 @@ io.on('connection', (socket) => {
                                               else{
                                                 for (var jou of partie.joueurs){
                                                   if (jou.idJoueur==getIdFromPseudo(data.joueurConcerne)){
-                                                    if (jou.protected==false && !cible.hasItem("Amulette")){
+                                                    if (jou.protected==false && !jou.hasItem("Amulette")){
                                                       io.emit("tourPasse",{"Message":"La poupée est prise d'une pulsion vengeresse et s'attaque à "+data.joueurConcerne+"  ! Il subit 3 dégâts !","rapportAction":false,"idPartie":partie.id})
                                                     jou.hurtPoint+=3}
                                                     else{

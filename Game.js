@@ -552,11 +552,11 @@ class shadowHunter extends Game{
         this.blanches = []
         /*this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
-        this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))*/
+        this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
        
         this.blanches.push(new CarteShadowHunter('Bénédiction', 'consommable'))
-          this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
-       /* this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
+          this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))*/
+        this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))/*
         this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
@@ -783,12 +783,12 @@ class shadowHunter extends Game{
                             joueur.protected=true
                             this.state="phase_Attaque"
                             break
-                            //LIGNE QUI DELIMITE CE QUE J'AI FAIT COMPLETEMENT
                             case "Eau_Bénite":
                                 joueur.hurtPoint-=2
                                 if (joueur.hurtPoint<=0){joueur.hurtPoint=0}
                                 this.state="phase_Attaque"
-                break
+                                break
+                                //LIGNE QUI DELIMITE CE QUE J'AI FAIT COMPLETEMENT
             case "Miroir_Divin":
                 if (this.shadowsBase.includes(joueur.character)&&joueur.character!="Métamorphe"){
                     joueur.révélé=true
