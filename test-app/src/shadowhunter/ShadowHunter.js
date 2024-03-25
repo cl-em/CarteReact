@@ -8,7 +8,9 @@ import { useNavigate } from "react-router-dom";
 import { createPortal } from 'react-dom';
 import Action from "./ActionShadow";
 import Des from "./Des/Des";
-
+import { ImageProvider } from './ImageContext';
+import { useImageContext } from './ImageContext';
+import ImageComponent from './ImageComponent';
 
 function ChatSH() {
     const currentUrl = window.location.href;
@@ -92,7 +94,7 @@ function ApresJeu({ tableauFin }) {
 /*----------------------------------------------Main-----------------------------------------------------*/
 
 function Main({ listeDeCarte }) { // liste de string 
-
+    const { handleHoveredImageChange } = useImageContext();
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie = urlP.get("idPartie");
 
@@ -121,18 +123,9 @@ function Main({ listeDeCarte }) { // liste de string
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, idCarte: element, type: "stuffSelf" });
                     }}
-                    onMouseEnter={() => handleMouseEnter(index)}
-                    // onMouseLeave={handleMouseLeave}
-                    className={hoveredImage === index ? 'hovered' : ''}
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow/" + element + ".png")}
                 />
             ))}
-            <div className="hovered-image">
-                {hoveredImage !== null && <img src={"http://localhost:8888/carteShadow/" + listeDeCarte[hoveredImage] + ".png"} alt={listeDeCarte[hoveredImage]}
-                // onClick={() => {
-                //     socket.emit("choixCarte", { idPartie: idPartie, idCarte: listeDeCarte[hoveredImage], type: "stuffSelf" });
-                // }} 
-                />}
-            </div>
         </div>
     )
 }
@@ -140,16 +133,17 @@ function Main({ listeDeCarte }) { // liste de string
 /*----------------------------------------------Role-----------------------------------------------------*/
 
 function Role({ nomCarte }) {
+    const { handleHoveredImageChange } = useImageContext();
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie = urlP.get("idPartie");
 
     let socket = React.useContext(SocketContext);
 
 
-    const imageSrc = `http://localhost:8888/carteShadow/${nomCarte}.avif`;
+    const imageSrc = `http://localhost:8888/carteShadow/${nomCarte}.png`;
     return (
         <div id="role-carte-sh">
-            <img src={"http://localhost:8888/carteShadow/" + nomCarte + ".png"} alt={nomCarte} />
+            <img src={imageSrc} alt={nomCarte} onMouseEnter={() => handleHoveredImageChange(imageSrc)} />
             <div className="role-bouton">
                 <div>
                     <button className="joliebouton2"
@@ -174,7 +168,7 @@ function Role({ nomCarte }) {
 /*----------------------------------------------Stats-----------------------------------------------------*/
 
 function Stats({ listeJoueurs }) {
-
+    const { handleHoveredImageChange } = useImageContext();
     // console.log(listeJoueurs)
 
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
@@ -194,10 +188,12 @@ function Stats({ listeJoueurs }) {
                         <div id="Joueurs-carte">
                             {joueur.révélé ?
                                 <img src={"http://localhost:8888/carteShadow2/" + joueur.révélé + ".png"} alt={joueur.révélé}
+                                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/" + joueur.révélé + ".png")}
                                     onClick={() => {
                                         socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: joueur.révélé, joueurConcerne: joueur.pseudo });
                                     }} /> :
                                 <img src={"http://localhost:8888/carteShadow2/Personnage.png"}
+                                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Personnage.png")}
                                     onClick={() => {
                                         socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: "Personnage", joueurConcerne: joueur.pseudo });
                                     }} />
@@ -213,6 +209,7 @@ function Stats({ listeJoueurs }) {
                         {joueur.stuff.length ?
                             joueur.stuff.map((carte, index) => (
                                 <img key={index} src={"http://localhost:8888/carteShadow2/" + carte + ".png"} alt={carte}
+                                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/" + carte + ".png")}
                                     onClick={() => {
                                         socket.emit("choixCarte", { idPartie: idPartie, type: "stuffOther", carte: carte, joueurConcerne: joueur.pseudo });
                                     }}
@@ -230,6 +227,7 @@ function Stats({ listeJoueurs }) {
 /*----------------------------------------------Plateau-----------------------------------------------------*/
 
 function CartePlateau({ deuxCarte, position, listeJoueurs }) {
+    const { handleHoveredImageChange } = useImageContext();
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie = urlP.get("idPartie");
     let socket = React.useContext(SocketContext);
@@ -244,6 +242,7 @@ function CartePlateau({ deuxCarte, position, listeJoueurs }) {
             {deuxCarte.map((carte, index) => (
                 <div className={`carte ${carte}`} key={index}>
                     <img src={"http://localhost:8888/carteShadow/" + carte + ".png"} alt={carte}
+                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow/" + carte + ".png")}
                         onClick={() => {
                             socket.emit("choixCarte", { idPartie: idPartie, type: "zone", carte: carte });
                         }}
@@ -276,6 +275,7 @@ function Plateau({ carteEnFonctionDeLaZone, listeJoueurs }) {
 /*----------------------------------------------Pioches-----------------------------------------------------*/
 
 function Pioches() {
+    const { handleHoveredImageChange } = useImageContext();
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie = urlP.get("idPartie");
     let socket = React.useContext(SocketContext);
@@ -287,17 +287,20 @@ function Pioches() {
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, type: "pioche", carte: "Lumiere" });
                     }}
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Carte_Lumiere.png")}
 
                 />
                 <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"}
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, type: "pioche", carte: "Tenebres" });
                     }}
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Carte_Tenebres.png")}
                 />
                 <img src={"http://localhost:8888/carteShadow2/Carte_Vision.png"}
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, type: "pioche", carte: "Vision" });
                     }}
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Carte_Vision.png")}
                 />
             </div>
         </div>
@@ -396,22 +399,25 @@ function Jouer() {
         <div>
             {gameStart ?
                 <div>
-                    <div className="droite">
-                        <ChatSH />
-                        <Stats listeJoueurs={listeJoueurs} />
-                    </div>
-                    <div className="gauche">
-                        <div class="elements-gauche-haut">
-                            <Pioches />
-                            <Main listeDeCarte={stuff} />
-                            <Role nomCarte={personnage} />
+                    <ImageProvider>
+                        <div className="droite">
+                            <ChatSH />
+                            <Stats listeJoueurs={listeJoueurs} />
                         </div>
-                    </div>
-                    <Plateau carteEnFonctionDeLaZone={zoneDeJeu} listeJoueurs={listeJoueurs} />
-                    <Action rapportAction={action} idJoueurLocal={idJoueur} />
-                    <div className="messageTourPasse">
-                        {message.length > 0 ? <p>{message}</p> : <div></div>}
-                    </div>
+                        <div className="gauche">
+                            <div class="elements-gauche-haut">
+                                <Pioches />
+                                <Main listeDeCarte={stuff} />
+                                <Role nomCarte={personnage} />
+                            </div>
+                        </div>
+                        <Plateau carteEnFonctionDeLaZone={zoneDeJeu} listeJoueurs={listeJoueurs} />
+                        <Action rapportAction={action} idJoueurLocal={idJoueur} />
+                        <div className="messageTourPasse">
+                            {message.length > 0 ? <p>{message}</p> : <div></div>}
+                        </div>
+                        <ImageComponent />
+                    </ImageProvider>
 
 
                 </div>
