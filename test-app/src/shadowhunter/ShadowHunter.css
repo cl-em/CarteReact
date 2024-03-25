@@ -63,15 +63,16 @@
     align-items: center;
     justify-content: space-around;
     height: 100%;
-    gap: 20px; /* Ajustez cette valeur selon l'espacement désiré entre les duos */
+    gap: 20px;
+    /* Ajustez cette valeur selon l'espacement désiré entre les duos */
 }
 
-  .plateau {
+.plateau {
     gap: 3vw;
     display: flex;
     justify-content: center;
     align-items: center;
-  }
+}
 
 .carte img {
     max-height: 180px;
@@ -93,9 +94,122 @@
 
 .duo3 {
     position: fixed;
-    right:54vw;
+    right: 54vw;
     top: 43vh;
     transform: rotate(-110deg);
+}
+
+@media (max-width: 1750px) {
+
+    .duo1 {
+        position: fixed;
+        left: 41.8%;
+        top: 4.0vh;
+    }
+}
+
+@media (max-width: 1600px) {
+
+    .duo1 {
+        left: 41%;
+        top: 4.0vh;
+    }
+
+    .duo2 {
+        left: 55vw;
+        top: 40vh;
+    }
+
+    .duo3 {
+        right: 54.5vw;
+        top: 43vh;
+    }
+}
+
+@media (max-width: 1450px) {
+
+    .duo1 {
+        left: 40.5%;
+        top: 4.0vh;
+    }
+
+    .duo2 {
+        left: 56vw;
+        top: 40vh;
+    }
+
+    .duo3 {
+        right: 55.5vw;
+        top: 43vh;
+    }
+}
+
+@media (max-width: 1300px) {
+
+    .duo1 {
+        left: 39.5%;
+        top: 4.0vh;
+    }
+
+    .duo2 {
+        left: 57vw;
+        top: 40vh;
+    }
+
+    .duo3 {
+        right: 56.5vw;
+        top: 43vh;
+    }
+}
+
+@media (max-height: 900px) {
+
+    .duo1 {
+        left: 41.5%;
+        top: 4.0vh;
+    }
+
+    .duo2 {
+        left: 54vw;
+        top: 40vh;
+    }
+
+    .duo3 {
+        right: 53.5vw;
+        top: 41.5vh;
+    }
+
+    .carte img {
+        max-height: 160px;
+        display: block;
+    }
+}
+
+@media (max-height: 800px) {
+
+    .plateau {
+        gap: 1vw;
+    }
+
+    .duo1 {
+        left: 42.8%;
+        top: 4.0vh;
+    }
+
+    .duo2 {
+        left: 53vw;
+        top: 39vh;
+    }
+
+    .duo3 {
+        right: 53vw;
+        top: 39vh;
+    }
+
+    .carte img {
+        max-height: 140px;
+        display: block;
+    }
 }
 
 
@@ -379,9 +493,12 @@
     margin: auto;
     width: 56%;
     height: 70vh;
-    background-image: url('http://localhost:8888/fichier/shadoter.png'); /* Remplacez chemin_vers_votre_image.jpg par l'URL de votre image */
-    background-size: cover; /* Assure que l'image de fond couvre entièrement la div sans perdre ses proportions */
-    background-position: center; /* Centre l'image de fond dans la div */
+    background-image: url('http://localhost:8888/fichier/shadoter.png');
+    /* Remplacez chemin_vers_votre_image.jpg par l'URL de votre image */
+    background-size: cover;
+    /* Assure que l'image de fond couvre entièrement la div sans perdre ses proportions */
+    background-position: center;
+    /* Centre l'image de fond dans la div */
     background-size: contain;
     background-repeat: no-repeat;
     background-color: #000a09;
