@@ -63,7 +63,7 @@ function ChatSH() {
                 ))}
             </ul>
 
-            <div className="input-area">
+            <div className="input-area2">
                 <input className="input1"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}

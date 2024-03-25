@@ -253,7 +253,7 @@ function MainJoueur() {
     return (
         <div>
             { host && (
-                <button onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
+                <button id="sauvegarde-btn" className='joliebouton' onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
             )}
             <Chat />
             <Lobby  listesjoueurs={onlyJoueurs}/>

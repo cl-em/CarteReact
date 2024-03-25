@@ -62,8 +62,8 @@ function Chat() {
           onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
           maxLength={maxMessageLength}
         />
-        <button onClick={sendMessage}>Envoyer</button><br></br>
-        <button onClick={()=>{setAccessibilite(!accessibilite)}}>Accessibilite</button>
+        {/* <button onClick={sendMessage}>Envoyer</button><br></br>
+        <button onClick={()=>{setAccessibilite(!accessibilite)}}>Accessibilite</button> */}
       </div>
     </div>
 

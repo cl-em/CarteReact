@@ -339,7 +339,7 @@ useEffect(()=>{
             <AfficherLigne listeLignes={nouvelleListeLignes} />
             <Main6QuiPrend listeNombre={nouvelleMain.sort()} />
             { host && (
-                <button onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
+                <button id="sauvegarde-btn" className="joliebouton"onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
             )}
             <div className='infopartie'>
               {choixNecessaire ? 
