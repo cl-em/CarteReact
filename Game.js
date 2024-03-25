@@ -550,12 +550,14 @@ class shadowHunter extends Game{
 
         //Création des piles en question
         this.blanches = []
-        this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
+        /*this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
-        this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
+        this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))*/
+       
         this.blanches.push(new CarteShadowHunter('Bénédiction', 'consommable'))
-        this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
-        this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
+          this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
+       /* this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Amulette', 'équipement'))
@@ -563,8 +565,7 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))
-        this.blanches.push(new CarteShadowHunter('Premiers_Soins', 'consommable'))
-        this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
+        this.blanches.push(new CarteShadowHunter('Premiers_Soins', 'consommable'))*/
 
         this.noires = []
        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
@@ -739,67 +740,69 @@ class shadowHunter extends Game{
             this.défausseVisions.push(this.state)
         }
 
-        drawBlanche(idJoueur){
-            var joueur;
-            for (var test of this.joueurs){//Trouver le joueur concerné
-                if (test.idJoueur == idJoueur){
-                    joueur = test;
-                }
-            }
+        drawBlanche(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et data les trucs en plus, surtout pour la dynamite
+          //Retourne {valeur,data}, valeur c'est le nom de la carte et data les trucs en plus, surtout pour la dynamite
+   if (this.blanches.length<=0){this.blanches = this.défausseBlanche;this.défausseBlanche=[];this.blanches = this.shuffle(this.blanches)}
+   var joueur
+   for (var test of this.joueurs){//Trouver le joueur concerné
+       if (test.idJoueur == idJoueur){
+           joueur = test;
+       }
+   }
 
-            var carte = this.blanches.shift()
-            this.défausseBlanche.push(carte.valeur)
-            if (carte.type=="équipement"){
-                joueur.objets.push(carte.valeur)//Les inventaires sont juste des listes de string, pas besoin de plus.
-            }
-            else{
-                switch (carte.valeur) {
-                    case "Ange_Gardien":
-                        joueur.protected = true;
-                        break;
-                    case "Avènement_Suprême":
-                        if (this.huntersBase.includes(joueur.character)){
-                        this.joueurCourant = joueur.idJoueur
-                        this.state = "Avènement_Suprême"
-                        }
-                        break;
-                    case "Barre_De_Chocolat":
-                        if ((joueur.révélé==true) && joueur.hp<=11){
-                            joueur.hurtPoint = 0
-                        }
-                        if (joueur.révélé = false && joueur.hp<=11){
-                            this.state = "Barre_De_Chocolat"
-                            this.joueurCourant = joueur.idJoueur
-                        }
-                        break;
+   var carte = this.blanches.shift()
+   this.défausseBlanche.push(carte)
+
+   var data;
+   if (carte.type=="équipement"){
+       joueur.objets.push(carte.valeur)//Les inventaires sont juste des listes de string, pas besoin de plus.
+       this.state = "phase_Attaque"
+   }
+
+   else{
+    switch (carte.valeur){
+        case "Avènement_Suprême":
+            this.state = "Avènement_Suprême"
+            this.joueurCourant = joueur.idJoueur
+            break
+            
+            case "Barre_De_Chocolat":
+                this.state = "Barre_De_Chocolat"
+                this.joueurCourant = joueur.idJoueur
+                break
+                case "Savoir_Ancestral":
+                    joueur.turnsToPlay++
+                    this.joueurCourant = joueur.idJoueur
+                    this.state = "phase_Attaque"
+                    break
                     case "Bénédiction":
                         this.state = "Bénédiction"
                         this.joueurCourant = joueur.idJoueur
-                    break;
-                    case "Eau_Bénite":
-                        joueur.hurtPoint-=2
-                        if (joueur.hurtPoint<0){joueur.hurtPoint = 0}
-                    break;
-                    case "Miroir_Divin":
-                      if (this.shadowsBase.includes(joueur.character)){
-                        joueur.révélé = true
-                      }
-                    break;
-                    case "Premiers_Soins":
-                        this.state = "Premiers_Soins"
-                        this.joueurCourant = joueur.idJoueur
-                    break;
-                    case "Savoir_Ancestral":
-                        joueur.turnsToPlay++
-                    break;
-                
-                    default:
-                        break;
+                        break
+                        case "Ange_Gardien":
+                            joueur.protected=true
+                            this.state="phase_Attaque"
+                            break
+                            //LIGNE QUI DELIMITE CE QUE J'AI FAIT COMPLETEMENT
+                            case "Eau_Bénite":
+                                joueur.hurtPoint-=2
+                                if (joueur.hurtPoint<=0){joueur.hurtPoint=0}
+                                this.state="phase_Attaque"
+                break
+            case "Miroir_Divin":
+                if (this.shadowsBase.includes(joueur.character)&&joueur.character!="Métamorphe"){
+                    joueur.révélé=true
+                    data = true
+                    this.state="phase_Attaque"
+                    break
                 }
-            }
+                case "Premiers_Soins":
+                    this.state="Premiers_Soins"
 
+    }
+   }
+   return {"valeur":carte.valeur,"data":data}
 
-            return carte.valeur
         }
 
 
@@ -836,7 +839,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 var destination = Math.floor(Math.random()*6)
                 for (var test of this.joueurs){
                     if (parseInt(test.position)==destination||this.zonesAdjacentes(parseInt(test.position),destination)){
-                        test.hurtPoint+=3
+                        if (!test.hasItem("Amulette")){test.hurtPoint+=3}
                     }
                     data = destination
                     console.log("destination de la dynamite:"+data)
