@@ -1214,6 +1214,19 @@ io.on('connection', (socket) => {
                             var cartePiochée = partie.drawBlanche(joueur.idJoueur)
                             switch (cartePiochée.valeur){
                               
+                              case "Miroir_Divin":
+                                if (cartePiochée.data==true){
+                                  io.emit("tourPasse",{"Message":(pseudos[joueur.idJoueur]+" est révélé par le miroir !"),"rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":joueur.character,"pseudo":pseudos[joueur.idJoueur]}},"idPartie":data.idPartie})
+
+                                }
+                                else{
+                                  io.emit("tourPasse",{"Message":"Rien ne se produit.","rapportAction":{type:"cartePiochée",valeur:"Miroir_Divin"},"idPartie":partie.id})
+
+                                }
+                                setTimeout(() => {
+                                  tourPasseDeCirconstance(partie)
+                                }, 2500);
+                              break
                               case "Eau_Bénite":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" est soigné de deux points de vie.","rapportAction":{type:"cartePiochée",valeur:"Eau_Bénite"},"idPartie":partie.id})
                                 partie.state = "phase_Attaque"

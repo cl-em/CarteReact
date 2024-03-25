@@ -555,16 +555,18 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
        
         this.blanches.push(new CarteShadowHunter('Bénédiction', 'consommable'))
-          this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))*/
-        this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))/*
+          this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
+          */
+         this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))
+         /*
+         this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
-        this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
+        this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Amulette', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Toge_Sainte', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
-        this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Premiers_Soins', 'consommable'))*/
 
         this.noires = []
@@ -793,9 +795,11 @@ class shadowHunter extends Game{
                 if (this.shadowsBase.includes(joueur.character)&&joueur.character!="Métamorphe"){
                     joueur.révélé=true
                     data = true
-                    this.state="phase_Attaque"
-                    break
                 }
+                else { data = false}
+                
+                this.state="phase_Attaque"
+                break
                 case "Premiers_Soins":
                     this.state="Premiers_Soins"
 
