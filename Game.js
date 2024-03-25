@@ -570,13 +570,13 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
                 
         this.noires = []
-       this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))/*
+        this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
+        /*this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
         this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Peau_De_Banane', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Sabre_Hanté_Masamune', 'équipement'))
         this.noires.push(new CarteShadowHunter('Succube_Tentatrice', 'consommable'))

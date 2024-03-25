@@ -1554,19 +1554,91 @@ io.on('connection', (socket) => {
                                           break
 
                                           case "Araignée_Sanguinaire":
-                                            for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
-                                            if (joueur.protected==false && !cible.hasItem("Amulette")){
-                                              cible.hurtPoint+=2
-                                              if (cible.hasItem("Toge_Sainte")){cible.hurtPoint--}
-                                            }
-                                            for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.joueurCourant){cible=joueur}}
-                                            if (joueur.protected==false){
+                                           
+                                            for (var joueu of partie.joueurs){if (joueu.idJoueur==partie.joueurCourant){cible=joueu}}
+                                            if (joueu.protected==false && !cible.hasItem("Amulette")){
+                                            cible.hurtPoint+=2
+                                            if (cible.hasItem("Toge_Sainte")){cible.hurtPoint--}
+                                          }
+                                          for (var joueu of partie.joueurs){if (joueu.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueu}}
+                                          if (cible.protected==false && !cible.hasItem("Amulette")){
                                             cible.hurtPoint+=2
                                             if (cible.hasItem("Toge_Sainte")){cible.hurtPoint--}
                                           }
                                             partie.state = "phase_Attaque"
                                           
+                                            if (cible.isDead()||joueur.isDead()){//Si un mort
+
+                                            if (cible.isDead()){
+                                              for (var z of cible.objets){//Renvoi objets dans la défausse
+                                                switch (z){
+          
+                                                  case "Hache_Tueuse":
+                                                  case "Sabre_Hanté_Masamune":
+                                                  case "Revolver_Des_Ténèbres":
+                                                  case "Hachoir_Maudit":
+                                                  case "Mitrailleuse_Funeste":
+                                                  case "Tronçonneuse_Du_Mal":
+                                                    partie.défausseNoire.push(z)
+                                                    break
+          
+                                                  case "Boussole_Mystique":
+                                                  case "Broche_De_Chance":
+                                                  case "Amulette":
+                                                  case "Toge_Sainte":
+                                                  case "Lance_De_Longinus":
+                                                  case "Crucifix_En_Argent":
+                                                    partie.défausseBlanche.push(z)
+                                                  break
+                                                }
+                                            }//Fin renvoi
+                                          cible.éliminé=true  
+                                          }
+                                            
+                                          if (joueur.isDead()){
+                                            for (var z of cible.objets){//Renvoi objets dans la défausse
+                                              switch (z){
+        
+                                                case "Hache_Tueuse":
+                                                case "Sabre_Hanté_Masamune":
+                                                case "Revolver_Des_Ténèbres":
+                                                case "Hachoir_Maudit":
+                                                case "Mitrailleuse_Funeste":
+                                                case "Tronçonneuse_Du_Mal":
+                                                  partie.défausseNoire.push(z)
+                                                  break
+        
+                                                case "Boussole_Mystique":
+                                                case "Broche_De_Chance":
+                                                case "Amulette":
+                                                case "Toge_Sainte":
+                                                case "Lance_De_Longinus":
+                                                case "Crucifix_En_Argent":
+                                                  partie.défausseBlanche.push(z)
+                                                  break
+                                                }
+                                              
+                                          }//Fin renvoi
+                                        
+                                          joueur.éliminé=true
+                                          if (joueur.idJoueur==partie.joueurCourant){partie.state="débutTour"; partie.nextPlayer()}  
+                                        }
+                                        if (cible.isDead()&&joueur.isDead()){//Cas double mort
+                                          io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" et "+pseudos[cible.idJoueur]+" sont tous les deux morts. Ils étaient " +cible.character.replace(/_/g," ")+ " et "+joueur.character.replace(/_/g," "),"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[joueur.idJoueur],"dégâts":9999,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})                                      
+                                        }
+                                        else{
+                                          if (cible.isDead()){//Cas où seule la cible est morte
+                                            io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" qui était " +cible.character.replace(/_/g," ")+ " avec l'araignée. Ses objets partent à la défausse.","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})                                                                                 
+                                          }
+                                          else{//Cas où seul le lanceur est mort
+                                            io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a succombé l'araignée. Il était " +joueur.character.replace(/_/g," ")+ ". Ses objets partent à la défausse.","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":joueur.character,"pseudo":pseudos[joueur.idJoueur]}},"idPartie":data.idPartie})                                     
+                                          }
+                                        }
+                                              }//Fin si un mort
+
+                                            else{
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" et "+data.joueurConcerne+" ont été victimes de l'araignée ! Ils subissent 2 dégâts.","rapportAction":false,"idPartie":partie.id})
+                                          }
                                             setTimeout(() => {
                                               tourPasseDeCirconstance(partie)
                                             }, 2500);
