@@ -1132,7 +1132,9 @@ io.on('connection', (socket) => {
                                     cibles.push(pseudos[j.idJoueur])
                                   }                                  
                                 }
+                                if (!joueur.hasItem("Sabre_Hanté_Masamune")){
                                 cibles.push("personne")
+                                }
                                 io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit qui attaquer.","rapportAction":{"type":"choix","valeur":{"boutons":cibles,"idJoueur":partie.joueurCourant}}})
                                 break
                                 case "Forêt_Hantée_1":
@@ -1156,12 +1158,13 @@ io.on('connection', (socket) => {
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché une peau de banane... L'un de ses équipements lui glisse des mains ! Reste à cliquer pour décider duquel...","rapportAction": {type:"cartePiochée",valeur:"Peau_de_Banane"},"idPartie":partie.id})
                               break
                               case "Peau_De_Banane_2":
-                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit qui trouvera son objet...","rapportAction": {type:"cartePiochée",valeur:partie.variableTemp},"idPartie":data.idPartie})
-                              case "Poupée_Démoniaque":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit qui trouvera son objet...","rapportAction": {type:"cartePiochée",valeur:partie.variableTemp},"idPartie":partie.id})
+                                break
+                                case "Poupée_Démoniaque":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé une poupée étrange et s'amuse avec... Mais l'image d'un autre joueur lui vient en tête. Qui est-ce ?","rapportAction":{type:"cartePiochée",valeur:"Poupée_Démoniaque"},"idPartie":partie.id})
                               break
                               case "Rituel_Diabolique":
-                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" tombe sur les restes d'un vieux rituel maléfique et décide s'il souhaite s'y intéresser de plus près... mais seul un shadow pourrait en tirer profit, et cela le révèlerait.","rapportAction":{type:"choix",valeur:["S'intéresser au rituel","Le laisser où il est"]},"idPartie":partie.id,"idJoueur":joueur.idJoueur})
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" tombe sur les restes d'un vieux rituel maléfique et décide s'il souhaite s'y intéresser de plus près...","rapportAction":{"type":"choix","valeur":{"idJoueur":partie.joueurCourant,"boutons":["S'intéresser au rituel","Le laisser où il est"]}},"idPartie":partie.id})
                               break
                               case "Succube_Tentatrice":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé une succube qui propose de l'aider à voler l'objet d'un joueur. "+pseudos[partie.joueurCourant]+" clique sur l'objet à voler !","rapportAction":{type:"cartePiochée",valeur:"Succube_Tentatrice"},"idPartie":partie.id})
@@ -1341,10 +1344,10 @@ io.on('connection', (socket) => {
                                                   }
                                                 }
                                                 for (var test of partie.joueurs){
-                                                  if (test.idJoueur==data.joueurConcerne){
+                                                  if (test.idJoueur==getIdFromPseudo(data.joueurConcerne)){
                                                     test.objets.push(partie.variableTemp)
                                                     partie.state = "phase_Attaque"
-                                                    io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" a donné son objet "+partie.variableTemp+" à "+data.joueurConcerne,"rapportAction":false})
+                                                    io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" a donné son objet à "+data.joueurConcerne,"rapportAction":false})
                                                     setTimeout(() => {tourPasseDeCirconstance(partie)}, 2500);
                                                     partie.variableTemp=""
                                                   }
@@ -1389,7 +1392,6 @@ io.on('connection', (socket) => {
                                                   if (joueur.idJoueur==partie.joueurCourant){
                                               io.emit("tourPasse",{"Message":"La poupée se retourne contre "+pseudos[partie.joueurCourant]+" et lui inflige 3 dégâts !","rapportAction":false,"idPartie":partie.id})
                                               joueur.hurtPoint+=3
-                                              return
                                             }}}
                                               else{
                                                 for (var jou of partie.joueurs){
@@ -1404,6 +1406,7 @@ io.on('connection', (socket) => {
                                               }, 2500);
                                               
                                               return
+                                              break
 
 
 
@@ -1495,18 +1498,20 @@ io.on('connection', (socket) => {
                                               if (joueur.objets[item]==data.carte){
                                                 joueur.objets.splice(item,1)
                                             }
+                                          }
+                                        }
                                             for (var joueur of partie.joueurs){
                                               if (joueur.idJoueur==partie.joueurCourant){
-                                                joueur.objets.push()
-                                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a volé un objet à "+data.joueurConcerne,"rapportAction":false,"idPartie":data.idPartie})
-
+                                                joueur.objets.push(data.carte)
                                               }
                                             }
                                           }
+                                          io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a volé un objet à "+data.joueurConcerne,"rapportAction":false,"idPartie":data.idPartie})
                                           partie.state = "phase_Attaque"
+                                          setTimeout(() => {
+                                            tourPasseDeCirconstance(partie)
+                                          }, 2500);
 
-                                          }
-                                        }
                                       }//Fin du cas de vol via succube OU sanctuaire
 
                                  
@@ -1628,7 +1633,7 @@ io.on('connection', (socket) => {
                                               break
                                             case 7:
                                             partie.state = "choixDestination"
-                                            tourPasseDeCirconstance(partie)
+                                            io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" est chanceux et peut choisir où aller !","rapportAction":{"type":"jetsDeDés","valeur":[roll1,roll2]} ,"idPartie":data.idPartie})
                                             return
                                             case 8:
                                               destination = partie.getNameFromZone("zone4")
@@ -1763,16 +1768,7 @@ io.on('connection', (socket) => {
                                         }, 2500);
                                         break
 
-                                case "Liche":
-                                  if (partie.joueurCourant==socket.data.userId && partie.state=="débutTour"){
-                                  for (var joueur of partie.joueurs){if (joueur.idJoueur==socket.data.userId){
-                                    for (var z of partie.joueurs){
-                                      if (z.éliminé==true){joueur.turnsToPlay++}
-                                    }
-                                    joueur.pouvoirUtilisé=true}}
-                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" fait de la nécromancie !","rapportAction":false,"idPartie":data.idPartie})
-                                        return}
-                                        break
+               
                                   case "Momie":
                                     console.log("Tentative d'utilisation de son pouvoir par "+pseudos[socket.data.userId]+" qui est "+data.capacite)
                                     console.log(partie.state)
@@ -1786,6 +1782,20 @@ io.on('connection', (socket) => {
                                     partie.state = "pouvoirMomie"
                                     io.emit("tourPasse", { "Message": pseudos[socket.data.userId] + " canalise son énergie de momie et se prépare à frapper une cible sur la porte de l'outremonde!", "rapportAction": false, "idPartie": data.idPartie })
                                     return}
+                                    break
+
+                                    case "Liche":
+                                      if (partie.joueurCourant==socket.data.userId){
+                                        var j
+                                        var t = 0
+                                        for (var joueur of partie.joueurs){if (joueur.idJoueur==partie.joueurCourant){j = joueur}}
+                                        for (var joueur of partie.joueurs){if (joueur.éliminé==true){t++}}
+                                        j.turnsToPlay+=t
+                                        io.emit("tourPasse", { "Message": pseudos[socket.data.userId] + " relève les morts et rejouera "+t+" fois.", "rapportAction": false, "idPartie": data.idPartie })
+
+
+                                      }
+
                                     break
 
 
