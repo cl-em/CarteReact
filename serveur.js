@@ -1211,12 +1211,31 @@ io.on('connection', (socket) => {
                           function piocheNoire(partie,joueur){//Fonction serveur pour faire piocher une carte noire au joueur passé en paramètre dans l'environnement de la partie
                             var cartePiochée = partie.drawNoire(joueur.idJoueur)
                               if (cartePiochée.valeur=="Dynamite"){
-                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a lancé une dynamite sur "+partie.getNameFromZone(partie.zones[cartePiochée.data]),"rapportAction":{type:"cartePiochée",valeur:"Dynamite"},"idPartie":partie.id})
-                                partie.state = "phase_Attaque"
+                                if (cartePiochée.data.victimes>0){
+                                  var liste = ""
+                                  for (var joueurTué in cartePiochée.data.victimes){
+                                    if (joueurTué==cartePiochée.data.victimes.length-1 && cartePiochée.data.victimes.length>1){
+                                      liste += "et "+pseudos[cartePiochée.data.victimes[joueurTué]]
+                                    }
+                                    else{
+                                      if (joueurTué==0){
+                                      liste += ""+pseudos[cartePiochée.data.victimes[joueurTué]]
+                                    }
+                                    else{
+                                      liste += ", "+pseudos[cartePiochée.data.victimes[joueurTué]]
+                                      }
+                                    }
+                                  }
+                                  io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a lancé une dynamite sur "+partie.getNameFromZone(partie.zones[cartePiochée.data.destination])+" et tué "+liste,"rapportAction":{type:"cartePiochée",valeur:"Dynamite"},"idPartie":partie.id})
+                                }
+                                else{
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a lancé une dynamite sur "+partie.getNameFromZone(partie.zones[cartePiochée.data.destination]),"rapportAction":{type:"cartePiochée",valeur:"Dynamite"},"idPartie":partie.id})
+                                }
                                 setTimeout(() => {
                                   tourPasseDeCirconstance(partie)
                                 }, 2500);
                               }
+                              
                                 else{
                                   tourPasseDeCirconstance(partie)
                                

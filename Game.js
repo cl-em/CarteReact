@@ -571,10 +571,10 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
                 
         this.noires = []
-        this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
-        /*this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
+        /*this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
+        this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
@@ -840,18 +840,52 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 this.state = "Araignée_Sanguinaire";
                 this.joueurCourant = joueur.idJoueur
                 break;
-            case "Chauve-Souris_Vampire":
-                this.joueurCourant = joueur.idJoueur
-                this.state = "Chauve-Souris_Vampire"
-                break;
-            case "Dynamite":
+                case "Chauve-Souris_Vampire":
+                    this.joueurCourant = joueur.idJoueur
+                    this.state = "Chauve-Souris_Vampire"
+                    break;
+                    case "Dynamite":
+                this.state = "phase_Attaque"
+                var data = {}
+                data.victimes = []
                 var destination = Math.floor(Math.random()*6)
                 for (var test of this.joueurs){
                     if (parseInt(test.position)==destination||this.zonesAdjacentes(parseInt(test.position),destination)){
-                        if (!test.hasItem("Amulette")){test.hurtPoint+=3}
+                        if (!test.hasItem("Amulette")){test.hurtPoint+=3
+                            if (test.isDead()){
+                                data.victimes.push(test.idJoueur)
+                                test.éliminé = true
+                                if (test.idJoueur==this.joueurCourant){this.nextPlayer()}
+                                for (var zzz of test.objets){
+                                    //Renvoi des autres objets à la défausse
+                
+                                    switch (zzz){
+                
+                                        case "Hache_Tueuse":
+                                        case "Sabre_Hanté_Masamune":
+                                        case "Revolver_Des_Ténèbres":
+                                        case "Hachoir_Maudit":
+                                        case "Mitrailleuse_Funeste":
+                                        case "Tronçonneuse_Du_Mal":
+                                          this.défausseNoire.push(zzz)
+                                          break
+                
+                                        case "Boussole_Mystique":
+                                        case "Broche_De_Chance":
+                                        case "Amulette":
+                                        case "Toge_Sainte":
+                                        case "Lance_De_Longinus":
+                                        case "Crucifix_En_Argent":
+                                          this.défausseBlanche.push(zzz)
+                                        break
+                                      }
+                
+                            }
+                            }
+                        }
                     }
-                    data = destination
-                    console.log("destination de la dynamite:"+data)
+                    data.destination = destination
+                    console.log("destination de la dynamite:"+data.destination)
                 }
 
               
