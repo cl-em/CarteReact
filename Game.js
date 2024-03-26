@@ -508,6 +508,7 @@ class shadowHunter extends Game{
         this.deck = null//Le deck ne servira pas et on utilisera trois piles à la place
         this.couleurs = null//Pareil pour les couleurs. On préférera utiliser l'attribut "type" des cartes
         this.type="shadowHunter"
+        this.gameFinished = false
         this.joueurCourant = undefined
         this.state = undefined
         this.variableTemp = undefined
@@ -515,7 +516,7 @@ class shadowHunter extends Game{
         //Choix des personnages
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
-        this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"]
+        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Emi"/*,"Ellen"*/]
         this.hunters = this.shuffle(Array.from(this.hunterBase))
         this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         this.neutres = this.shuffle(Array.from(this.neutresBase))  
@@ -555,7 +556,7 @@ class shadowHunter extends Game{
         //Création des piles en question
         this.blanches = []
         this.blanches.push(new CarteShadowHunter('Eclair_Purificateur', 'consommable'))
-        /*
+        
         this.blanches.push(new CarteShadowHunter('Premiers_Secours', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
@@ -570,7 +571,7 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Amulette', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Toge_Sainte', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'équipement'))
-        this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))*/
+        this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
                 
         this.noires = []
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
@@ -591,15 +592,22 @@ class shadowHunter extends Game{
         this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
         
         this.visions = []
-        this.visions.push(new CarteShadowHunter('Vision_Cupide', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Furtive', 'vision'))/*
+        this.visions.push(new CarteShadowHunter('Vision_Enivrante', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Destructrice', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Divine', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Enivrante', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Foudroyante', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Clairvoyante', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Cupide', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Réconfortante', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Cupide', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Furtive', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Mortifère', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Lugubre', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Mortifère', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Purificatrice', 'vision'))
-        this.visions.push(new CarteShadowHunter('Vision_Suprême', 'vision'))
+        this.visions.push(new CarteShadowHunter('Vision_Suprême', 'vision'))*/
         
         this.défausseNoire = []
         this.défausseBlanche = []
@@ -644,8 +652,7 @@ class shadowHunter extends Game{
         
 
         //--------------------TESTS------------------------
-        this.joueurs.push(new JoueurShadowHunter(2,false,"Allie",19))
-        this.joueurs.push(new JoueurShadowHunter(3,false,"Fu-ka",10))
+    this.joueurs[1].objets.push("Sabre_Hanté_Masamune")
 
         //--------------------TESTS------------------------
         for (var joueur of this.joueurs){
@@ -733,16 +740,12 @@ class shadowHunter extends Game{
 
 
         //---------------------------------FONCTIONS DE GESTION DES CARTES PIOCHEES---------------------------------------------
-        drawVerte(idJoueur){
-            var joueur;
-            for (var test of this.joueurs){//Trouver le joueur concerné
-                if (test.idJoueur == idJoueur){
-                    joueur = test;
-                }
-            }
-            this.joueurCourant = joueur.idJoueur
-            this.state = this.vertes.shift().valeur
+        drawVision(){
+            this.state = "vision1"
+            var carte = this.visions.shift()
+            this.variableTemp = carte.valeur
             this.défausseVisions.push(this.state)
+            return carte
         }
 
         drawBlanche(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et data les trucs en plus, surtout pour la dynamite
@@ -1006,20 +1009,36 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         return false
     }
 
+    finPartie(){//Fonction qui teste si quelqu'un a gagné et, si oui, qui met
+
+    }
+
+
     nextPlayer(){//Change le joueur courant au prochain dans la liste
+        if (this.gameFinished){return}
+        var isPlayer = false
+        for (var j in this.joueurs){    if (!j.éliminé){isPlayer=true}        }
+        if (!isPlayer){this.finPartie();return}
+
+
 
     var indexCourant = 0;
     for (var j in this.joueurs){if (this.joueurs[j].idJoueur==this.joueurCourant){indexCourant=parseInt(j)}}
     
+    indexCourant++
+    if (indexCourant==this.joueursMax){
+        indexCourant = 0
+     }
+
+    while (this.joueurs[indexCourant].éliminé){
     if (indexCourant==this.joueursMax-1){
-        this.joueurCourant=this.joueurs[0].idJoueur;
+       indexCourant = 0
     }
     else{
-        this.joueurCourant=this.joueurs[indexCourant+1].idJoueur
+       indexCourant++
     }   
-    for (var z of this.joueurs){
-    if (z.éliminé && z.idJoueur==this.joueurCourant){this.nextPlayer()}
-    }
+}
+this.joueurCourant = this.joueurs[indexCourant].idJoueur
     }
 
     attaquer(atk,def){

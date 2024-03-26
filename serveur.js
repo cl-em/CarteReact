@@ -1108,6 +1108,18 @@ io.on('connection', (socket) => {
                             //La fonction va être trèèèèès longue
                             switch (partie.state){
                               //Les dés et système
+
+                              case "vision1":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" peut sonder l'âme de quelqu'un... mais qui ? ","rapportAction":{type:"vision1",valeur:{"vision":partie.variableTemp,"idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                              break
+                              case "vision2":
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" sonde l'âme de "+pseudos[partie.variableTemp.cible],"rapportAction":{"type":"vision2","valeur":{"boutons":["dire la vérité","mentir"],"vision":partie.variableTemp.vision,"idJoueur":partie.variableTemp.cible}},"idPartie":partie.id})
+                              break                              
+
+                              case "vision3":
+                                io.emit("tourPasse",{"Message":pseudos[partie.variableTemp.cible]+" doit donner un objet à "+pseudos[partie.joueurCourant],"rapportAction":{"type":"vision2","valeur":{"boutons":["refuser"],"vision":partie.variableTemp.vision,"idJoueur":partie.variableTemp.cible}},"idPartie":partie.id})                              
+
+
                               case "choixStuff":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit quel objet récupérer.","rapportAction":{"type":"choix","valeur":{"boutons":partie.variableTemp,"défaut":false,"idJoueur":partie.joueurCourant}},"idPartie":partie.id})
                               break
@@ -1204,9 +1216,7 @@ io.on('connection', (socket) => {
                             }
                           }
 
-                          function tourPasseDeMort(){
-
-                          }
+                         
 
                           function piocheNoire(partie,joueur){//Fonction serveur pour faire piocher une carte noire au joueur passé en paramètre dans l'environnement de la partie
                             var cartePiochée = partie.drawNoire(joueur.idJoueur)
@@ -1242,7 +1252,11 @@ io.on('connection', (socket) => {
                                 }
                             }//Fin piocheNoire
 
-                          
+                            function piocheVision(partie,joueur){
+                              partie.drawVision()
+                              io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" peut sonder l'âme de quelqu'un... mais qui ? ","rapportAction":{type:"vision1",valeur:{"vision":partie.variableTemp,"idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+
+                            }
 
                           function piocheBlanche(partie,joueur){//Fonction serveur qui pioche une carte blanche et fait des trucs selon la carte
                             var cartePiochée = partie.drawBlanche(joueur.idJoueur)
@@ -1319,10 +1333,6 @@ io.on('connection', (socket) => {
                               }
                           }
 
-                          function piocheVerte(partie,joueur){
-
-
-                          }
 
                           function tuer(partie,joueur){//Tue un joueur, skip au prochain tour s'il était joueur courant et envoie tous ses objets dans les défausses. Ne gère pas les tourPasse
                               for (var z of joueur.objets){//Renvoi objets dans la défausse
@@ -1361,7 +1371,7 @@ io.on('connection', (socket) => {
                             switch (partie.zones[joueur.position]){
                               case "zone1":
 
-                              piocheNoire(partie,joueur)
+                              piocheVision(partie,joueur)
 
                               break
 
@@ -1439,6 +1449,268 @@ io.on('connection', (socket) => {
                           for (var partie of partiesEnCours){
                             if (partie.id == data.idPartie){
 
+                              if (partie.state=="vision3" &&socket.data.userId==partie.variableTemp.cible && data.type=="stuffSelf"&&(partie.variableTemp.vision=="Vision_Enivrante" || partie.variableTemp.vision=="Vision_Cupide"||partie.variableTemp.vision=="Vision_Furtive")){
+                                var receveur;
+                                var donneur;
+                                for (var test of partie.joueurs){
+                                  if (test.idJoueur==partie.joueurCourant){receveur=test}
+                                  if (test.idJoueur==partie.variableTemp.cible){donneur=test}
+                                }
+                                if (test==null||receveur==null){return}
+                                for (var z in donneur.objets){
+                                  if (donneur.objets[z]==data.idCarte){
+                                    receveur.objets.push(donneur.objets[z])
+                                    receveur.objets.splice(z,1)
+                                    io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[donneur.idJoueur]+" a donné son objet à "+pseudos[receveur.idJoueur],"rapportAction":false})
+                                    partie.state="phase_Attaque"
+                                    setTimeout(() => {
+                                      tourPasseDeCirconstance(partie)
+                                    }, 2500);
+                                    return
+                                  }
+                                }
+
+                              }
+
+                              if (partie.state=="vision3" && socket.data.userId==partie.variableTemp.cible && data.type=="choix"){//Cas de don d'objet en cas de vision traîté ici car sinon le check l'empêche
+                                if (data.text=="refuser"){
+                                  var cible
+                                  for (var test of partie.joueurs){
+                                    if (test.idJoueur==partie.variableTemp.cible){cible=test}
+                                  }
+                                  partie.state = "phase_Attaque"
+                                  cible.hurtPoint++
+                                  if (cible.isDead()){
+                                    tuer(partie,cible)
+                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[cible.idJoueur]+" qui était " +cible.character.replace(/_/g," ")+ " grâce à sa vision","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})
+                                  }
+                                  else{
+                                  io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 1 dégât !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                  
+                                }
+                                setTimeout(() => {
+                                  tourPasseDeCirconstance(partie)
+                                }, 2500);
+                                }
+                                return
+                              }
+
+
+                              if (partie.state=="vision2" && socket.data.userId==partie.variableTemp.cible && data.type=="choix"){//Cas de REPONSE à une vision. Traîté ici car sinon le check l'empêche
+                                var cible
+                                for (var test of partie.joueurs){
+                                  if (test.idJoueur==partie.variableTemp.cible){cible=test}
+                                }
+                                var mentir = false
+                                switch (data.text){
+                                  case "mentir":
+                                    if (cible.character!="Métamorphe"){return}
+                                    mentir = true//Comme ça on pourra faire un seul switch, plus pratique
+                                  case "dire la vérité":
+                                    console.log(partie.variableTemp)
+                                    switch (partie.variableTemp.vision){
+                                      //D'abord les cas où c'est juste du heal/des dégâts
+
+                                      case "Vision_Suprême":
+                                        if (mentir){//Si mensonge, on renvoie qu'il se passe rien
+                                          io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                        }
+                                        else{
+                                          io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" voit la carte de "+ pseudos[partie.variableTemp.cible]+".","rapportAction":{type:"vision1",valeur:{"vision":cible.character,"idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                        }
+                                        partie.state = "phase_Attaque"
+                                        break
+                                        case "Vision_Destructrice":
+                                          if (cible.hp>=12 || mentir){
+                                            cible.hurtPoint+=2
+                                            io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 2 dégâts !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                          }
+                                          else{
+                                            io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                          }
+                                          partie.state = "phase_Attaque"
+                                          break
+
+                                          case "Vision_Clairvoyante":
+                                            if (cible.hp<=11 && !mentir){
+                                              cible.hurtPoint+=2
+                                              io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 2 dégâts !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            }
+                                            else{
+                                              io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            }
+                                            partie.state = "phase_Attaque"
+                                            break
+
+                                      case "Vision_Foudroyante":
+                                        if (partie.shadowsBase.includes(cible.character) && !mentir){
+                                          cible.hurtPoint++
+                                          io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 1 dégât !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                        }
+                                        else{
+                                          io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                        }
+                                        partie.state = "phase_Attaque"
+                                        break
+
+                                        case "Vision_Lugubre":
+                                          if (partie.shadowsBase.includes(cible.character) && !mentir && cible.hurtPoint>0){
+                                            cible.hurtPoint-=2
+                                            if (cible.hurtPoint<=0){cible.hurtPoint=0}
+                                            io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a été soigné de 2 points de vie !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                          }
+                                          else{
+                                             if (partie.shadowsBase.includes(cible.character) && !mentir && cible.hurtPoint<=0){
+                                              cible.hurtPoint++
+                                              io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 1 dégât !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+
+                                            }
+                                            else{
+                                            io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            }
+                                          }
+                                            partie.state = "phase_Attaque"
+                                          break
+
+                                          case "Vision_Mortifère":
+                                            if (partie.hunterBase.includes(cible.character) || mentir){
+                                              cible.hurtPoint++
+                                              io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 1 dégât !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            }
+                                            else{
+                                              io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            }
+                                            partie.state = "phase_Attaque"
+                                            break
+
+                                            case "Vision_Réconfortante":
+                                          if ((partie.neutresBase.includes(cible.character) || mentir) && cible.hurtPoint>0){
+                                            cible.hurtPoint-=1
+                                            if (cible.hurtPoint<=0){cible.hurtPoint=0}
+                                            io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a été soigné de 1 point de vie !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                          }
+                                          else{
+                                             if ((partie.neutresBase.includes(cible.character) || mentir) && cible.hurtPoint<=0){
+                                              cible.hurtPoint++
+                                              io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 1 dégât !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+
+                                            }
+                                            else{
+                                            io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            }
+                                          }
+                                            partie.state = "phase_Attaque"
+                                          break
+
+                                          case "Vision_Purificatrice":
+                                            if (partie.shadowsBase.includes(cible.character) && !mentir){
+                                              cible.hurtPoint+=2
+                                              io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 2 dégâts !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            }
+                                            else{
+                                              io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            }
+                                            partie.state = "phase_Attaque"
+                                            break
+
+                                            case "Vision_Divine":
+                                              if ((partie.hunterBase.includes(cible.character) || mentir) && cible.hurtPoint>0){
+                                                cible.hurtPoint-=1
+                                                if (cible.hurtPoint<=0){cible.hurtPoint=0}
+                                                io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a été soigné de 1 point de vie !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                              }
+                                              else{
+                                                 if ((partie.hunterBase.includes(cible.character) || mentir) && cible.hurtPoint<=0){
+                                                  cible.hurtPoint++ 
+                                                  io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 1 dégât !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                                }
+                                                else{
+                                                io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                                }
+                                              }
+
+
+                                      case "Vision_Furtive":
+                                        if ((partie.hunterBase.includes(cible.character)||partie.shadowsBase.includes(cible.character))&&!mentir){
+                                          if (cible.objets.length<=0){
+                                            cible.hurtPoint++
+                                            io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 1 dégât !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            partie.state = "phase_Attaque"
+                                          }
+                                          else{
+                                            partie.state="vision3"
+                                            io.emit("tourPasse",{"Message":pseudos[partie.variableTemp.cible]+" doit donner un objet à "+pseudos[partie.joueurCourant],"rapportAction":{"type":"vision2","valeur":{"boutons":["refuser"],"vision":partie.variableTemp.vision,"idJoueur":partie.variableTemp.cible}},"idPartie":partie.id})                              
+                                            return
+                                          }
+
+                                        }
+                                        else{
+                                          io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                          partie.state = "phase_Attaque"
+
+                                        }
+
+                                      break
+
+                                      case "Vision_Cupide":
+                                        if ((partie.neutresBase.includes(cible.character)||partie.shadowsBase.includes(cible.character))&&!mentir){
+                                          if (cible.objets.length<=0){
+                                            cible.hurtPoint++
+                                            io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 1 dégât !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            partie.state = "phase_Attaque"
+                                          }
+                                          else{
+                                            partie.state="vision3"
+                                            io.emit("tourPasse",{"Message":pseudos[partie.variableTemp.cible]+" doit donner un objet à "+pseudos[partie.joueurCourant],"rapportAction":{"type":"vision2","valeur":{"boutons":["refuser"],"vision":partie.variableTemp.vision,"idJoueur":partie.variableTemp.cible}},"idPartie":partie.id})                              
+                                          return
+                                          }
+
+                                        }
+                                        else{
+                                          io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                          partie.state = "phase_Attaque"
+
+                                        }
+
+                                      break
+                                      case "Vision_Enivrante":
+                                        if ((partie.hunterBase.includes(cible.character)||partie.neutresBase.includes(cible.character)) || mentir){
+                                          if (cible.objets.length<=0){
+                                            cible.hurtPoint++
+                                            io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 1 dégât !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                            partie.state = "phase_Attaque"
+                                          }
+                                          else{
+                                            partie.state="vision3"
+                                            io.emit("tourPasse",{"Message":pseudos[partie.variableTemp.cible]+" doit donner un objet à "+pseudos[partie.joueurCourant],"rapportAction":{"type":"vision2","valeur":{"boutons":["refuser"],"vision":partie.variableTemp.vision,"idJoueur":partie.variableTemp.cible}},"idPartie":partie.id})                              
+                                            return
+                                          }
+
+                                        }
+                                        else{
+                                          io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
+                                          partie.state = "phase_Attaque"
+
+                                        }
+
+                                      break
+
+                                    }
+                                    break
+                                }
+                                partie.state = "phase_Attaque"
+                                if (cible.isDead()){
+                                  tuer(partie,cible)
+                                  io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[cible.idJoueur]+" qui était " +cible.character.replace(/_/g," ")+ " grâce à sa vision","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})
+                                }
+
+                                setTimeout(() => {
+                                  tourPasseDeCirconstance(partie)
+                                }, 2500);
+                                return
+                                                
+                              return
+                              }
 
 
                               if (socket.data.userId==partie.variableTemp &&data.type=="choix"&&partie.state=="contre-attaque"){//Cas de contre-attaque tra^tié avant le reste
@@ -1508,7 +1780,24 @@ io.on('connection', (socket) => {
                                     }
                                     if (data.type=="CartePersonnage"){//-----------------------------------------------------------------------------
                                       switch (partie.state){
+                                        case "vision1"://Un joueur choisit de donner une vision à un autre
+                                        partie.state = "vision2"
+                                        partie.variableTemp = {"vision":partie.variableTemp,"cible":getIdFromPseudo(data.joueurConcerne)}
+                                        var cible
+                                        for (var z of partie.joueurs){if (z.idJoueur==partie.variableTemp.cible){
+                                          cible = z
+                                        }}
                                         
+
+
+                                        if (z.character=="Métamorphe"){
+                                          io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" sonde l'âme de "+data.joueurConcerne,"rapportAction":{"type":"vision2","valeur":{"boutons":["dire la vérité","mentir"],"vision":partie.variableTemp.vision,"idJoueur":getIdFromPseudo(data.joueurConcerne)}},"idPartie":data.idPartie})
+                                        }
+                                        else{
+                                        io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" sonde l'âme de "+data.joueurConcerne,"rapportAction":{"type":"vision2","valeur":{"boutons":["dire la vérité"],"vision":partie.variableTemp.vision,"idJoueur":getIdFromPseudo(data.joueurConcerne)}},"idPartie":data.idPartie})
+                                        }
+                                        break
+
                                         case "Forêt_Hantée_2":
                                           for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
                                           if (partie.variableTemp=="attaquer"){
@@ -1521,7 +1810,7 @@ io.on('connection', (socket) => {
                                             if (cible.hasItem("Toge_Sainte")){cible.hurtPoint--}}
                                             if (cible.isDead()){
                                               tuer(partie,cible)
-                                              io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a été achevé par la magie de la forêt. Il était " +cible.character.replace(/_/g," ")+ ".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":jou.character,"pseudo":pseudos[jou.idJoueur]}},"idPartie":data.idPartie})                                     
+                                              io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a été achevé par la magie de la forêt. Il était " +cible.character.replace(/_/g," ")+ ".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})                                     
                                             }
                                             else{
                                             io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a blessé "+data.joueurConcerne+" grâce à la forêt.","rapportAction":false,"idPartie":data.idPartie})
@@ -1859,6 +2148,12 @@ io.on('connection', (socket) => {
 
 
                                     if (data.type=="stuffSelf"){
+
+                                      
+
+
+
+
                                       if (partie.state=="Peau_De_Banane_1"){
                                         for (var joueur of partie.joueurs){
                                           if (joueur.hasItem(data.idCarte)){
@@ -1884,6 +2179,7 @@ io.on('connection', (socket) => {
                                           break//Fin du case tenebres
 
                                           case "Vision":
+                                            piocheVision(partie,joueur)
                                           break
 
                                         }
@@ -1891,7 +2187,8 @@ io.on('connection', (socket) => {
 
                                     if (data.type=="choix"){
                                       //cas de la boussole 
-
+                                      
+                                    
                                       if (partie.state=="Boussole_Mystique"){
                                         if (!partie.variableTemp.includes(data.text)){console.log(data.text);console.log(partie.variableTemp);return}
                                         var destination

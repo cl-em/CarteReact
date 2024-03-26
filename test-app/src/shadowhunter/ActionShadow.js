@@ -75,19 +75,42 @@ export default function Action({ rapportAction, idJoueurLocal }) {
 
 
                 <div className="carte1" id="tourPasse">
-                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV.carteRévélée + ".png"} alt={actV} />
+                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV.carteRévélée + ".png"} alt={actV.carteRévélée} />
                 </div>
             )
             break;
 
-        case "vision":
+        case "vision1":
 
             ActComp = (
                 <div className="carte1" id="tourPasse">
                     {actV.idJoueur == idJoueurLocal ?
-                        <img src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV} />
+                        <img src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV.vision} />
 
-                        : <div></div>}
+                        :<img src={"http://localhost:8888/carteShadow/Carte_Vision.png"} alt={actV.vision} />
+                    }
+                </div>
+            )
+            break;
+
+            case "vision2":
+
+            ActComp = (
+                <div className="carte1" id="tourPasse">
+                    {actV.idJoueur == idJoueurLocal ?
+                        <div className="carte1" id="tourPasse">
+                        <img src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV} />
+                    {actV.boutons.map((text, index) => (
+
+                        <button className="joliebouton2" key={index} onClick={() => {
+                            socket.emit("choixCarte", { idPartie: idPartie, type: "choix", text: text })
+                        }}>{text}</button>
+                    ))}
+                </div>
+            
+
+                        :<img src={"http://localhost:8888/carteShadow/Carte_Vision.png"} alt={actV} />
+                    }
                 </div>
             )
             break;
