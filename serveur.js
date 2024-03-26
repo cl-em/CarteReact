@@ -1460,7 +1460,7 @@ io.on('connection', (socket) => {
                                 for (var z in donneur.objets){
                                   if (donneur.objets[z]==data.idCarte){
                                     receveur.objets.push(donneur.objets[z])
-                                    receveur.objets.splice(z,1)
+                                    donneur.objets.splice(z,1)
                                     io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[donneur.idJoueur]+" a donné son objet à "+pseudos[receveur.idJoueur],"rapportAction":false})
                                     partie.state="phase_Attaque"
                                     setTimeout(() => {
