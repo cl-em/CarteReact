@@ -554,6 +554,8 @@ class shadowHunter extends Game{
 
         //Création des piles en question
         this.blanches = []
+        this.blanches.push(new CarteShadowHunter('Eclair_Purificateur', 'consommable'))
+        /*
         this.blanches.push(new CarteShadowHunter('Premiers_Secours', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
@@ -568,11 +570,11 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Amulette', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Toge_Sainte', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'équipement'))
-        this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
+        this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))*/
                 
         this.noires = []
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
-        /*this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
         this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
@@ -586,7 +588,7 @@ class shadowHunter extends Game{
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Mitrailleuse_Funeste', 'équipement'))
         this.noires.push(new CarteShadowHunter('Tronçonneuse_Du_Mal', 'équipement'))
-        this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))*/
+        this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
         
         this.visions = []
         this.visions.push(new CarteShadowHunter('Vision_Cupide', 'vision'))
@@ -643,11 +645,8 @@ class shadowHunter extends Game{
 
         //--------------------TESTS------------------------
         this.joueurs.push(new JoueurShadowHunter(2,false,"Allie",19))
-        this.joueurs.push(new JoueurShadowHunter(3,false,"Fu_ka",10))
-        this.joueurs[0].objets.push("Mitrailleuse_Funeste")
-        this.joueurs[1].objets.push("Amulette")
-        this.joueurs[2].objets.push("Tronçonneuse_Du_Mal")
-        this.joueurs[3].objets.push("Broche_De_Chance")
+        this.joueurs.push(new JoueurShadowHunter(3,false,"Fu-ka",10))
+
         //--------------------TESTS------------------------
         for (var joueur of this.joueurs){
             joueur.couleur = this.couleurs.shift()
@@ -758,7 +757,7 @@ class shadowHunter extends Game{
 
    var carte = this.blanches.shift()
    
-   var data;
+   var data
    if (carte.type=="équipement"){
        joueur.objets.push(carte.valeur)//Les inventaires sont juste des listes de string, pas besoin de plus.
        this.state = "phase_Attaque"
@@ -767,6 +766,46 @@ class shadowHunter extends Game{
     else{
        this.défausseBlanche.push(carte)
     switch (carte.valeur){
+        case "Eclair_Purificateur":
+            this.state = "phase_Attaque"
+            data = {}
+            data.victimes = []
+            for (var test of this.joueurs){
+                if (test.protected==false){
+                    test.hurtPoint+=2
+                        if (test.isDead() && !test.éliminé){
+                            data.victimes.push(test.idJoueur)
+                            test.éliminé = true
+                            if (test.idJoueur==this.joueurCourant){this.nextPlayer()}
+                            for (var zzz of test.objets){
+            
+                                switch (zzz){
+            
+                                    case "Hache_Tueuse":
+                                    case "Sabre_Hanté_Masamune":
+                                    case "Revolver_Des_Ténèbres":
+                                    case "Hachoir_Maudit":
+                                    case "Mitrailleuse_Funeste":
+                                    case "Tronçonneuse_Du_Mal":
+                                      this.défausseNoire.push(zzz)
+                                      break
+            
+                                    case "Boussole_Mystique":
+                                    case "Broche_De_Chance":
+                                    case "Amulette":
+                                    case "Toge_Sainte":
+                                    case "Lance_De_Longinus":
+                                    case "Crucifix_En_Argent":
+                                      this.défausseBlanche.push(zzz)
+                                    break
+                                  }
+            
+                                }
+                        }
+                    }
+                }
+                        break
+
         case "Avènement_Suprême":
             this.state = "Avènement_Suprême"
             this.joueurCourant = joueur.idJoueur
@@ -852,7 +891,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 for (var test of this.joueurs){
                     if (parseInt(test.position)==destination||this.zonesAdjacentes(parseInt(test.position),destination)){
                         if (!test.hasItem("Amulette")){test.hurtPoint+=3
-                            if (test.isDead()){
+                            if (test.isDead()&&!test.éliminé){
                                 data.victimes.push(test.idJoueur)
                                 test.éliminé = true
                                 if (test.idJoueur==this.joueurCourant){this.nextPlayer()}

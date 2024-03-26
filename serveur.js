@@ -1235,7 +1235,7 @@ io.on('connection', (socket) => {
                                   tourPasseDeCirconstance(partie)
                                 }, 2500);
                               }
-                              
+
                                 else{
                                   tourPasseDeCirconstance(partie)
                                
@@ -1247,7 +1247,36 @@ io.on('connection', (socket) => {
                           function piocheBlanche(partie,joueur){//Fonction serveur qui pioche une carte blanche et fait des trucs selon la carte
                             var cartePiochée = partie.drawBlanche(joueur.idJoueur)
                             switch (cartePiochée.valeur){
-                              
+                             
+                              case "Eclair_Purificateur":
+                                if (cartePiochée.data.victimes>0){
+                                  var liste = ""
+                                  for (var joueurTué in cartePiochée.data.victimes){
+                                    if (joueurTué==cartePiochée.data.victimes.length-1 && cartePiochée.data.victimes.length>1){
+                                      liste += "et "+pseudos[cartePiochée.data.victimes[joueurTué]]
+                                    }
+                                    else{
+                                      if (joueurTué==0){
+                                      liste += ""+pseudos[cartePiochée.data.victimes[joueurTué]]
+                                    }
+                                    else{
+                                      liste += ", "+pseudos[cartePiochée.data.victimes[joueurTué]]
+                                      }
+                                    }
+                                  }
+                                  io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" invoqué un éclair purificateur et tué "+liste,"rapportAction":{type:"cartePiochée",valeur:"Eclair_Purificateur"},"idPartie":partie.id})
+                                }
+                                else{
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a invoqué un éclair purificateur et infligé 2 dégâts à tout-le-monde ","rapportAction":{type:"cartePiochée",valeur:"Eclair_Purificateur"},"idPartie":partie.id})
+                                }
+                                setTimeout(() => {
+                                  tourPasseDeCirconstance(partie)
+                                }, 2500);
+                              break
+
+
+
+
                               case "Miroir_Divin":
                                 if (cartePiochée.data==true){
                                   io.emit("tourPasse",{"Message":(pseudos[joueur.idJoueur]+" est révélé par le miroir !"),"rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":joueur.character,"pseudo":pseudos[joueur.idJoueur]}},"idPartie":data.idPartie})
@@ -1490,8 +1519,13 @@ io.on('connection', (socket) => {
                                             if (cible.protected==false){
                                               cible.hurtPoint+=2
                                             if (cible.hasItem("Toge_Sainte")){cible.hurtPoint--}}
+                                            if (cible.isDead()){
+                                              tuer(partie,cible)
+                                              io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a été achevé par la magie de la forêt. Il était " +cible.character.replace(/_/g," ")+ ".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":jou.character,"pseudo":pseudos[jou.idJoueur]}},"idPartie":data.idPartie})                                     
+                                            }
+                                            else{
                                             io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a blessé "+data.joueurConcerne+" grâce à la forêt.","rapportAction":false,"idPartie":data.idPartie})
-                                            
+                                            }
                                           }
                                         }
                                           if (partie.variableTemp=="soigner"){
@@ -1711,6 +1745,7 @@ io.on('connection', (socket) => {
                                         break;
 
                                         case "pouvoirFranklin":
+                                          partie.state="débutTour"
 
                                           var cible;
                                           for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
@@ -1718,31 +1753,42 @@ io.on('connection', (socket) => {
                                           var dmg = Math.floor(Math.random()*5)+1
                                           if (cible.protected){dmg=0}
                                           partie.takeDamage(cible,dmg)
-                                          if (!testFinPartie(partie.id)){
+                                          
+                                          if (cible.isDead()){
+                                              tuer(partie,joueur)
+                                              io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" avec sa foudre. Il était " +cible.character.replace(/_/g," ")+ ".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})                                     
+                                              
+                                          }
+                                          else{
                                           if (cible.révélé){io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+data.joueurConcerne,"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})}
                                           else{io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+data.joueurConcerne,"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,false]}},"idPartie":data.idPartie})}
-                                          partie.state="débutTour"
+                                      }
                                           setTimeout(() => {
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant}},"idPartie":data.idPartie})
                                           }, 2500);
-                                          break;}
+                                          break;
 
                                           case "pouvoirGeorges":
-
+                                            partie.state="débutTour"
                                           var cible;
                                           for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
                                           joueur.pouvoirUtilisé = true
                                           var dmg = Math.floor(Math.random()*3)+1
                                           if (cible.protected){dmg=0}
                                           partie.takeDamage(cible,dmg)
-                                          if (!testFinPartie(partie.id)){
+                                          if (cible.isDead()){
+                                            tuer(partie,joueur)
+                                            io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" grâce a démolition. Il était " +cible.character.replace(/_/g," ")+ ".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})                                     
+                                        }
+                                        else{
                                           if (cible.révélé){io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+pseudos[getIdFromPseudo(data.joueurConcerne)],"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})}
                                           else{io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+data.joueurConcerne,"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,false]}},"idPartie":data.idPartie})}
-                                          partie.state="débutTour"
+                                        }
+                                          
                                           setTimeout(() => {
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant}},"idPartie":data.idPartie})
                                           }, 2500);
-                                          break;}
+                                          break;
 
                                           case "pouvoirEllen":
 
@@ -1758,6 +1804,7 @@ io.on('connection', (socket) => {
                                           break;
 
                                           case "pouvoirMomie":
+                                            partie.state="débutTour"
                                           var cible;
                                           for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
                                           if (cible.position!=partie.getIndexFromZone("Zone2")){return}
@@ -1765,14 +1812,18 @@ io.on('connection', (socket) => {
                                           var dmg = 3
                                           if (cible.protected){dmg=0}
                                           partie.takeDamage(cible,dmg)
-                                          if (!testFinPartie(partie.id)){
+                                          if (cible.isDead()){
+                                            tuer(partie,joueur)
+                                            io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" avec sa foudre. Il était " +cible.character.replace(/_/g," ")+ ".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})                                     
+                                          }
+                                            else{
                                           if (cible.révélé){io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+pseudos[partie.getIdFromCharacter(socket.data.carte)],"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})}
                                           else{io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+pseudos[getIdFromPseudo(data.joueurConcerne)],"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,false]}},"idPartie":data.idPartie})}
-                                          partie.state="débutTour"
+                                            }
                                           setTimeout(() => {
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant}},"idPartie":data.idPartie})
                                           }, 2500);
-                                          break;}
+                                          break;
 
 
                                       }//Fin switch  
@@ -1794,7 +1845,7 @@ io.on('connection', (socket) => {
                                                 joueur.objets.push(data.carte)
                                               }
                                             }
-                                          io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a volé un objet à "+data.joueurConcerne,"rapportAction":{type:"cartePiochée",valeur:"data.carte"},"idPartie":data.idPartie})
+                                          io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a volé un objet à "+data.joueurConcerne,"rapportAction":{type:"cartePiochée","valeur":data.carte},"idPartie":data.idPartie})
                                           partie.state = "phase_Attaque"
                                           setTimeout(() => {
                                             tourPasseDeCirconstance(partie)
