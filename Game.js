@@ -17,6 +17,7 @@ class Game {
         this.joueursMax = joueursMax;
         this.hasStarted = false;
         this.chat = [];
+        this.winners = []
 
     }
 //-----------------------Fonctions gestion cartes------------------------------------------
@@ -516,7 +517,7 @@ class shadowHunter extends Game{
         //Choix des personnages
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
-        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Agnès"/*"Emi","Ellen"*/]
+        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Charles"/*"Emi","Ellen"*/]
         this.hunters = this.shuffle(Array.from(this.hunterBase))
         this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         this.neutres = this.shuffle(Array.from(this.neutresBase))  
@@ -592,7 +593,7 @@ class shadowHunter extends Game{
         this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
         
         this.visions = []
-        this.visions.push(new CarteShadowHunter('Vision_Furtive', 'vision'))/*
+        this.visions.push(new CarteShadowHunter('Vision_Furtive', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Enivrante', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Destructrice', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Divine', 'vision'))
@@ -607,7 +608,7 @@ class shadowHunter extends Game{
         this.visions.push(new CarteShadowHunter('Vision_Lugubre', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Mortifère', 'vision'))
         this.visions.push(new CarteShadowHunter('Vision_Purificatrice', 'vision'))
-        this.visions.push(new CarteShadowHunter('Vision_Suprême', 'vision'))*/
+        this.visions.push(new CarteShadowHunter('Vision_Suprême', 'vision'))
         
         this.défausseNoire = []
         this.défausseBlanche = []
@@ -660,6 +661,12 @@ class shadowHunter extends Game{
       this.visions = this.shuffle(this.visions)
       
 
+            this.joueurs[0].objets.push("Toge_Sainte")
+            this.joueurs[0].objets.push("Tronçonneuse_Du_Mal")
+            this.joueurs[0].objets.push("Hachoir_Maudit")
+
+
+
             //Pour condition de victoire d'agnès
             for (var zzz in this.joueurs){
                 console.log(parseInt(zzz))
@@ -691,7 +698,7 @@ class shadowHunter extends Game{
                 if (char=="Liche"||char=="Loup-Garou"||char=="Georges"||char=="Gregor"){hp=13}
 
 
-            joueur.hp = 3
+            joueur.hp = hp
         }
         this.hasStarted = true;
         this.joueurCourant = this.joueurs[0].idJoueur
@@ -755,6 +762,8 @@ class shadowHunter extends Game{
 
         //---------------------------------FONCTIONS DE GESTION DES CARTES PIOCHEES---------------------------------------------
         drawVision(){
+            if (this.visions.length<=0){this.visions = this.défausseVisions;this.défausseBlanche=[];this.visions = this.shuffle(this.visions)}
+
             this.state = "vision1"
             var carte = this.visions.shift()
             this.variableTemp = carte.valeur

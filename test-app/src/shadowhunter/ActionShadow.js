@@ -68,7 +68,9 @@ export default function Action({ rapportAction, idJoueurLocal }) {
                 </div>
             ) : 
             actV.défaut==false||actV.défaut==undefined?<div></div>:<div>
-                <img src={"http://localhost:8888/carteShadow"+actV.défaut+".png"} alt={actV.défaut}/>
+                   <div className="carte1" id="tourPasse">
+                <img src={"http://localhost:8888/carteShadow/"+actV.défaut+".png"} alt={actV.défaut}/>
+                </div>
             </div>
             break
 
