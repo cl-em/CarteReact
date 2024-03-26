@@ -237,14 +237,14 @@ function lancerPartie(idPartie){
 // );
 function sauvegarderPartieBataille(idPartie, idHost, Bataille){
   Bataille = JSON.stringify(Bataille);
-  db.run("INSERT INTO Batailles(idB,idH,Bataille) VALUES(?,?,?)",[idPartie, idHost, Bataille],(err)=>{
+  db.run("INSERT OR REPLACE INTO Batailles(idB,idH,Bataille) VALUES(?,?,?)",[idPartie, idHost, Bataille],(err)=>{
     console.log(err);
   });
 }
 
 function sauvegarderPartieSixQuiPrend(idPartie, idHost, SixQuiPrend){
   SixQuiPrend = JSON.stringify(SixQuiPrend);
-  db.run("INSERT INTO SixQuiPrend(id6,idH,SixQuiPrend) VALUES(?,?,?)",[idPartie, idHost, SixQuiPrend],(err)=>{
+  db.run("INSERT OR REPLACE INTO SixQuiPrend(id6,idH,SixQuiPrend) VALUES(?,?,?)",[idPartie, idHost, SixQuiPrend],(err)=>{
     console.log(err);
   });
 }
