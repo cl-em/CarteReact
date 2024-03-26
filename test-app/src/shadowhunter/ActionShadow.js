@@ -66,7 +66,9 @@ export default function Action({ rapportAction, idJoueurLocal }) {
                         }}>{text}</button>
                     ))}
                 </div>
-            ) : <div></div>
+            ) : <div>
+                <img src={"http://localhost:8888/carteShadow"+actV.défaut+".png"} alt={actV.défaut}/>
+            </div>
             break
 
 
