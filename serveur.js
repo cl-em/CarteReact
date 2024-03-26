@@ -2588,9 +2588,29 @@ io.on('connection', (socket) => {
                                 if (partie.getIdFromCharacter(data.capacite)!=socket.data.userId){return}
                                 for (var joueur of partie.joueurs){
                                   if (joueur.idJoueur==socket.data.userId){
-                                  if ( (joueur.révélé==false||joueur.pouvoirUtilisé==true)){{socket.emit("tourPasse",{"Message":"Révélez-vous pour utiliser votre pouvoir","rapportAction":false,"idPartie":data.idPartie});return;}}
+                                  if ( (joueur.révélé==false||joueur.pouvoirUtilisé==true)){{socket.emit("tourPasse",{"Message":"Révélez-vous pour utiliser votre pouvoir et assurez-vous qu'il n'a pas déjà été utilisé","rapportAction":false,"idPartie":data.idPartie});return;}}
                                   }}
                                 switch (data.capacite){
+                                  case "Agnès":
+                                  for (var zzz in partie.joueurs){
+                                    if (partie.joueurs[zzz].idJoueur==joueur.idJoueur){
+                                      if (parseInt(zzz)>=0){
+                                        joueur.conditionVictoire = partie.joueurs[partie.joueursMax-1].idJoueur
+                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[ joueur.conditionVictoire]+" !","rapportAction":false,"idPartie":data.idPartie})
+                                        
+                                      }
+                                      else{
+                                        joueur.conditionVictoire = partie.joueurs[parseInt(zzz)-1].idJoueur
+                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[joueur.conditionVictoire]+" !","rapportAction":false,"idPartie":data.idPartie})
+
+                                      }
+                                      setTimeout(() => {
+                                          tourPasseDeCirconstance(partie)
+                                      }, 2500);
+                                      return
+                                    }
+                                  }
+                                  break
                                   case "Emi":
                                     if (partie.joueurCourant==socket.data.userId && partie.state=="débutTour"){
                                       partie.state = "pouvoirEmi"

@@ -516,7 +516,7 @@ class shadowHunter extends Game{
         //Choix des personnages
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
-        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Emi"/*,"Ellen"*/]
+        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Agnès"/*"Emi","Ellen"*/]
         this.hunters = this.shuffle(Array.from(this.hunterBase))
         this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         this.neutres = this.shuffle(Array.from(this.neutresBase))  
@@ -651,10 +651,6 @@ class shadowHunter extends Game{
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
         
 
-        //--------------------TESTS------------------------
-    this.joueurs[1].objets.push("Sabre_Hanté_Masamune")
-
-        //--------------------TESTS------------------------
         for (var joueur of this.joueurs){
             joueur.couleur = this.couleurs.shift()
         }
@@ -663,6 +659,23 @@ class shadowHunter extends Game{
        this.noires = this.shuffle(this.noires)
       this.visions = this.shuffle(this.visions)
       
+
+            //Pour condition de victoire d'agnès
+            for (var zzz in this.joueurs){
+                console.log(parseInt(zzz))
+                if (this.joueurs[parseInt(zzz)].character=="Agnès"){
+                    if (parseInt(zzz)>=this.joueursMax-1){
+
+                        this.joueurs[parseInt(zzz)].conditionVictoire = this.joueurs[0].idJoueur
+                    }
+                    else{
+                        this.joueurs[parseInt(zzz)].conditionVictoire = this.joueurs[parseInt(zzz)+1].idJoueur
+                    }
+                    
+                }
+            }
+
+
        this.shuffle(this.zones)
        }
         //Don des PV aux joueurs
@@ -686,6 +699,7 @@ class shadowHunter extends Game{
         this.state = "débutTour"
        
         }
+        
 
         addPlayer(idJoueur){
             for (var joueur of this.joueurs){
