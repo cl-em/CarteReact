@@ -138,9 +138,10 @@ class Bataille extends Game{
 //-----------------------Fonctions gestion jeu----------------------------------------------
 
 initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
-for (var joueur of this.joueurs){
-    joueur.couleur = this.couleurs.shift()
-}
+
+
+
+
 while (this.deck.length>=this.joueurs.length){//Distribution équitable des cartes
         for (var joueur of this.joueurs){
             joueur.main.push(this.drawCarte());
@@ -553,13 +554,13 @@ class shadowHunter extends Game{
 
         //Création des piles en question
         this.blanches = []
+        this.blanches.push(new CarteShadowHunter('Premiers_Secours', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Savoir_Ancestral', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Bénédiction', 'consommable'))
           this.blanches.push(new CarteShadowHunter('Ange_Gardien', 'consommable'))
           this.blanches.push(new CarteShadowHunter('Miroir_Divin', 'consommable'))          
-         this.blanches.push(new CarteShadowHunter('Premiers_Secours', 'consommable'))
          this.blanches.push(new CarteShadowHunter('Eau_Bénite', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Boussole_Mystique', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Broche_De_Chance', 'équipement'))
@@ -570,17 +571,17 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
                 
         this.noires = []
-        this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
         /*this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Poupée_Démoniaque', 'consommable'))
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
+        this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Hache_Tueuse', 'équipement'))
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Peau_De_Banane', 'consommable'))
         this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Sabre_Hanté_Masamune', 'équipement'))
         this.noires.push(new CarteShadowHunter('Succube_Tentatrice', 'consommable'))
-        this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
         this.noires.push(new CarteShadowHunter('Hachoir_Maudit', 'équipement'))
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Mitrailleuse_Funeste', 'équipement'))
@@ -638,6 +639,19 @@ class shadowHunter extends Game{
 
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
+        
+
+        //--------------------TESTS------------------------
+        this.joueurs.push(new JoueurShadowHunter(2,false,"Allie",19))
+        this.joueurs.push(new JoueurShadowHunter(3,false,"Fu_ka",10))
+        this.joueurs[0].objets.push("Mitrailleuse_Funeste")
+        this.joueurs[1].objets.push("Amulette")
+        this.joueurs[2].objets.push("Tronçonneuse_Du_Mal")
+        this.joueurs[3].objets.push("Broche_De_Chance")
+        //--------------------TESTS------------------------
+        for (var joueur of this.joueurs){
+            joueur.couleur = this.couleurs.shift()
+        }
         for (var i=0;i<3;i++){  
         this.blanches =this.shuffle(this.blanches)
        this.noires = this.shuffle(this.noires)
@@ -646,15 +660,6 @@ class shadowHunter extends Game{
        this.shuffle(this.zones)
        }
         //Don des PV aux joueurs
-
-//---------------------test----------------------
-
-
-
-
-
-
-
 
         for (var joueur of this.joueurs){
             var char = joueur.character
@@ -667,7 +672,7 @@ class shadowHunter extends Game{
                 if (char=="Liche"||char=="Loup-Garou"||char=="Georges"||char=="Gregor"){hp=13}
 
 
-            joueur.hp = 1
+            joueur.hp = 3
         }
         this.hasStarted = true;
         this.joueurCourant = this.joueurs[0].idJoueur
@@ -752,15 +757,15 @@ class shadowHunter extends Game{
    }
 
    var carte = this.blanches.shift()
-   this.défausseBlanche.push(carte)
-
+   
    var data;
    if (carte.type=="équipement"){
        joueur.objets.push(carte.valeur)//Les inventaires sont juste des listes de string, pas besoin de plus.
        this.state = "phase_Attaque"
-   }
-
-   else{
+    }
+    
+    else{
+       this.défausseBlanche.push(carte)
     switch (carte.valeur){
         case "Avènement_Suprême":
             this.state = "Avènement_Suprême"
@@ -822,14 +827,14 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
     }
 
     var carte = this.noires.shift()
-    this.défausseNoire.push(carte)
-
+    
     var data;
     if (carte.type=="équipement"){
         joueur.objets.push(carte.valeur)//Les inventaires sont juste des listes de string, pas besoin de plus.
         this.state = "phase_Attaque"
     }
     else{
+        this.défausseNoire.push(carte)
         switch (carte.valeur) {
             case "Araignée_Sanguinaire":
                 this.state = "Araignée_Sanguinaire";
@@ -909,7 +914,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 if (joueur.idJoueur==def){défenseur= joueur }
             }
         
-            if (attaquant==null||défenseur==null){return false}
+            if (attaquant==null||défenseur==null || défenseur.éliminé ||attaquant.éliminé){return false}
 
             if (attaquant.hasItem("Revolver_Des_Ténèbres")){return !this.zonesAdjacentes(parseInt(attaquant.position),parseInt(défenseur.position))}
             else{return this.zonesAdjacentes(parseInt(attaquant.position),parseInt(défenseur.position))}
@@ -917,7 +922,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
 
     existTarget(joueur){
         for (var j of this.joueurs){
-            if (j.idJoueur!=joueur.idJoueur && this.canAttack(joueur.idJoueur,j.idJoueur)){return true}
+            if (j.idJoueur!=joueur.idJoueur && this.canAttack(joueur.idJoueur,j.idJoueur) && !joueur.éliminé){return true}
         }
         return false
     }
@@ -972,15 +977,43 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         }
 
         if (attaquant.hasItem("Mitrailleuse_Funeste")){
-            for (var défenseur of this.joueurs){
+                for (var défenseur of this.joueurs){
                 var tempDamage = totalDamage
-                if (this.canAttack(attaquant.idJoueur,défenseur.idJoueur && attaquant.idJoueur!=défenseur.idJoueur)){
+                if (this.canAttack(attaquant.idJoueur,défenseur.idJoueur) && attaquant.idJoueur!=défenseur.idJoueur){console.log(attaquant.idJoueur+" attaque "+défenseur.idJoueur)
             if (défenseur.protected==true){tempDamage=0}
             if (this.takeDamage(défenseur,tempDamage)==false){
                 if (défenseur.character=="Loup-Garou"&&défenseur.révélé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
             }
             else{
                 retour.killed = true;
+                défenseur.éliminé=true
+                if (défenseur.objets.length>0){attaquant.objets.push(défenseur.objets.shift())
+                for (var zzz of défenseur.objets){
+                    //Renvoi des autres objets à la défausse
+
+                    switch (zzz){
+
+                        case "Hache_Tueuse":
+                        case "Sabre_Hanté_Masamune":
+                        case "Revolver_Des_Ténèbres":
+                        case "Hachoir_Maudit":
+                        case "Mitrailleuse_Funeste":
+                        case "Tronçonneuse_Du_Mal":
+                          this.défausseNoire.push(z)
+                          break
+
+                        case "Boussole_Mystique":
+                        case "Broche_De_Chance":
+                        case "Amulette":
+                        case "Toge_Sainte":
+                        case "Lance_De_Longinus":
+                        case "Crucifix_En_Argent":
+                          this.défausseBlanche.push(z)
+                        break
+                      }
+
+            }}
+
             }
         }
     }
