@@ -510,14 +510,15 @@ class shadowHunter extends Game{
         this.couleurs = null//Pareil pour les couleurs. On préférera utiliser l'attribut "type" des cartes
         this.type="shadowHunter"
         this.gameFinished = false
+        this.hasDied = false
         this.joueurCourant = undefined
         this.state = undefined
         this.variableTemp = undefined
         this.couleurs = ["Rouge","Jaune","Vert","Bleu","Rose","Orange","Blanc","Noir"]
         //Choix des personnages
-        this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
+        this.shadowsBase = ["Catherine"/*"Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"*/]
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
-        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Charles"/*"Emi","Ellen"*/]
+        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Bob"/*"Emi","Ellen"*/]
         this.hunters = this.shuffle(Array.from(this.hunterBase))
         this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         this.neutres = this.shuffle(Array.from(this.neutresBase))  
@@ -651,7 +652,6 @@ class shadowHunter extends Game{
 
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
         
-
         for (var joueur of this.joueurs){
             joueur.couleur = this.couleurs.shift()
         }
@@ -661,14 +661,11 @@ class shadowHunter extends Game{
       this.visions = this.shuffle(this.visions)
       
 
-            this.joueurs[0].objets.push("Toge_Sainte")
-            this.joueurs[0].objets.push("Tronçonneuse_Du_Mal")
-            this.joueurs[0].objets.push("Hachoir_Maudit")
 
 
-
-            //Pour condition de victoire d'agnès
-            for (var zzz in this.joueurs){
+      
+      //Pour condition de victoire d'agnès
+      for (var zzz in this.joueurs){
                 console.log(parseInt(zzz))
                 if (this.joueurs[parseInt(zzz)].character=="Agnès"){
                     if (parseInt(zzz)>=this.joueursMax-1){
@@ -684,13 +681,13 @@ class shadowHunter extends Game{
 
 
        this.shuffle(this.zones)
-       }
-        //Don des PV aux joueurs
-
-        for (var joueur of this.joueurs){
-            var char = joueur.character
-            var hp
-                if (char=="Allie" ||char=="Agnès"){hp=8}
+    }
+    //Don des PV aux joueurs
+    
+    for (var joueur of this.joueurs){
+        var char = joueur.character
+        var hp
+        if (char=="Allie" ||char=="Agnès"){hp=8}
                 if (char=="Bob" ||char=="Bryan" ||char=="Emi" || char=="Ellen"){hp=10}
                 if (char=="Catherine" ||char=="Charles" || char=="Métamorphe" || char=="Momie"){hp=11}
                 if (char=="Franklin"||char=="Fu-ka"){hp=12}
@@ -704,6 +701,10 @@ class shadowHunter extends Game{
         this.joueurCourant = this.joueurs[0].idJoueur
         this.joueurs[0].turnsToPlay = 1
         this.state = "débutTour"
+        this.joueurs[1].hurtPoint = 11
+        this.joueurs[0].objets.push("Amulette")
+        this.joueurs[0].objets.push("Amulette")
+        this.joueurs[0].objets.push("Amulette")
        
         }
         
@@ -910,6 +911,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                     this.state = "Chauve-Souris_Vampire"
                     break;
                     case "Dynamite":
+                        
                 this.state = "phase_Attaque"
                 var data = {}
                 data.victimes = []
@@ -918,8 +920,13 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                     if (parseInt(test.position)==destination||this.zonesAdjacentes(parseInt(test.position),destination)){
                         if (!test.hasItem("Amulette")){test.hurtPoint+=3
                             if (test.isDead()&&!test.éliminé){
+                                this.testBryan(this.getJoueurCourant,test)
+                                this.testCharles(this.getJoueurCourant)
+                                
                                 data.victimes.push(test.idJoueur)
                                 test.éliminé = true
+                                this.testCatherine()
+                                this.testDaniel()
                                 if (test.idJoueur==this.joueurCourant){this.nextPlayer()}
                                 for (var zzz of test.objets){
                                     //Renvoi des autres objets à la défausse
@@ -1032,10 +1039,96 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         return false
     }
 
-    finPartie(){//Fonction qui teste si quelqu'un a gagné et, si oui, qui met
+    finPartie(){//Fonction qui teste si quelqu'un a gagné et, si oui, qui met gamefinished à true
 
+        for (var joueur of this.joueurs){
+            switch (joueur.character){
+                case "Bob":
+                    if (joueur.objets.length>=5){this.winners.push(joueur.idJoueur)}
+                    break
+            }   
+        }
+
+console.log("bip boup on cherche qui a gagné")
+
+
+
+
+
+        //A la fin on arrête si au moins un gagnant
+        if (this.winners.length>0){this.gameFinished = true;return true}
+        else{return false}
     }
 
+
+
+
+         testDaniel(){//Teste si Daniel a gagné
+            
+            for (var j of this.joueurs){
+                if (j.character=="Daniel" ){
+                if ( j.éliminé && this.hasDied==false){//Daniel a gagné
+                   this.winners.push(j.idJoueur);
+                            return true}
+               
+                    //Cas où daniel doit se révéler
+                            else{j.révélé = true;
+                            return false}}
+                }
+            }
+          
+
+            testCatherine(){//Teste si Daniel a gagné
+            
+                for (var j of this.joueurs){
+                    if (j.character=="Catherine" ){
+                    if ( j.éliminé && this.hasDied==false){//Daniel a gagné
+                       this.winners.push(j.idJoueur);
+                                return true}
+                   
+                        //Cas où daniel doit se révéler
+                                else{
+                                return false}}
+                    }
+                }
+
+
+         testCharles(joueur){//Appelé quand un kill a lieu. Sert à voir si le tueur était Charles et, si oui, le déclare comme gagnant
+            if (joueur.character!="Charles"){return false}
+
+            var compte = 0
+            for (var test of this.joueurs){
+                if (test.éliminé){compte++}
+            }
+
+            if (this.joueursMax>5){
+                if (compte>=3){
+                    this.winners.push(joueur.idJoueur);
+                    return true
+                }
+            }
+            else{
+                if (compte>=4){
+                    this.winners.push(joueur.idJoueur);
+                    return true
+                }
+            }
+    return false 
+          }
+        testBryan(attaquant,victime){
+            if (attaquant.character!="Bryan"){return}
+            if (victime.hp>=13){
+                this.winners.push(attaquant.idJoueur)
+                return true
+            }
+            else{
+                attaquant.révélé = true
+                return false
+            }
+          }
+    
+
+          getJoueurCourant(){for (var j of this.joueurs){if (j.idJoueur==this.joueurCourant){return j}}}
 
     nextPlayer(){//Change le joueur courant au prochain dans la liste
         if (this.gameFinished){return}
@@ -1062,6 +1155,10 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
     }   
 }
 this.joueurCourant = this.joueurs[indexCourant].idJoueur
+this.joueurs[indexCourant].turnsToPlay++
+if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCourant].révélé&&!this.joueurs[indexCourant].pouvoirUtilisé && this.joueurs[indexCourant].hurtPoint>0){
+    this.joueurs[indexCourant].hurtPoint--//Soin pour catherine
+}
     }
 
     attaquer(atk,def){
@@ -1078,7 +1175,7 @@ this.joueurCourant = this.joueurs[indexCourant].idJoueur
 
         var baseDamage
         
-        if (attaquant.hasItem("Sabre_Hanté_Masamune")||attaquant.character=="Valkyrie"){baseDamage = d4;retour.dés = [false,d4]}
+        if (attaquant.hasItem("Sabre_Hanté_Masamune")||(attaquant.character=="Valkyrie"&&attaquant.révélé&&!attaquant.pouvoirUtilisé)){baseDamage = d4;retour.dés = [false,d4]}
         else{baseDamage = Math.abs(d6-d4);retour.dés = [d4,d6]}
 
         var totalDamage = baseDamage
@@ -1097,7 +1194,7 @@ this.joueurCourant = this.joueurs[indexCourant].idJoueur
                 if (this.canAttack(attaquant.idJoueur,défenseur.idJoueur) && attaquant.idJoueur!=défenseur.idJoueur){console.log(attaquant.idJoueur+" attaque "+défenseur.idJoueur)
             if (défenseur.protected==true){tempDamage=0}
             if (this.takeDamage(défenseur,tempDamage)==false){
-                if (défenseur.character=="Loup-Garou"&&défenseur.révélé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
+                if (défenseur.character=="Loup-Garou"&&défenseur.révélé&&!défenseur.pouvoirUtilisé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
             }
             else{
                 retour.killed = true;
@@ -1132,7 +1229,7 @@ this.joueurCourant = this.joueurs[indexCourant].idJoueur
             }
         }
     }
-    if (attaquant.character=="Vampire"&&attaquant.révélé){attaquant.hurtPoint-=2}
+    if (attaquant.character=="Vampire"&&attaquant.révélé&&!attaquant.pouvoirUtilisé){attaquant.hurtPoint-=2}
     if (attaquant.hurtPoint<=0){attaquant.hurtPoint==0}
     retour.dégâts = totalDamage
     return retour
@@ -1143,12 +1240,12 @@ this.joueurCourant = this.joueurs[indexCourant].idJoueur
         retour.dégâts = totalDamage
   
         if (this.takeDamage(défenseur,totalDamage)==false){
-            if (défenseur.character=="Loup-Garou"&&défenseur.révélé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
+            if (défenseur.character=="Loup-Garou"&&défenseur.révélé&&!défenseur.pouvoirUtilisé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
         }
         else{
             retour.killed = true;
         }
-        if (attaquant.character=="Vampire"&&attaquant.révélé){attaquant.hurtPoint-=2}
+        if (attaquant.character=="Vampire"&&attaquant.révélé&&!attaquant.pouvoirUtilisé){attaquant.hurtPoint-=2}
         if (attaquant.hurtPoint<=0){attaquant.hurtPoint==0}
         return retour;
     }
