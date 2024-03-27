@@ -66,7 +66,6 @@
     justify-content: space-around;
     height: 100%;
     gap: 20px;
-    /* Ajustez cette valeur selon l'espacement désiré entre les duos */
 }
 
 .plateau {
@@ -80,6 +79,7 @@
     max-height: 180px;
     cursor: pointer;
     display: block;
+    cursor: pointer;
 }
 
 .duo1 {
@@ -332,7 +332,6 @@
     max-height: 100px;
     margin-right: 5px;
     cursor: pointer;
-
 }
 
 
@@ -484,17 +483,16 @@
 
 .bas>div {
     flex: 1;
-    /* Cela permet à chaque div d'occuper une part égale de l'espace disponible */
     display: flex;
     align-items: center;
-    /* Centrer le contenu verticalement à l'intérieur de chaque div */
     justify-content: center;
-    /* Centrer le contenu horizontalement à l'intérieur de chaque div */
     height: 100%;
-    /* S'assure que chaque div interne prend toute la hauteur de .bas */
     overflow: auto;
-    /* Ajoute un défilement si le contenu dépasse la hauteur de la div */
     padding: 50px;
+}
+
+#tourPasse button{
+    display: flex;
 }
 
 /*----------------------------------------------milieu-sh-----------------------------------------------------*/
@@ -508,11 +506,8 @@
     width: 56%;
     height: 70vh;
     background-image: url('http://localhost:8888/fichier/shadoter.png');
-    /* Remplacez chemin_vers_votre_image.jpg par l'URL de votre image */
     background-size: cover;
-    /* Assure que l'image de fond couvre entièrement la div sans perdre ses proportions */
     background-position: center;
-    /* Centre l'image de fond dans la div */
     background-size: contain;
     background-repeat: no-repeat;
     background-color: #000a09;
