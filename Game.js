@@ -701,11 +701,12 @@ class shadowHunter extends Game{
         this.joueurCourant = this.joueurs[0].idJoueur
         this.joueurs[0].turnsToPlay = 1
         this.state = "débutTour"
+        
+        this.joueurs.push(new JoueurShadowHunter(3,false,"Agnès",3))
+        this.joueurs[0].objets.push("Amulette")
+        this.joueurs[0].objets.push("Amulette")
+        this.joueurs[0].objets.push("Amulette")
         this.joueurs[1].hurtPoint = 11
-        this.joueurs[0].objets.push("Amulette")
-        this.joueurs[0].objets.push("Amulette")
-        this.joueurs[0].objets.push("Amulette")
-       
         }
         
 
@@ -1053,7 +1054,15 @@ console.log("bip boup on cherche qui a gagné")
 
 
 
-
+        //Test agnès en tout dernier
+        for (var joueur of this.joueurs){
+            if (joueur.character=="Agnès"){
+                
+                if (this.winners.includes(joueur.conditionVictoire)){
+                    this.winners.push(joueur.idJoueur)
+                }
+            }
+        }
 
         //A la fin on arrête si au moins un gagnant
         if (this.winners.length>0){this.gameFinished = true;return true}
@@ -1081,14 +1090,13 @@ console.log("bip boup on cherche qui a gagné")
             testCatherine(){//Teste si Daniel a gagné
             
                 for (var j of this.joueurs){
-                    if (j.character=="Catherine" ){
-                    if ( j.éliminé && this.hasDied==false){//Daniel a gagné
+                    if (j.character=="Catherine"){
+                    if ( j.éliminé && this.hasDied==false){//Catherine a gagné
                        this.winners.push(j.idJoueur);
                                 return true}
                    
-                        //Cas où daniel doit se révéler
-                                else{
-                                return false}}
+                    
+                                else{return false}}
                     }
                 }
 

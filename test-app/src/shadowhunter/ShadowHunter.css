@@ -24,6 +24,8 @@
 
     #main-cartes-sh img {
         max-height: 65px;
+        cursor: pointer;
+
     }
 }
 
@@ -76,6 +78,7 @@
 
 .carte img {
     max-height: 180px;
+    cursor: pointer;
     display: block;
 }
 
@@ -181,6 +184,8 @@
 
     .carte img {
         max-height: 160px;
+        cursor: pointer;
+
         display: block;
     }
 }
@@ -209,6 +214,8 @@
     .carte img {
         max-height: 140px;
         display: block;
+        cursor: pointer;
+
     }
 }
 
@@ -301,6 +308,7 @@
 }
 
 #role-carte-sh img {
+    
     max-height: 100px;
 }
 
@@ -323,6 +331,8 @@
 #pioches img {
     max-height: 100px;
     margin-right: 5px;
+    cursor: pointer;
+
 }
 
 
@@ -334,6 +344,8 @@
     #pioches img {
         max-height: 65px;
         margin-right: 10px;
+        cursor: pointer;
+
     }
 }
 
@@ -366,6 +378,8 @@
 
 .carte1 img {
     height: 150px;
+    cursor: pointer;
+
 }
 
 /*----------------------------------------------Droite-----------------------------------------------------*/

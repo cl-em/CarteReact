@@ -1447,8 +1447,8 @@ io.on('connection', (socket) => {
                             partie.testDaniel()
                             partie.testCharles(attaquant)
                             partie.testBryan(attaquant,victime)
-                            testFinPartie(partie)
                             partie.hasDied = true
+                            testFinPartie(partie)
                           }
                           //-------Les socket-----------------------------------
                         socket.on("reveleCarte",data=>{
@@ -1895,7 +1895,8 @@ io.on('connection', (socket) => {
                                               for (var test of partie.joueurs){
                                                 if (test.idJoueur==partie.joueurCourant){
                                                   for (var z in test.objets){
-                                                  if (test.objets[z]==partie.variableTemp){test.objets.splice(z,1)}
+                                                    if (test.objets[z]==partie.variableTemp){test.objets.splice(z,1)}
+                                                  }
                                                   }
                                                 }
                                                 for (var test of partie.joueurs){
@@ -1907,7 +1908,6 @@ io.on('connection', (socket) => {
                                                     partie.variableTemp=""
                                                   }
                                                 }
-                                              }
                                             }
 
                                           break
@@ -2351,9 +2351,9 @@ io.on('connection', (socket) => {
                                                     else{
                                                     io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était " +test.character.replace(/_/g," ")+".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
                                                     }
-                                                    testAprèsKill(partie,partie.getJoueurCourant(),test)
                                                     test.éliminé=true
                                                     partie.state = "finTour"
+                                                    testAprèsKill(partie,partie.getJoueurCourant(),test)
 
                                                   setTimeout(() => {
                                                     tourPasseDeCirconstance(partie)
@@ -2457,13 +2457,13 @@ io.on('connection', (socket) => {
                                                     io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était " +test.character.replace(/_/g," ")+".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
                                                     }
                                                     partie.state = "finTour"
+                                                    test.éliminé=true
                                                     testAprèsKill(partie,partie.getJoueurCourant(),test)
 
                                                   setTimeout(() => {
                                                     tourPasseDeCirconstance(partie)
                                                   }, 2500);
                                                   }
-                                                  test.éliminé=true
                                                     
                                                     return
                                                 }
