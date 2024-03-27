@@ -1234,6 +1234,21 @@ io.on('connection', (socket) => {
 
                           function piocheNoire(partie,joueur){//Fonction serveur pour faire piocher une carte noire au joueur passé en paramètre dans l'environnement de la partie
                             var cartePiochée = partie.drawNoire(joueur.idJoueur)
+                            if (cartePiochée.valeur=="Peau_De_Banane" && cartePiochée.data=="noItems"){
+
+                              if (joueur.isDead()){
+                              io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" est tombé sur une peau de banane et en est mort !","rapportAction":{type:"cartePiochée",valeur:"Peau_De_Banane"},"idPartie":partie.id})
+                              tuer(partie,cible)
+                              testAprèsKill(partie,partie.getJoueurCourant(),cible)
+                              }
+                            else{                              
+                              io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" est tombé sur une peau de banane et a subit un dégât !","rapportAction":{type:"cartePiochée",valeur:"Peau_De_Banane"},"idPartie":partie.id})
+                          }
+                              setTimeout(() => {
+                                tourPasseDeCirconstance(partie)
+                              }, 2500);
+                              return
+                            }
                               if (cartePiochée.valeur=="Dynamite"){
                                 if (cartePiochée.data.victimes>0){
                                   var liste = ""
@@ -1278,9 +1293,13 @@ io.on('connection', (socket) => {
                             switch (cartePiochée.valeur){
                              
                               case "Eclair_Purificateur":
-                                if (cartePiochée.data.victimes>0){
+                                if (cartePiochée.data.victimes.length>0){
+                                 
                                   var liste = ""
                                   for (var joueurTué in cartePiochée.data.victimes){
+                                    for (var z of partie.joueurs){
+                                      if (z.idJoueur==cartePiochée.data.victimes[joueurTué]){partie.testBryan(joueur,z);partie.testCharles(joueur);partie.testCatherine();partie.testDaniel();testFinPartie(partie)}
+                                    }
                                     if (joueurTué==cartePiochée.data.victimes.length-1 && cartePiochée.data.victimes.length>1){
                                       liste += "et "+pseudos[cartePiochée.data.victimes[joueurTué]]
                                     }
@@ -1448,8 +1467,7 @@ io.on('connection', (socket) => {
                             partie.testCharles(attaquant)
                             partie.testBryan(attaquant,victime)
                             partie.hasDied = true
-                            testFinPartie(partie)
-                          }
+                            testFinPartie(partie)                          }
                           //-------Les socket-----------------------------------
                         socket.on("reveleCarte",data=>{
                           
@@ -1944,7 +1962,7 @@ io.on('connection', (socket) => {
                                           break
 
                                           case "Araignée_Sanguinaire":
-                                           
+                                           var cible
                                             for (var joueu of partie.joueurs){if (joueu.idJoueur==partie.joueurCourant){cible=joueu}}
                                             if (joueu.protected==false && !cible.hasItem("Amulette")){
                                             cible.hurtPoint+=2
@@ -1963,10 +1981,10 @@ io.on('connection', (socket) => {
                                             tuer(partie,cible) 
                                             
                                           }
-                                            
                                           if (joueur.isDead()){
                                             tuer(partie,joueur)
                                         }
+                                        testAprèsKill(partie,partie.getJoueurCourant(),cible)        
                                         if (cible.isDead()&&joueur.isDead()){//Cas double mort
                                           io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" et "+pseudos[cible.idJoueur]+" sont tous les deux morts. Ils étaient " +cible.character.replace(/_/g," ")+ " et "+joueur.character.replace(/_/g," "),"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[joueur.idJoueur],"dégâts":9999,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})                                      
                                         }
@@ -1978,7 +1996,6 @@ io.on('connection', (socket) => {
                                             io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a succombé l'araignée. Il s'agissait de  " +joueur.character.replace(/_/g," ")+ ". Ses objets partent à la défausse.","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":joueur.character,"pseudo":pseudos[joueur.idJoueur]}},"idPartie":data.idPartie})                                     
                                           }
                                         }
-                                        testAprèsKill(partie,partie.getJoueurCourant(),cible)        
                                       }//Fin si un mort
 
                                             else{
@@ -2764,15 +2781,15 @@ io.on('connection', (socket) => {
                                 switch (data.capacite){
                                   case "Agnès":
                                   for (var zzz in partie.joueurs){
-                                    if (partie.joueurs[zzz].idJoueur==joueur.idJoueur){
-                                      if (parseInt(zzz)>=0){
-                                        joueur.conditionVictoire = partie.joueurs[partie.joueursMax-1].idJoueur
-                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[ joueur.conditionVictoire]+" !","rapportAction":false,"idPartie":data.idPartie})
+                                    if (partie.joueurs[zzz].idJoueur==socket.data.userId&&partie.joueurs[zzz].character=="Agnès"){
+                                      if (parseInt(zzz)>=partie.joueursMax-1){
+                                        partie.joueurs[zzz].conditionVictoire = partie.joueurs[0].idJoueur
+                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[ partie.joueurs[zzz]]+" !","rapportAction":false,"idPartie":data.idPartie})
                                         
                                       }
                                       else{
-                                        joueur.conditionVictoire = partie.joueurs[parseInt(zzz)-1].idJoueur
-                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[joueur.conditionVictoire]+" !","rapportAction":false,"idPartie":data.idPartie})
+                                        partie.joueurs[zzz].conditionVictoire = partie.joueurs[parseInt(zzz)+1].idJoueur
+                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[partie.joueurs[zzz]]+" !","rapportAction":false,"idPartie":data.idPartie})
 
                                       }
                                       setTimeout(() => {
