@@ -3,11 +3,15 @@ import SocketContext from "../SocketContext";
 import React from "react";
 import Des from "./Des/Des";
 
+import { useImageContext } from "./ImageContext";
+
 
 export default function Action({ rapportAction, idJoueurLocal }) {
     let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
     let idPartie = urlP.get("idPartie");
     const socket = React.useContext(SocketContext);
+
+    const { handleHoveredImageChange } = useImageContext();
 
     let actV = rapportAction.valeur;
     let ActComp = (<div>default</div>);
@@ -29,7 +33,9 @@ export default function Action({ rapportAction, idJoueurLocal }) {
             ActComp = (
                 <div className="carte1" id="tourPasse">
                     {actV.personnages.map((carte, index) => (
-                        <img key={index} src={"http://localhost:8888/carteShadow/" + carte + ".png"} alt={carte} />
+                        <img key={index} src={"http://localhost:8888/carteShadow/" + carte + ".png"} alt={carte} 
+                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+carte+".png")}
+                        />
                     ))}
                 </div>
             )
@@ -38,7 +44,9 @@ export default function Action({ rapportAction, idJoueurLocal }) {
         case "cartePiochée":
             ActComp = (
                 <div className="carte1" id="tourPasse">
-                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV + ".png"} alt={actV} />
+                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV + ".png"} alt={actV} 
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+actV+".png")}
+                    />
 
 
                 </div>
@@ -69,7 +77,9 @@ export default function Action({ rapportAction, idJoueurLocal }) {
             ) : 
             actV.défaut==false||actV.défaut==undefined?<div></div>:<div>
                    <div className="carte1" id="tourPasse">
-                <img src={"http://localhost:8888/carteShadow/"+actV.défaut+".png"} alt={actV.défaut}/>
+                <img src={"http://localhost:8888/carteShadow/"+actV.défaut+".png"} alt={actV.défaut}
+                onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+actV.défaut+".png")}
+                />
                 </div>
             </div>
             break
@@ -80,7 +90,9 @@ export default function Action({ rapportAction, idJoueurLocal }) {
 
 
                 <div className="carte1" id="tourPasse">
-                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV.carteRévélée + ".png"} alt={actV.carteRévélée} />
+                    <img key={actV} src={"http://localhost:8888/carteShadow/" + actV.carteRévélée + ".png"} alt={actV.carteRévélée} 
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+actV.carteRévélée+".png")}
+                    />
                 </div>
             )
             break;
@@ -90,9 +102,14 @@ export default function Action({ rapportAction, idJoueurLocal }) {
             ActComp = (
                 <div className="carte1" id="tourPasse">
                     {actV.idJoueur == idJoueurLocal ?
-                        <img src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV.vision} />
+                        <img src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV.vision} 
 
-                        :<img src={"http://localhost:8888/carteShadow/Carte_Vision.png"} alt={actV.vision} />
+                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+actV.vision+".png")}
+                        />
+
+                        :<img src={"http://localhost:8888/carteShadow/Carte_Vision.png"} alt={actV.vision} 
+                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+actV.vision+".png")}
+                        />
                     }
                 </div>
             )
@@ -104,7 +121,11 @@ export default function Action({ rapportAction, idJoueurLocal }) {
                 <div className="carte1" id="tourPasse">
                     {actV.idJoueur == idJoueurLocal ?
                         <div className="carte1" id="tourPasse">
-                        <img src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV} />
+                        <img src={"http://localhost:8888/carteShadow/" + actV.vision + ".png"} alt={actV} 
+                        
+                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+actV.vision+".png")}
+                        
+                        />
                     {actV.boutons.map((text, index) => (
 
                         <button className="joliebouton2" key={index} onClick={() => {
@@ -114,7 +135,10 @@ export default function Action({ rapportAction, idJoueurLocal }) {
                 </div>
             
 
-                        :<img src={"http://localhost:8888/carteShadow/Carte_Vision.png"} alt={actV} />
+                        :<img src={"http://localhost:8888/carteShadow/Carte_Vision.png"} alt={actV} 
+
+                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+actV.vision+".png")}
+                        />
                     }
                 </div>
             )
