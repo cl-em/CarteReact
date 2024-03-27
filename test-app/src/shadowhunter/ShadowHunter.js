@@ -88,8 +88,27 @@ function AvantJeu() {
     )
 }
 
-function ApresJeu({ tableauFin }) {
+function ApresJeu({ listeGagnants }) {
+    const navigate = useNavigate();
+
+    let messageGagnants;
+    if (listeGagnants.length === 1) {
+        messageGagnants = `Le gagnant est ${listeGagnants[0]}`;
+    } else {
+        messageGagnants = `Les gagnants sont ${listeGagnants.join(', ')}`;
+    }
+
+    return (
+        <div>
+            <p>{messageGagnants}.</p>
+            <br />
+            <button className="joliebouton2" onClick={() => navigate("/games")}>
+                Revenir à l'écran de sélection des jeux
+            </button>
+        </div>
+    );
 }
+
 
 /*----------------------------------------------Connecté-----------------------------------------------------*/
 
@@ -210,7 +229,9 @@ function Stats({ listeJoueurs }) {
                 <div id="Joueurs">
                     <div id="Joueurs-display">
                         <div id="Joueurs-name">
-                            <p>{joueur.pseudo}</p>
+                            <p onClick={() => {
+                                socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: "Personnage", joueurConcerne: joueur.pseudo });
+                            }}>{joueur.pseudo}</p>
                         </div>
                         <div id="Joueurs-carte">
                             {joueur.révélé ?
@@ -239,6 +260,7 @@ function Stats({ listeJoueurs }) {
                                     onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/" + carte + ".png")}
                                     onClick={() => {
                                         socket.emit("choixCarte", { idPartie: idPartie, type: "stuffOther", carte: carte, joueurConcerne: joueur.pseudo });
+                                        socket.emit("choixCarte", { idPartie: idPartie, idCarte: carte, type: "stuffSelf" });
                                     }}
                                 />
                             ))
@@ -298,13 +320,13 @@ function Plateau({ carteEnFonctionDeLaZone, listeJoueurs }) {
         <div className="plateau-container">
 
             <div className="duo1">
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0, 2)} position={"droite"} listeJoueurs={listeJoueurs} />
+                <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(0, 2)} position={"droite"} listeJoueurs={listeJoueurs} />
             </div>
             <div className="duo2">
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(2, 4)} position={"droite"} listeJoueurs={listeJoueurs} />
+                <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(2, 4)} position={"droite"} listeJoueurs={listeJoueurs} />
             </div>
             <div className="duo3">
-            <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(4)} position={"base"} listeJoueurs={listeJoueurs} />
+                <CartePlateau deuxCarte={carteEnFonctionDeLaZone.slice(4)} position={"base"} listeJoueurs={listeJoueurs} />
             </div>
         </div>
     );
@@ -369,6 +391,8 @@ function Jouer() {
     const [zoneDeJeu, setZoneDeJeu] = useState(["Zone1", "Zone2", "Zone3", "Zone4", "Zone5", "Zone6"]);
     // {pseudo:string,révélé:bool à false si non révélé string sinon,pouvoirUtilisé:bool,dégâts:int}
 
+    const [listeGagnants, setListeGagnants] = useState([]);
+
     useEffect(() => {
         socket.on("gameStarting", (data) => {
             if (data.idPartie === idPartie) {
@@ -376,6 +400,16 @@ function Jouer() {
                 socket.emit("wantCarte", { idPartie: idPartie });
 
                 setZoneDeJeu(data.zones);
+            }
+
+        })
+    }, [])
+
+    useEffect(() => {
+        socket.on("gameFinished", (data) => {
+            if (data.idPartie === idPartie) {
+                setFinish(true);
+                setListeGagnants(data.gagnants);
             }
 
         })
@@ -435,40 +469,42 @@ function Jouer() {
 
     return (
         <div>
-            {gameStart ?
-                <div>
-                    <ImageProvider>
-                        <div className="droite">
-                            <Connecte />
-                            <ChatSH />
-                            <Stats listeJoueurs={listeJoueurs} />
-                        </div>
-                        <div className="gauche">
-                            <div class="elements-gauche-haut">
-                                <Pioches />
-                                <Main listeDeCarte={stuff} />
-                                <Role nomCarte={personnage} />
-                                <div className="carte-hover">
-                                    <ImageComponent />
+            {gameStart ? (
+                gameFinish ? (
+                    <ApresJeu listeGagnants={listeGagnants} />
+                ) : (
+                    <div>
+                        <ImageProvider>
+                            <div className="droite">
+                                <Connecte />
+                                <ChatSH />
+                                <Stats listeJoueurs={listeJoueurs} />
+                            </div>
+                            <div className="gauche">
+                                <div className="elements-gauche-haut">
+                                    <Pioches />
+                                    <Main listeDeCarte={stuff} />
+                                    <Role nomCarte={personnage} />
+                                    <div className="carte-hover">
+                                        <ImageComponent />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="milieu-sh">
-                        <Plateau carteEnFonctionDeLaZone={zoneDeJeu} listeJoueurs={listeJoueurs} />
-                        </div>
-                        <div className="bas">
-                            <div className="messageTourPasse">
-                                {message.length > 0 ? <p>{message}</p> : <div></div>}
+                            <div className="milieu-sh">
+                                <Plateau carteEnFonctionDeLaZone={zoneDeJeu} listeJoueurs={listeJoueurs} />
                             </div>
-                            <Action rapportAction={action} idJoueurLocal={idJoueur} />
-                        </div>
-                    </ImageProvider>
-
-
-                </div>
-                : <AvantJeu />}
+                            <div className="bas">
+                                <div className="messageTourPasse">
+                                    {message.length > 0 ? <p>{message}</p> : <div></div>}
+                                </div>
+                                <Action rapportAction={action} idJoueurLocal={idJoueur} />
+                            </div>
+                        </ImageProvider>
+                    </div>
+                )
+            ) : <AvantJeu />}
         </div>
-    )
+    );
 }
 
 /*----------------------------------------------Default-----------------------------------------------------*/
