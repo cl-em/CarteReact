@@ -700,9 +700,7 @@ class shadowHunter extends Game{
         this.joueurCourant = this.joueurs[0].idJoueur
         this.joueurs[0].turnsToPlay = 1
         this.state = "débutTour"
-        
-        this.joueurs[2].hurtPoint = 10
-        this.joueurs[1].hurtPoint = 11
+     
         }
         
 
