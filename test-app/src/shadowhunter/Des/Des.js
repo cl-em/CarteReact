@@ -17,18 +17,22 @@ export  default class Des extends React.Component {
         // des 2 en a 4 
 
         return(
-            <div style={{display:"flex",flexDirection:"row"}}>
-                <div className="des1">
-                    {this.state.des1valeur}
-                </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
 
-                <div className="des2">
-                    
-                    <div className="face2">
-                        {this.state.des2valeur}
+                {this.state.des1valeur != false ?
+                    <div className="des1">
+                        {this.state.des1valeur}
                     </div>
+                    : <></>}
+                {this.state.des2valeur != false ?
+                    <div className="des2">
 
-                </div>
+                        <div className="face2">
+                            {this.state.des2valeur}
+                        </div>
+                    </div>
+                    : <></>}
+
             </div>
         )
     }

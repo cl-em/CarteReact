@@ -518,7 +518,7 @@ class shadowHunter extends Game{
         //Choix des personnages
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
-        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"*/"David"]
+        this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"]
         this.hunters = this.shuffle(Array.from(this.hunterBase))
         this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         this.neutres = this.shuffle(Array.from(this.neutresBase))  
@@ -668,15 +668,17 @@ class shadowHunter extends Game{
       //Pour condition de victoire d'agnès
       for (var zzz in this.joueurs){
                 if (this.joueurs[parseInt(zzz)].character=="Agnès"){
-                    if (parseInt(zzz)<=0){
-                        this.joueurs[parseInt(zzz)].conditionVictoire = this.joueurs[this.joueursMax-1].idJoueur
+                    if (parseInt(zzz)>=this.joueursMax-1){
+                        this.joueurs[parseInt(zzz)].conditionVictoire = this.joueurs[0].idJoueur
                     }
                     else{
-                        this.joueurs[parseInt(zzz)].conditionVictoire = this.joueurs[parseInt(zzz)-1].idJoueur
+                        this.joueurs[parseInt(zzz)].conditionVictoire = this.joueurs[parseInt(zzz)+1].idJoueur
                     }
                     
                 }
                 if (this.joueurs[parseInt(zzz)].character=="Bob"){this.joueurs[parseInt(zzz)].vol=false}//Variable utilisée pour voir s'il vole ou non
+                if (this.joueurs[parseInt(zzz)].character=="Momie"){this.joueurs[parseInt(zzz)].pouvoirCeTour=false}//Variable utilisée pour voir s'il vole ou non
+
             }
 
 
@@ -702,12 +704,6 @@ class shadowHunter extends Game{
         this.joueurs[0].turnsToPlay = 1
         this.state = "débutTour"
      
-
-        this.joueurs[1].objets.push("Amulette")
-        this.joueurs[1].objets.push("Toge_Sainte")
-
-        this.défausseBlanche.push(new CarteShadowHunter("Lance_De_Longinus","équipement"))
-
 
         }
         
@@ -1096,10 +1092,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
 
         //Test allie en vie
 
-        for (var joueur of this.joueurs){
-            if (joueur.character=="Allie"){
-                if (!joueur.éliminé){this.winners.push(joueur.idJoueur)}
-            }}
+
 
         //Catherine
         var joueursEnVie = 0
@@ -1110,6 +1103,10 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             if (joueursEnVie==2 && !joueur.éliminé){this.winners.push(joueur.idJoueur)}
             }
         }
+        for (var joueur of this.joueurs){
+            if (joueur.character=="Allie"&&this.winners.length>0){
+                if (!joueur.éliminé){this.winners.push(joueur.idJoueur)}
+            }}
         //Test agnès en tout dernier
         for (var joueur of this.joueurs){
             if (joueur.character=="Agnès"){
@@ -1170,7 +1167,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 if (test.éliminé){compte++}
             }
 
-            if (this.joueursMax>5){
+            if (this.joueursMax<5){
                 if (compte>=3){
                     this.winners.push(joueur.idJoueur);
                     return true
@@ -1271,7 +1268,8 @@ if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCoura
                         attaquant.objets.push(défenseur.objets.splice(+Math.floor(Math.random()*défenseur.objets.length),1))
                         
                     }
-            
+                }
+            else{
             if (this.takeDamage(défenseur,tempDamage)==false){
                 if (défenseur.character=="Loup-Garou"&&défenseur.révélé&&!défenseur.pouvoirUtilisé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
             }
@@ -1303,18 +1301,19 @@ if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCoura
                             break
                       }
 
-            }}
+            }
 
             }
 
 
+            
         }
-    
-    }
-    if (attaquant.character=="Vampire"&&attaquant.révélé&&!attaquant.pouvoirUtilisé&& totalDamage>0){attaquant.hurtPoint-=2}
-    if (attaquant.hurtPoint<=0){attaquant.hurtPoint=0}
-    retour.dégâts = totalDamage
+        if (attaquant.character=="Vampire"&&attaquant.révélé&&!attaquant.pouvoirUtilisé&& totalDamage>0){attaquant.hurtPoint-=2}
+        if (attaquant.hurtPoint<=0){attaquant.hurtPoint=0}
+        retour.dégâts = totalDamage
+    } 
 }
+                }
 attaquant.vol=false
     return retour
 }//FIN CAS MITRAILLEUSE
@@ -1337,7 +1336,7 @@ attaquant.vol=false
         }
 
         if (this.takeDamage(défenseur,totalDamage)==false){
-            if (défenseur.character=="Loup-Garou"&&défenseur.révélé&&!défenseur.pouvoirUtilisé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
+            if (défenseur.character=="Loup-Garou"&&défenseur.révélé&&!défenseur.pouvoirUtilisé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true;console.log("aaaa")}
         }
         else{
             retour.killed = true;

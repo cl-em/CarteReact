@@ -1000,7 +1000,7 @@ io.on('connection', (socket) => {
                 var classement = partie.rank();
                 var retour = [];
                 for (var joueur of classement){
-                  db.run("UPDATE users SET score6quiprend = score6quiprend+"+(66-joueur.score*2)+" WHERE idU="+joueur.idJoueur )
+                  db.run("UPDATE users SET score6quiprend = score6quiprend+"+((66-joueur.score)*2)+" WHERE idU="+joueur.idJoueur )
                   retour.push({"pseudo":pseudos[joueur.idJoueur],"score":joueur.score})
                 }
                 console.log(retour)
@@ -1199,7 +1199,7 @@ io.on('connection', (socket) => {
 
 
                                 case "Forêt_Hantée_1":
-                                  io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit s'il veut faire le bien... ou faire le mal.","rapportAction":{"type":"choix","valeur":{"boutons":["attaquer","soigner"],"défaut":"Forêt_Hantée","idJoueur":partie.joueurCourant}}})
+                                  io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit s'il veut faire le bien... ou faire le mal.","rapportAction":{"type":"choix","valeur":{"boutons":["attaquer","soigner"],"défaut":"Zone5","idJoueur":partie.joueurCourant}}})
                                 break
                                 case "Forêt_Hantée_2":
                                   io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" clique sur le joueur sur qui utiliser la magie de la forêt.","rapportAction":false})
@@ -1399,7 +1399,7 @@ io.on('connection', (socket) => {
                                   case "Hachoir_Maudit":
                                   case "Mitrailleuse_Funeste":
                                   case "Tronçonneuse_Du_Mal":
-                                    this.défausseNoire.push(new CarteShadowHunter(z,"équipement"))
+                                    partie.défausseNoire.push(new CarteShadowHunter(z,"équipement"))
                                     break
 
                                   case "Boussole_Mystique":
@@ -1408,7 +1408,7 @@ io.on('connection', (socket) => {
                                   case "Toge_Sainte":
                                   case "Lance_De_Longinus":
                                   case "Crucifix_En_Argent":
-                                    this.défausseBlanche.push(new CarteShadowHunter(z,"équipement"))
+                                    partie.défausseBlanche.push(new CarteShadowHunter(z,"équipement"))
                                     break
                                   }
                                 
@@ -1475,6 +1475,16 @@ io.on('connection', (socket) => {
                               console.log(retour)
                               partie.state = "finished"
                               io.emit("gameFinished",{"idPartie":partie.id,"gagnants":retour})
+                              for (var v of partie.winner){
+                                db.run("UPDATE users SET score6quiprend = score6quiprend+"+1+" WHERE idU="+v )
+                              }
+                              setTimeout(() => {
+                                for (var test in partiesEnCours){
+                                  if (partiesEnCours[test].id==partie.id){
+                                    partiesEnCours.splice(test,1)
+                                  }
+                                }
+                              }, 2500);
                               //BDD etc...
                               return
                             }
@@ -2099,7 +2109,7 @@ io.on('connection', (socket) => {
                                                     joueur.hurtPoint-=chance
                                                     if (joueur.hurtPoint<=0){joueur.hurtPoint=0}
                                                     partie.state = "phase_Attaque"
-                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a soigné "+data.joueurConcerne+" de "+chance+" points de vie.","rapportAction":false,"idPartie":partie.id})
+                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a soigné "+data.joueurConcerne+" de "+chance+" points de vie.","rapportAction":{"type":"jetsDeDés","valeur":[chance,false]},"idPartie":partie.id})
                                                     setTimeout(() => {
                                                       tourPasseDeCirconstance(partie)
                                                     }, 2500);
@@ -2128,7 +2138,7 @@ io.on('connection', (socket) => {
                                         case "pouvoirFu-ka":
 
                                         var cible;
-                                        for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
+                                        for (var joueu of partie.joueurs){if (joueu.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueu}}
                                         cible.hurtPoint = 7
                                         joueur.pouvoirUtilisé = true
                                         io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a ciblé "+data.joueurConcerne+" avec le pouvoir de Fu-ka !","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":"Fu-Ka","pseudo":pseudos[socket.data.userId]}},"idPartie":data.idPartie})
@@ -2142,8 +2152,8 @@ io.on('connection', (socket) => {
                                           partie.state="débutTour"
 
                                           var cible;
-                                          for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
                                           joueur.pouvoirUtilisé = true
+                                          for (var joueu of partie.joueurs){if (joueu.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueu}}
                                           var dmg = Math.floor(Math.random()*5)+1
                                           if (cible.protected){dmg=0}
                                           partie.takeDamage(cible,dmg)
@@ -2165,9 +2175,9 @@ io.on('connection', (socket) => {
 
                                           case "pouvoirGeorges":
                                             partie.state="débutTour"
+                                            joueur.pouvoirUtilisé = true
                                           var cible;
-                                          for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
-                                          joueur.pouvoirUtilisé = true
+                                          for (var joueu of partie.joueurs){if (joueu.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueu}}
                                           var dmg = Math.floor(Math.random()*3)+1
                                           if (cible.protected){dmg=0}
                                           partie.takeDamage(cible,dmg)
@@ -2190,8 +2200,8 @@ io.on('connection', (socket) => {
                                           case "pouvoirEllen":
 
                                           var cible;
-                                          for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
                                           joueur.pouvoirUtilisé = true
+                                          for (var joueu of partie.joueurs){if (joueu.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueu}}
                                           cible.pouvoirUtilisé = true
                                           io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a privé "+pseudos[getIdFromPseudo(data.joueurConcerne)]+" de sa capacité !","rapportAction":false,"idPartie":data.idPartie})
                                           partie.state="débutTour"
@@ -2201,11 +2211,12 @@ io.on('connection', (socket) => {
                                           break;
 
                                           case "pouvoirMomie":
-                                            partie.state="débutTour"
+                                            
                                           var cible;
-                                          for (var joueur of partie.joueurs){if (joueur.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueur}}
+                                          joueur.pouvoirCeTour= true
+                                          for (var joueu of partie.joueurs){if (joueu.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueu}}
                                           if (cible.position!=partie.getIndexFromZone("Zone2")){return}
-                                          joueur.pouvoirUtilisé = true
+                                          partie.state="débutTour"
                                           var dmg = 3
                                           if (cible.protected){dmg=0}
                                           partie.takeDamage(cible,dmg)
@@ -2216,8 +2227,8 @@ io.on('connection', (socket) => {
 
                                           }
                                             else{
-                                          if (cible.révélé){io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+pseudos[partie.getIdFromCharacter(socket.data.carte)],"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})}
-                                          else{io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+pseudos[getIdFromPseudo(data.joueurConcerne)],"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,false]}},"idPartie":data.idPartie})}
+                                          if (cible.révélé){io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+data.joueurConcerne,"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})}
+                                          else{io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+data.joueurConcerne,"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible],"dégâts":dmg,"personnages":[joueur.character,false]}},"idPartie":data.idPartie})}
                                             }
                                           setTimeout(() => {
                                             io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant}},"idPartie":data.idPartie})
@@ -2392,7 +2403,7 @@ io.on('connection', (socket) => {
                                                   case "Hachoir_Maudit":
                                                   case "Mitrailleuse_Funeste":
                                                   case "Tronçonneuse_Du_Mal":
-                                                    this.défausseNoire.push(new CarteShadowHunter(z,"équipement"))
+                                                    partie.défausseNoire.push(new CarteShadowHunter(z,"équipement"))
                                                     break
 
                                                   case "Boussole_Mystique":
@@ -2401,7 +2412,7 @@ io.on('connection', (socket) => {
                                                   case "Toge_Sainte":
                                                   case "Lance_De_Longinus":
                                                   case "Crucifix_En_Argent":
-                                                    this.défausseBlanche.push(new CarteShadowHunter(z,"équipement"))
+                                                    partie.défausseBlanche.push(new CarteShadowHunter(z,"équipement"))
                                                   break
                                                 }
                                               }
@@ -2628,6 +2639,7 @@ io.on('connection', (socket) => {
                                         case "lancer les dés !"://Cas de lancer de dés en début de tour. Est nécessaire pour laisser le temps à certains personnages, dont le pouvoir marche seulement en début de tour, d'utiliser leur pouvoir
                                           if (partie.state!="débutTour"){return}
                                           joueur.protected = false
+                                          if (joueur.character=="Momie"){joueur.pouvoirCeTour=false}
                                           if (!joueur.hasItem("Boussole_Mystique")){
                                           var destination;
                                           var posDébut = partie.getNameFromZone(partie.zones[joueur.position])
@@ -2893,13 +2905,13 @@ io.on('connection', (socket) => {
                                   case "Agnès":
                                   for (var zzz in partie.joueurs){
                                     if (partie.joueurs[zzz].idJoueur==socket.data.userId&&partie.joueurs[zzz].character=="Agnès"){
-                                      if (parseInt(zzz)>=partie.joueursMax-1){
-                                        partie.joueurs[zzz].conditionVictoire = partie.joueurs[0].idJoueur
+                                      if (parseInt(zzz)<=0){
+                                        partie.joueurs[zzz].conditionVictoire = partie.joueurs[partie.joueursMax-1].idJoueur
                                         io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[ partie.joueurs[zzz].conditionVictoire]+" !","rapportAction":false,"idPartie":data.idPartie})
                                         
                                       }
                                       else{
-                                        partie.joueurs[zzz].conditionVictoire = partie.joueurs[parseInt(zzz)+1].idJoueur
+                                        partie.joueurs[zzz].conditionVictoire = partie.joueurs[parseInt(zzz)-1].idJoueur
                                         io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[partie.joueurs[zzz].conditionVictoire]+" !","rapportAction":false,"idPartie":data.idPartie})
 
                                       }
@@ -2960,15 +2972,16 @@ io.on('connection', (socket) => {
                
                                   case "Momie":
 
-                                    partie.joueurs[1].position = partie.getIndexFromZone("Zone2")
-                                    if (partie.joueurCourant==socket.data.userId && partie.state=="débutTour"){
+                                    if (partie.joueurCourant==socket.data.userId && partie.state=="débutTour" && partie.getJoueurCourant().pouvoirCeTour==false){
                                       var possible = false//Check pour voir si il y a une cible potentielle
-                                      for (var joueur of partie.joueurs) {if (joueur.position==partie.getIndexFromZone("Zone2")){possible = true}}
+                                      for (var joueu of partie.joueurs) {if (parseInt(joueu.position)==partie.getIndexFromZone("zone2") && joueu.idJoueur!=partie.joueurCourant){possible = true}}
                                       if (possible==false){return}
-
-                                    partie.state = "pouvoirMomie"
-                                    io.emit("tourPasse", { "Message": pseudos[socket.data.userId] + " canalise son énergie de momie et se prépare à frapper une cible sur la porte de l'outremonde!", "rapportAction": {"type":"carteRévélée","valeur":{"carteRévélée":"Momie","pseudo":pseudos[socket.data.userId]}}, "idPartie": data.idPartie })
-                                    return}
+                                      console.log(partie.state)
+                                      io.emit("tourPasse", { "Message": pseudos[socket.data.userId] + " canalise son énergie de momie et se prépare à frapper une cible sur la porte de l'outremonde!", "rapportAction": {"type":"carteRévélée","valeur":{"carteRévélée":"Momie","pseudo":pseudos[socket.data.userId]}}, "idPartie": data.idPartie })
+                                      partie.state = "pouvoirMomie"
+                                      console.log(partie.state)
+                                    return
+                                  }
                                     break
 
                                     case "Liche":

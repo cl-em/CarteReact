@@ -15,13 +15,13 @@ export default function Action({ rapportAction, idJoueurLocal }) {
 
     let actV = rapportAction.valeur;
     let ActComp = (<div>default</div>);
-    console.log(rapportAction)
-    console.log(actV);
+    //console.log(rapportAction)
+    //console.log(actV);
 
 
     switch (rapportAction.type) {
         case "jetsDeDés":
-            console.log("lancer de dés" + actV)
+            //console.log("lancer de dés" + actV)
             ActComp = (
                 <div id="tourPasse">
                     <Des des1valeur={actV[0]} des2valeur={actV[1]} />

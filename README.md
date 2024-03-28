@@ -1,5 +1,7 @@
 # CarteReact
 
+C'EST NORMAL QUE CE SOIT MARQUE LES ECHECS SUR LA CARTE DU TROISIEME JEU C'EST POUR L'EFFET DE SURPRISE
+
 cd CarteReact/
 npm install
 cd test-app/
