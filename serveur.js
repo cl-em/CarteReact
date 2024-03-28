@@ -1475,7 +1475,7 @@ io.on('connection', (socket) => {
                               console.log(retour)
                               partie.state = "finished"
                               io.emit("gameFinished",{"idPartie":partie.id,"gagnants":retour})
-                              for (var v of partie.winner){
+                              for (var v of partie.winners){
                                 db.run("UPDATE users SET score6quiprend = score6quiprend+"+1+" WHERE idU="+v )
                               }
                               setTimeout(() => {
