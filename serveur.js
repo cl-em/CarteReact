@@ -173,7 +173,7 @@ function getIdFromPseudo(pseudo){
 //-------------------------------Classes-----------------------------------------------
 const { Game,Bataille,sixquiprend, shadowHunter } = require('./Game.js');
 const { Joueur,JoueurShadowHunter } = require('./Joueur.js');
-const { Carte } = require('./Carte.js');
+const { Carte,CarteShadowHunter } = require('./Carte.js');
 const { Console } = require('console');
 const { setTimeout } = require('timers');
 
@@ -639,8 +639,8 @@ io.on('connection', (socket) => {
 
           if (data.type=="shadowHunter"){
             var joueursMax = data.joueursMax;
-            if (!Number.isInteger(parseInt(joueursMax))||joueursMax>8||joueursMax<2){
-              joueursMax=8
+            if (!Number.isInteger(parseInt(joueursMax))||joueursMax>10||joueursMax<2){
+              joueursMax=4
             }
             let partie = new shadowHunter(socket.data.userId,joueursMax)
             partiesOuvertes.push(partie)
@@ -1119,6 +1119,18 @@ io.on('connection', (socket) => {
                             //La fonction va être trèèèèès longue
                             switch (partie.state){
                               //Les dés et système
+
+                              case "choixDavid":
+                              console.log(partie.défausseBlanche)
+                              console.log(partie.défausseNoire)
+                                var boutons = []
+                                for (var carte of partie.défausseBlanche){if (carte.type=="équipement"){boutons.push(carte.valeur)}}
+                                for (var carte of partie.défausseNoire){if (carte.type=="équipement"){boutons.push(carte.valeur)}}
+                                
+                              io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" récupère un objet dans l'une des défausses !","rapportAction":{"type":"choix","valeur":{"boutons":boutons,"idJoueur":partie.joueurCourant,"défaut":"David"}}})
+                              return
+                              break
+
                               case "CharlesFinTour":
                                 for (var joueur of partie.joueurs){
                                   if (joueur.idJoueur==partie.joueurCourant){
@@ -1387,7 +1399,7 @@ io.on('connection', (socket) => {
                                   case "Hachoir_Maudit":
                                   case "Mitrailleuse_Funeste":
                                   case "Tronçonneuse_Du_Mal":
-                                    partie.défausseNoire.push(z)
+                                    this.défausseNoire.push(new CarteShadowHunter(z,"équipement"))
                                     break
 
                                   case "Boussole_Mystique":
@@ -1396,7 +1408,7 @@ io.on('connection', (socket) => {
                                   case "Toge_Sainte":
                                   case "Lance_De_Longinus":
                                   case "Crucifix_En_Argent":
-                                    partie.défausseBlanche.push(z)
+                                    this.défausseBlanche.push(new CarteShadowHunter(z,"équipement"))
                                     break
                                   }
                                 
@@ -2286,6 +2298,65 @@ io.on('connection', (socket) => {
                                     if (data.type=="choix"){
                                       //cas de la boussole 
                                       
+                                      if (partie.state=="choixDavid"){
+                                        if (socket.data.userId==partie.joueurCourant){
+                                          for (var joueur of partie.joueurs){
+                                            if (joueur.idJoueur==partie.joueurCourant){
+                                              var renvoyé;
+                                          switch (data.text){
+                                              case "Hache_Tueuse":
+                                              case "Sabre_Hanté_Masamune":
+                                              case "Revolver_Des_Ténèbres":
+                                              case "Hachoir_Maudit":
+                                              case "Mitrailleuse_Funeste":
+                                              case "Tronçonneuse_Du_Mal":
+                                                
+                                              for (var z in partie.défausseNoire){
+                                                if (partie.défausseNoire[z].valeur==data.text){
+                                                  renvoyé = partie.défausseNoire[z].valeur
+                                                  joueur.objets.push(partie.défausseNoire[z].valeur)
+                                                  partie.défausseNoire.splice(z,1)
+                                                }
+                                              }
+                                              joueur.pouvoirUtilisé=true
+                                              partie.state="finTour"
+                                              io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" a récupéré l'objet "+data.text.replace(/_/g," "),"rapportAction":{"type":"cartePiochée","valeur":data.text},"idPartie":partie.id})
+                                                setTimeout(() => {
+                                                  tourPasseDeCirconstance(partie)
+                                                }, 2500);
+                                                return
+            
+
+                                              case "Boussole_Mystique":
+                                              case "Broche_De_Chance":
+                                              case "Amulette":
+                                              case "Toge_Sainte":
+                                              case "Lance_De_Longinus":
+                                              case "Crucifix_En_Argent":
+                                                for (var z in partie.défausseBlanche){
+                                                  if (partie.défausseBlanche[z].valeur==data.text){
+                                                    renvoyé = partie.défausseBlanche[z].valeur
+                                                    joueur.objets.push(partie.défausseBlanche[z].valeur)
+                                                    partie.défausseBlanche.splice(z,1)
+                                                  }
+                                                }
+                                                joueur.pouvoirUtilisé=true
+                                                partie.state="finTour"
+                                                
+                                                io.emit("tourPasse",{"Message":pseudos[partie.variableTemp]+" a récupéré l'objet "+data.text.replace(/_/g," "),"rapportAction":{"type":"cartePiochée","valeur":data.text},"idPartie":partie.id})
+                                                setTimeout(() => {
+                                                  tourPasseDeCirconstance(partie)
+                                                }, 2500);
+                                                return
+                                                
+                                         
+                                              }
+                                          }
+                                        }
+                                      }
+                                      }
+
+
                                     
                                       if (partie.state=="Boussole_Mystique"){
                                         if (!partie.variableTemp.includes(data.text)){console.log(data.text);console.log(partie.variableTemp);return}
@@ -2321,7 +2392,7 @@ io.on('connection', (socket) => {
                                                   case "Hachoir_Maudit":
                                                   case "Mitrailleuse_Funeste":
                                                   case "Tronçonneuse_Du_Mal":
-                                                    partie.défausseNoire.push(z)
+                                                    this.défausseNoire.push(new CarteShadowHunter(z,"équipement"))
                                                     break
 
                                                   case "Boussole_Mystique":
@@ -2330,7 +2401,7 @@ io.on('connection', (socket) => {
                                                   case "Toge_Sainte":
                                                   case "Lance_De_Longinus":
                                                   case "Crucifix_En_Argent":
-                                                    partie.défausseBlanche.push(z)
+                                                    this.défausseBlanche.push(new CarteShadowHunter(z,"équipement"))
                                                   break
                                                 }
                                               }
@@ -2789,6 +2860,36 @@ io.on('connection', (socket) => {
                                   if ((joueur.révélé==false||joueur.pouvoirUtilisé==true)){return}
                                   }}
                                 switch (data.capacite){
+
+                                  case "David":
+                                    if (partie.joueurCourant!=socket.data.userId){return}
+                                    if ((partie.getJoueurCourant().character!="David")||(partie.state!="finTour")){return}
+                                    if (partie.défausseBlanche.length<=0&&partie.défausseNoire.length<=0){return}
+                                    partie.state = "choixDavid"
+                                    partie.getJoueurCourant().pouvoirUtilisé=true
+                                    tourPasseDeCirconstance(partie)
+                                    return
+
+                                  break
+
+                                  case "Bob":
+                                    if (partie.joueurCourant!=socket.data.userId){return}
+                                   
+                                    if ((partie.getJoueurCourant().character!="Bob")||(partie.state!="phase_Attaque")){return}
+                                    if (joueur.vol==false){
+                                      io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise son pouvoir et volera un objet s'il inflige assez de dégâts à sa prochaine attaque !","rapportAction":false,"idPartie":data.idPartie})
+                                      joueur.vol=true
+                                    }
+                                    else{
+                                      io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" se reconcentre pour attaquer normalement.","rapportAction":false,"idPartie":data.idPartie})
+                                      joueur.vol=false
+                                    }
+                                    setTimeout(() => {
+                                      tourPasseDeCirconstance(partie)
+                                    }, 2500);
+                                    return
+                                    
+                                  break
                                   case "Agnès":
                                   for (var zzz in partie.joueurs){
                                     if (partie.joueurs[zzz].idJoueur==socket.data.userId&&partie.joueurs[zzz].character=="Agnès"){

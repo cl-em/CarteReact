@@ -514,13 +514,13 @@ class shadowHunter extends Game{
         this.joueurCourant = undefined
         this.state = undefined
         this.variableTemp = undefined
-        this.couleurs = ["Rouge","Jaune","Vert","Bleu","Rose","Orange","Blanc","Noir"]
+        this.couleurs = ["Rouge","Jaune","Vert","Bleu","Rose","Orange","Blanc","Noir","Jaune","Cyan"]
         //Choix des personnages
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
-        this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"]
+        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"*/"David"]
         this.hunters = this.shuffle(Array.from(this.hunterBase))
-        this.neutresBase = [/*"Bob","Allie",*/"Agnès","Bryan"/*,"David","Daniel","Catherine","Charles"*/]
+        this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         this.neutres = this.shuffle(Array.from(this.neutresBase))  
         this.personnages = []
         
@@ -667,7 +667,6 @@ class shadowHunter extends Game{
       
       //Pour condition de victoire d'agnès
       for (var zzz in this.joueurs){
-                console.log(parseInt(zzz))
                 if (this.joueurs[parseInt(zzz)].character=="Agnès"){
                     if (parseInt(zzz)<=0){
                         this.joueurs[parseInt(zzz)].conditionVictoire = this.joueurs[this.joueursMax-1].idJoueur
@@ -677,6 +676,7 @@ class shadowHunter extends Game{
                     }
                     
                 }
+                if (this.joueurs[parseInt(zzz)].character=="Bob"){this.joueurs[parseInt(zzz)].vol=false}//Variable utilisée pour voir s'il vole ou non
             }
 
 
@@ -702,6 +702,13 @@ class shadowHunter extends Game{
         this.joueurs[0].turnsToPlay = 1
         this.state = "débutTour"
      
+
+        this.joueurs[1].objets.push("Amulette")
+        this.joueurs[1].objets.push("Toge_Sainte")
+
+        this.défausseBlanche.push(new CarteShadowHunter("Lance_De_Longinus","équipement"))
+
+
         }
         
 
@@ -810,8 +817,8 @@ class shadowHunter extends Game{
                                     case "Hachoir_Maudit":
                                     case "Mitrailleuse_Funeste":
                                     case "Tronçonneuse_Du_Mal":
-                                      this.défausseNoire.push(zzz)
-                                      break
+                                        this.défausseNoire.push(new CarteShadowHunter(zzz,"équipement"))
+                                        break
             
                                     case "Boussole_Mystique":
                                     case "Broche_De_Chance":
@@ -819,8 +826,8 @@ class shadowHunter extends Game{
                                     case "Toge_Sainte":
                                     case "Lance_De_Longinus":
                                     case "Crucifix_En_Argent":
-                                      this.défausseBlanche.push(zzz)
-                                    break
+                                        this.défausseBlanche.push(new CarteShadowHunter(zzz,"équipement"))
+                                        break
                                   }
             
                                 }
@@ -935,7 +942,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                                         case "Hachoir_Maudit":
                                         case "Mitrailleuse_Funeste":
                                         case "Tronçonneuse_Du_Mal":
-                                          this.défausseNoire.push(zzz)
+                                          this.défausseNoire.push(new CarteShadowHunter(zzz,"équipement"))
                                           break
                 
                                         case "Boussole_Mystique":
@@ -944,7 +951,7 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                                         case "Toge_Sainte":
                                         case "Lance_De_Longinus":
                                         case "Crucifix_En_Argent":
-                                          this.défausseBlanche.push(zzz)
+                                          this.défausseBoire.push(new CarteShadowHunter(zzz,"équipement"))
                                         break
                                       }
                 
@@ -1255,6 +1262,16 @@ if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCoura
                 var tempDamage = totalDamage
                 if (this.canAttack(attaquant.idJoueur,défenseur.idJoueur) && attaquant.idJoueur!=défenseur.idJoueur){console.log(attaquant.idJoueur+" attaque "+défenseur.idJoueur)
             if (défenseur.protected==true){tempDamage=0}
+                  
+            
+            
+            if (attaquant.character=="Bob"&&attaquant.vol){
+            if (défenseur.objets.length>0 && tempDamage>=2){
+                        //BOB VOLE LES OBJETS
+                        attaquant.objets.push(défenseur.objets.splice(+Math.floor(Math.random()*défenseur.objets.length),1))
+                        
+                    }
+            
             if (this.takeDamage(défenseur,tempDamage)==false){
                 if (défenseur.character=="Loup-Garou"&&défenseur.révélé&&!défenseur.pouvoirUtilisé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
             }
@@ -1273,8 +1290,8 @@ if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCoura
                         case "Hachoir_Maudit":
                         case "Mitrailleuse_Funeste":
                         case "Tronçonneuse_Du_Mal":
-                          this.défausseNoire.push(z)
-                          break
+                            this.défausseNoire.push(new CarteShadowHunter(zzz,"équipement"))
+                            break
 
                         case "Boussole_Mystique":
                         case "Broche_De_Chance":
@@ -1282,25 +1299,43 @@ if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCoura
                         case "Toge_Sainte":
                         case "Lance_De_Longinus":
                         case "Crucifix_En_Argent":
-                          this.défausseBlanche.push(z)
-                        break
+                            this.défausseBlanche.push(new CarteShadowHunter(zzz,"équipement"))
+                            break
                       }
 
             }}
 
             }
+
+
         }
+    
     }
     if (attaquant.character=="Vampire"&&attaquant.révélé&&!attaquant.pouvoirUtilisé&& totalDamage>0){attaquant.hurtPoint-=2}
     if (attaquant.hurtPoint<=0){attaquant.hurtPoint=0}
     retour.dégâts = totalDamage
-    return retour
 }
+attaquant.vol=false
+    return retour
+}//FIN CAS MITRAILLEUSE
+
+
         else{
 
         if (défenseur.protected==true){totalDamage=0}
         retour.dégâts = totalDamage
   
+        if (attaquant.character=="Bob"&&attaquant.vol){
+            if (défenseur.objets.length>0 && totalDamageDamage>=2){
+                attaquant.objets.push(défenseur.objets.splice(+Math.floor(Math.random()*défenseur.objets.length),1))
+                attaquant.vol = false
+                return retour
+            }
+            else{
+                attaquant.vol=false
+            }
+        }
+
         if (this.takeDamage(défenseur,totalDamage)==false){
             if (défenseur.character=="Loup-Garou"&&défenseur.révélé&&!défenseur.pouvoirUtilisé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true}
         }
