@@ -306,7 +306,9 @@ function Jouer(){
         setListeLignes(data.lignes);
         socket.emit("wantCarte", { "idPartie": idPartie});
         socket.on("getCarte", (data) => {
-          setListeCartes(data.main);
+          if (data.main){
+            setListeCartes(data.main);
+          }
         });
       }
     }
