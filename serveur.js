@@ -62,6 +62,7 @@ app.post('/login', (req, res) => {
     res.send({ validation: false });
   } else {
     db.get('SELECT * FROM users WHERE pseudo = ?', [username], (err, row) => {
+      getpseudos();
       if (err) {
         throw err;
       }
@@ -109,6 +110,8 @@ app.post('/register', (req, res) => {
             res.send({ validation: false });
           } else {
             db.run("INSERT INTO users(pseudo,password) VALUES(?,?)", [username, hash], (insertErr) => {
+              getpseudos();
+
               if (insertErr) {
                 console.log(insertErr);
                 res.send({ validation: false });
@@ -178,7 +181,9 @@ const { setTimeout } = require('timers');
 
 //-------------------------------Fonctions-----------------------------------------------
 //Obtension de la liste des pseudos des joueurs
-const getpseudos = () => {
+
+function getpseudos(){
+  var db = new sqlite3.Database("cards_game.sqlite");
   // const db = new sqlite3.Database("cards_game.sqlite");
   db.all("SELECT idU, pseudo FROM users", (err, rows) => {
     if (err) {
@@ -545,6 +550,7 @@ io.on('connection', (socket) => {
   });
   
   socket.on("login",(data)=>{
+    getpseudos();
     // data : {id,password}
     // const db = new sqlite3.Database('cards_game.sqlite');
     
@@ -580,9 +586,11 @@ io.on('connection', (socket) => {
         });
         socket.emit("creerCompte",true);
       }
+      getpseudos()
     });
     // db.close();
     
+    getpseudos()
   });
   
   socket.on('message', data => {
@@ -1238,8 +1246,9 @@ io.on('connection', (socket) => {
 
                               if (joueur.isDead()){
                               io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" est tombé sur une peau de banane et en est mort !","rapportAction":{type:"cartePiochée",valeur:"Peau_De_Banane"},"idPartie":partie.id})
-                              tuer(partie,cible)
-                              testAprèsKill(partie,partie.getJoueurCourant(),cible)
+                              tuer(partie,joueur)
+                              partie.testCatherine();partie.testDaniel();testFinPartie(partie)
+
                               }
                             else{                              
                               io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" est tombé sur une peau de banane et a subit un dégât !","rapportAction":{type:"cartePiochée",valeur:"Peau_De_Banane"},"idPartie":partie.id})
@@ -1327,7 +1336,7 @@ io.on('connection', (socket) => {
 
                               case "Miroir_Divin":
                                 if (cartePiochée.data==true){
-                                  io.emit("tourPasse",{"Message":(pseudos[joueur.idJoueur]+" est révélé par le miroir !"),"rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":joueur.character,"pseudo":pseudos[joueur.idJoueur]}},"idPartie":data.idPartie})
+                                  io.emit("tourPasse",{"Message":(pseudos[joueur.idJoueur]+" est révélé par le miroir !"),"rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":joueur.character,"pseudo":pseudos[joueur.idJoueur]}},"idPartie":partie.id})
 
                                 }
                                 else{
@@ -1563,11 +1572,11 @@ io.on('connection', (socket) => {
                                   if (test.idJoueur==partie.variableTemp.cible){cible=test}
                                 }
                                 var mentir = false
-                                switch (data.text){
-                                  case "mentir":
-                                    if (cible.character!="Métamorphe"||cible.pouvoirUtilisé){return}
-                                    mentir = true//Comme ça on pourra faire un seul switch, plus pratique
-                                  case "dire la vérité":
+                                if (cible.character=="Métamorphe"&&!cible.pouvoirUtilisé&&data.text=="mentir"){mentir=true}
+                         
+                                  
+                                    
+                                  if (!(data.text=="mentir" || data.text=="dire la vérité")){return}
                                     console.log(partie.variableTemp)
                                     switch (partie.variableTemp.vision){
                                       //D'abord les cas où c'est juste du heal/des dégâts
@@ -1757,10 +1766,9 @@ io.on('connection', (socket) => {
                                       break
 
                                     }
-                                    break
-                                }
-                                partie.state = "phase_Attaque"
-                                if (cible.isDead()){
+                                    
+                                    partie.state = "phase_Attaque"
+                                    if (cible.isDead()){
                                   tuer(partie,cible)
                                   testAprèsKill(partie,partie.getJoueurCourant(),cible)
 
@@ -1770,10 +1778,11 @@ io.on('connection', (socket) => {
                                 setTimeout(() => {
                                   tourPasseDeCirconstance(partie)
                                 }, 2500);
-                                return
-                                                
-                              return
+                                return 
                               }
+                              
+                                                
+                              
 
 
                               if (socket.data.userId==partie.variableTemp &&data.type=="choix"&&partie.state=="contre-attaque"){//Cas de contre-attaque tra^tié avant le reste
@@ -2773,10 +2782,11 @@ io.on('connection', (socket) => {
                             console.log(data)
                             for (var partie of partiesEnCours){
                               if (partie.id==data.idPartie){
+                      
                                 if (partie.getIdFromCharacter(data.capacite)!=socket.data.userId){return}
                                 for (var joueur of partie.joueurs){
                                   if (joueur.idJoueur==socket.data.userId){
-                                  if ( (joueur.révélé==false||joueur.pouvoirUtilisé==true)){;return}
+                                  if ((joueur.révélé==false||joueur.pouvoirUtilisé==true)){return}
                                   }}
                                 switch (data.capacite){
                                   case "Agnès":
@@ -2784,12 +2794,12 @@ io.on('connection', (socket) => {
                                     if (partie.joueurs[zzz].idJoueur==socket.data.userId&&partie.joueurs[zzz].character=="Agnès"){
                                       if (parseInt(zzz)>=partie.joueursMax-1){
                                         partie.joueurs[zzz].conditionVictoire = partie.joueurs[0].idJoueur
-                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[ partie.joueurs[zzz]]+" !","rapportAction":false,"idPartie":data.idPartie})
+                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[ partie.joueurs[zzz].conditionVictoire]+" !","rapportAction":false,"idPartie":data.idPartie})
                                         
                                       }
                                       else{
                                         partie.joueurs[zzz].conditionVictoire = partie.joueurs[parseInt(zzz)+1].idJoueur
-                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[partie.joueurs[zzz]]+" !","rapportAction":false,"idPartie":data.idPartie})
+                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir d'agnès et se bat désormais aux côtés de "+pseudos[partie.joueurs[zzz].conditionVictoire]+" !","rapportAction":false,"idPartie":data.idPartie})
 
                                       }
                                       setTimeout(() => {

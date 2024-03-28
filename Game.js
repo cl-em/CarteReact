@@ -516,11 +516,11 @@ class shadowHunter extends Game{
         this.variableTemp = undefined
         this.couleurs = ["Rouge","Jaune","Vert","Bleu","Rose","Orange","Blanc","Noir"]
         //Choix des personnages
-        this.shadowsBase = ["Daniel"/*"Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"*/]
+        this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
-        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin",*/"Agnès"/*"Emi","Ellen"*/]
+        this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"]
         this.hunters = this.shuffle(Array.from(this.hunterBase))
-        this.neutresBase = [/*"Bob","Allie","Agnès","Bryan","David","Daniel",*/"Catherine",/*"Charles"*/]
+        this.neutresBase = [/*"Bob","Allie",*/"Agnès","Bryan"/*,"David","Daniel","Catherine","Charles"*/]
         this.neutres = this.shuffle(Array.from(this.neutresBase))  
         this.personnages = []
         
@@ -549,7 +549,9 @@ class shadowHunter extends Game{
                     
                 }
             }
-
+            this.personnages = this.shuffle(this.personnages)
+            this.personnages = this.shuffle(this.personnages)
+            this.personnages = this.shuffle(this.personnages)
 
         } 
         
@@ -558,7 +560,6 @@ class shadowHunter extends Game{
         //Création des piles en question
         this.blanches = []
         this.blanches.push(new CarteShadowHunter('Eclair_Purificateur', 'consommable'))
-        /*
         this.blanches.push(new CarteShadowHunter('Premiers_Secours', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Avènement_Suprême', 'consommable'))
         this.blanches.push(new CarteShadowHunter('Barre_De_Chocolat', 'consommable'))
@@ -573,10 +574,10 @@ class shadowHunter extends Game{
         this.blanches.push(new CarteShadowHunter('Amulette', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Toge_Sainte', 'équipement'))
         this.blanches.push(new CarteShadowHunter('Lance_De_Longinus', 'équipement'))
-        this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))*/
+        this.blanches.push(new CarteShadowHunter('Crucifix_En_Argent', 'équipement'))
                 
         this.noires = []
-        this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))/*
+        this.noires.push(new CarteShadowHunter('Araignée_Sanguinaire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Dynamite', 'consommable'))
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Revolver_Des_Ténèbres', 'équipement'))
@@ -591,7 +592,7 @@ class shadowHunter extends Game{
         this.noires.push(new CarteShadowHunter('Chauve-Souris_Vampire', 'consommable'))
         this.noires.push(new CarteShadowHunter('Mitrailleuse_Funeste', 'équipement'))
         this.noires.push(new CarteShadowHunter('Tronçonneuse_Du_Mal', 'équipement'))
-        this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))*/
+        this.noires.push(new CarteShadowHunter('Rituel_Diabolique', 'consommable'))
         
         this.visions = []
         this.visions.push(new CarteShadowHunter('Vision_Furtive', 'vision'))
@@ -724,8 +725,8 @@ class shadowHunter extends Game{
                 if (joueur.character==char){
                     return joueur.idJoueur;
                 }
-                return null
             }
+            return null
         }
 
         getIndexFromZone(zone){
@@ -1037,6 +1038,32 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
 
     finPartie(){//Fonction qui teste si quelqu'un a gagné et, si oui, qui met gamefinished à true
 
+        var victoireShadow = false
+        var victoireHunter = false
+
+        var compteNeutres = 0//Compte des neutres morts
+        var shadowEnVie = false//Pour voir si un hunter est en vie
+        var hunterEnVie = false//Pour voir si un hunter est en vie
+
+        for (var test of this.joueurs){
+            if (this.shadowsBase.includes(test.character) && !test.éliminé){shadowEnVie=true}
+            if (this.hunterBase.includes(test.character)&&!test.éliminé){hunterEnVie=true}
+            if (this.neutresBase.includes(test.character)&&test.éliminé){compteNeutres++}
+        }
+
+        if (!shadowEnVie){victoireHunter=true}
+        if (!hunterEnVie||compteNeutres>=3){victoireShadow=true}
+
+            for (var test of this.joueurs){
+            if (this.shadowsBase.includes(test.character) && victoireShadow){}
+            if (((this.hunterBase.includes(test.character)||test.character=="Daniel")&&victoireHunter)||(this.shadowsBase.includes(test.character) && victoireShadow)){this.winners.push(test.idJoueur)}
+        }
+
+
+
+        for (var test of this.joueurs){}
+
+
         for (var joueur of this.joueurs){
             switch (joueur.character){
                 case "Bob":
@@ -1044,16 +1071,13 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                     break
             }   
         }
+     
 
-console.log("bip boup on cherche qui a gagné")
-
-console.log("condition de victoire de Agnès:")
-console.log(this.joueurs[0].conditionVictoire)
 
         //Test agnès en tout dernier
         for (var joueur of this.joueurs){
             if (joueur.character=="Agnès"){
-                
+                console.log(joueur.conditionVictoire)
                 if (this.winners.includes(joueur.conditionVictoire)){
                     this.winners.push(joueur.idJoueur)
                 }
@@ -1138,7 +1162,7 @@ console.log(this.joueurs[0].conditionVictoire)
         if (this.gameFinished){return}
         var isPlayer = false
         for (var j in this.joueurs){    if (!j.éliminé){isPlayer=true}        }
-        if (!isPlayer){this.finPartie();return}
+        if (!isPlayer){return}
 
 
 
@@ -1233,8 +1257,8 @@ if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCoura
             }
         }
     }
-    if (attaquant.character=="Vampire"&&attaquant.révélé&&!attaquant.pouvoirUtilisé){attaquant.hurtPoint-=2}
-    if (attaquant.hurtPoint<=0){attaquant.hurtPoint==0}
+    if (attaquant.character=="Vampire"&&attaquant.révélé&&!attaquant.pouvoirUtilisé&& totalDamage>0){attaquant.hurtPoint-=2}
+    if (attaquant.hurtPoint<=0){attaquant.hurtPoint=0}
     retour.dégâts = totalDamage
     return retour
 }
@@ -1251,8 +1275,8 @@ if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCoura
             défenseur.éliminé=true
 
         }
-        if (attaquant.character=="Vampire"&&attaquant.révélé&&!attaquant.pouvoirUtilisé){attaquant.hurtPoint-=2}
-        if (attaquant.hurtPoint<=0){attaquant.hurtPoint==0}
+        if (attaquant.character=="Vampire"&&attaquant.révélé&&!attaquant.pouvoirUtilisé && totalDamage>0){attaquant.hurtPoint-=2}
+        if (attaquant.hurtPoint<=0){attaquant.hurtPoint=0}
         return retour;
     }
 
