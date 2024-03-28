@@ -2137,7 +2137,7 @@ io.on('connection', (socket) => {
                                           partie.takeDamage(cible,dmg)
                                           
                                           if (cible.isDead()){
-                                              tuer(partie,joueur)
+                                              tuer(partie,cible)
                                               testAprèsKill(partie,partie.getJoueurCourant(),cible)
                                               io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" avec sa foudre. Il s'agissait de  " +cible.character.replace(/_/g," ")+ ".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})                                     
 
@@ -2160,7 +2160,7 @@ io.on('connection', (socket) => {
                                           if (cible.protected){dmg=0}
                                           partie.takeDamage(cible,dmg)
                                           if (cible.isDead()){
-                                            tuer(partie,joueur)
+                                            tuer(partie,cible)
                                             io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" grâce a démolition. Il s'agissait de  " +cible.character.replace(/_/g," ")+ ".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})                                     
                                             testAprèsKill(partie,partie.getJoueurCourant(),cible)
 
@@ -2198,7 +2198,7 @@ io.on('connection', (socket) => {
                                           if (cible.protected){dmg=0}
                                           partie.takeDamage(cible,dmg)
                                           if (cible.isDead()){
-                                            tuer(partie,joueur)
+                                            tuer(partie,cible)
                                             io.emit("tourPasse",{"Message":pseudos[joueur.idJoueur]+" a tué "+pseudos[cible.idJoueur]+" avec son maléfice. Il s'agissait de  " +cible.character.replace(/_/g," ")+ ".","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":cible.character,"pseudo":pseudos[cible.idJoueur]}},"idPartie":data.idPartie})                                     
                                             testAprèsKill(partie,partie.getJoueurCourant(),cible)
 

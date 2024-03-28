@@ -1071,9 +1071,38 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                     break
             }   
         }
-     
 
 
+        
+        //David
+        var davidCompte = 0
+        for (var joueur of this.joueurs){
+            if (joueur.character=="David"){
+                if (joueur.hasItem("Lance_De_Longinus")){davidCompte++}
+                if (joueur.hasItem("Amulette")){davidCompte++}
+                if (joueur.hasItem("Toge_Sainte")){davidCompte++}
+                if (joueur.hasItem("Crucifix_En_Argent")){davidCompte++}
+                if (davidCompte>=3){this.winners.push(joueur.idJoueur)}
+            }
+        }
+
+
+        //Test allie en vie
+
+        for (var joueur of this.joueurs){
+            if (joueur.character=="Allie"){
+                if (!joueur.éliminé){this.winners.push(joueur.idJoueur)}
+            }}
+
+        //Catherine
+        var joueursEnVie = 0
+        for (var joueur of this.joueurs){if (!joueur.éliminé){joueursEnVie++}}
+ 
+        for (var joueur of this.joueurs){
+            if (joueur.character=="Catherine"){
+            if (joueursEnVie==2 && !joueur.éliminé){this.winners.push(joueur.idJoueur)}
+            }
+        }
         //Test agnès en tout dernier
         for (var joueur of this.joueurs){
             if (joueur.character=="Agnès"){
@@ -1083,6 +1112,11 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 }
             }
         }
+
+
+   
+
+
 
         //A la fin on arrête si au moins un gagnant
         if (this.winners.length>0){this.gameFinished = true;return true}
