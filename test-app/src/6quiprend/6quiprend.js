@@ -226,7 +226,7 @@ function Jouer(){
       console.log("gameFinished");
       if (data.idPartie === idPartie) {
         setFinish(true);
-        // Autres mises à jour d'état basées sur data
+        setInfosFinPartie(data.classement);
       }
     };
 
