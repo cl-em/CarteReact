@@ -317,7 +317,7 @@ function loadPartieSixQuiPrend(idPartie){
       var partie_json = JSON.parse(partiedb);
       // transformer en objet sixquiprend
       var partie = sixquiprend.fromJSON(partie_json);
-      partiesEnCours.push(partie);
+      if (!partiesEnCours.includes(partie)){partiesEnCours.push(partie);}
       resolve(partie); // Résoudre la promesse avec la partie chargée
     })
     .catch((err) => {
