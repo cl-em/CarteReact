@@ -744,7 +744,9 @@ io.on('connection', (socket) => {
               if (partie.joueurs.length==partie.joueursMax){
                 lancerPartie(partie.id);
                 //Renvoi de choses différentes selon le type de partie
-                if (partie.type=="Bataille"){io.emit("gameStarting",{"idPartie":data.idPartie})}
+                setTimeout(() => {
+                  if (partie.type=="Bataille"){io.emit("gameStarting",{"idPartie":data.idPartie})}
+                }, 1000);
                 
                 setTimeout(() => {
                   
