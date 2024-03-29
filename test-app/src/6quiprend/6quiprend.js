@@ -352,7 +352,12 @@ useEffect(()=>{
     socket.emit("sauvegarderPartieSixQuiPrend",{"idPartie":idPartie});
     navigate("/6quiprend")
 }
-  
+  let cansave = true;
+  for (let i = 0; i < infosJoueurs.length; i++){
+    if (infosJoueurs[i].doitJouer === false){
+      cansave = false;
+    }
+  }
   return (
     <div>
       {gameStart ? (
@@ -365,7 +370,7 @@ useEffect(()=>{
             <AfficherStats infosJoueursFun={infosJoueurs} />
             <AfficherLigne listeLignes={nouvelleListeLignes} />
             <Main6QuiPrend listeNombre={nouvelleMain.sort()} />
-            { host && (
+            { host && cansave && (
                 <button id="sauvegarde-btn" className="joliebouton"onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
             )}
             <div className='infopartie'>
