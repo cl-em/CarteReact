@@ -95,18 +95,28 @@ function MainJoueur() {
             if (data.idPartie === idPartie) {
                 setGameStart(true);
             }
-            socket.emit("isHost", { idPartie: idPartie });
-            socket.on("isHost", (data) => {
-                if (data === true) {
-                    setHost(true);
-                }
-            }
-            )
+            // socket.emit("isHost", { idPartie: idPartie });
+            // socket.on("isHost", (data) => {
+            //     if (data === true) {
+            //         setHost(true);
+            //     }
+            // }
+            // )
         });
 
         return () => {
             socket.off("gameStarting"); //Pour la mémoire
         };
+    }, [idPartie]);
+
+    useEffect(() => {
+        socket.emit("isHost", { idPartie: idPartie });
+            socket.on("isHost", (data) => {
+                if (data === true) {
+                    setHost(true);
+                }
+            }
+        )
     }, [idPartie]);
 
     useEffect(() => {

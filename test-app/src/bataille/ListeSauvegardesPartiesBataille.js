@@ -30,7 +30,11 @@ function ListeSauvegardesPartiesBataille(){
 
     return (
         <div>
-            <center><h1 style={{ color: 'aliceblue' }}>Liste des sauvegardes :</h1></center>
+            {sauvegardes.length === 0 ? (
+                <center><h1 style={{ color: 'aliceblue' }}>Aucune sauvegarde</h1></center>
+                ) : (
+                <center><h1 style={{ color: 'aliceblue' }}>Liste des sauvegardes :</h1></center>
+            )}
             <ul>
                 {sauvegardes.map((sauvegarde, index) => (
                     <div className={"test".concat(index%2)} key={index}>
