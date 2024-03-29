@@ -38,6 +38,7 @@ import {
 import { Bataille } from './bataille/Bataille';
 import Leaderboard from './bataille/Leaderboard';
 import Leaderboard6 from './6quiprend/Leaderboard6';
+import LeaderboardSH from './shadowhunter/LeaderboardSH';
 
 import { SixQuiPrend } from './6quiprend/6quiprend';
 import ShadowHunter from './shadowhunter/ShadowHunter';
@@ -67,6 +68,7 @@ function MyApp() {
           {/*  leaderboard */}
           <Route path='/leaderboardbataille' element={<SocketProvider><Leaderboard typeDeJeu={"Bataille"}/></SocketProvider>}/>
           <Route path='/leaderboard6quiprend' element={<SocketProvider><Leaderboard6 typeDeJeu={"6quiprend"}/></SocketProvider>}/>
+          <Route path='/leaderboardMagic' element={<SocketProvider><LeaderboardSH typeDeJeu={"shadowHunter"}/></SocketProvider>}/>
           {/* sauvegarde */}
           <Route path="/sauvegardeBataille" element={<SocketProvider><ListeSauvegardesPartiesBataille/></SocketProvider>} />
           <Route path="/sauvegardeSixQuiPrend" element={<SocketProvider><ListeSauvegardesParties6quiprend/></SocketProvider>} />

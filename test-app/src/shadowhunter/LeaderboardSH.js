@@ -3,8 +3,22 @@ import SocketContext from '../SocketContext';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
-function Leaderboard6({typeDeJeu}){
-  // le type c'est : Bataille ou 6quiprend
+export default function LeaderboardSH({typeDeJeu}){
+
+    useEffect(() => {
+
+        const obg = document.body.style.backgroundImage;
+
+
+        document.body.style.backgroundImage = 'url("http://localhost:8888/fichier/table_spooky.png")';
+
+
+        return () => {
+
+            document.body.style.backgroundImage = obg;
+        };
+    }, []);
+  // le type c'est : Bataille ou 6quiprend ou shadowHunter
     const navigate = useNavigate();
     const socket = React.useContext(SocketContext);
     useEffect(()=>{
@@ -27,7 +41,7 @@ function Leaderboard6({typeDeJeu}){
   
     return (
       <div>
-        <center><h1 style={{ color: 'aliceblue' }}>Classement du 6quiprend :</h1></center> <br></br>
+        <center><h1 style={{ color: 'aliceblue' }}>Classement du Shadow Hunter :</h1></center> <br></br>
         <div className="leaderboard">
           {leaderboardData && (
             <table>
@@ -51,7 +65,7 @@ function Leaderboard6({typeDeJeu}){
           )}
         </div>
         <br></br>
-        <button  class="joliebouton" onClick={()=>navigate("/6quiprend")}>Revenir à la liste des parties</button>
+        <button  class="joliebouton2" onClick={()=>navigate("/magic")}>Revenir à la liste des parties</button>
       </div>
     );   
     
@@ -65,4 +79,4 @@ function Leaderboard6({typeDeJeu}){
 ]*/
 }
 
-export default Leaderboard6;
+// export default LeaderboardSH;

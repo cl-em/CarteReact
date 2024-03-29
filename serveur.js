@@ -420,6 +420,7 @@ io.on('connection', (socket) => {
     let localplayer;
     let typeJeu = data;
     let idJoueur = socket.data.userId;
+    console.log("demande leaderboard "+typeJeu)
     db.all('SELECT pseudo, score' + typeJeu+', classement FROM (SELECT pseudo, score'+typeJeu+', row_number() OVER (ORDER BY score'+ typeJeu+' DESC) AS classement FROM users ) WHERE classement < 20 ORDER BY classement', (err, rows) => {
       socket.emit("leaderboard",{"joueursTop":rows,"joueurLocal":localplayer});
     })  
@@ -1468,17 +1469,22 @@ io.on('connection', (socket) => {
                             if (partie.state=="finished"){return}
                             if (partie.finPartie()){
                               var retour = []
-                              for (var j of (partie.winners)){retour.push(pseudos[j])}
+                              for (var j of (partie.joueurs)){
+                                if (partie.winners.includes(j.idJoueur)){
+                                  retour.push({"pseudo":pseudos[j.idJoueur],"carte":j.character})
+                                }
+                              }
                                  retour = retour.filter((value, index, self) => {
                                  return self.indexOf(value) === index;
                                });
+
                               
                               console.log("partie "+partie.id+ "finie. Gagnants:")
                               console.log(retour)
                               partie.state = "finished"
                               io.emit("gameFinished",{"idPartie":partie.id,"gagnants":retour})
                               for (var v of partie.winners){
-                                db.run("UPDATE users SET score6quiprend = score6quiprend+"+1+" WHERE idU="+v )
+                                db.run("UPDATE users SET scoreshadowHunter = scoreshadowHunter+"+1+" WHERE idU="+v )
                               }
                               setTimeout(() => {
                                 for (var test in partiesEnCours){
@@ -1487,7 +1493,7 @@ io.on('connection', (socket) => {
                                   }
                                 }
                               }, 2500);
-                              //BDD etc...
+        
                               return
                             }
 
@@ -1816,7 +1822,11 @@ io.on('connection', (socket) => {
                                   if (joueur.idJoueur==socket.data.userId){
                                 if (data.text=="contre-attaquer !"){//Cas de contre-attaque
                                   for (var cible of partie.joueurs){
-                                  var dmg = Math.floor(Math.random()*6)+1
+                                    if (cible.idJoueur==partie.joueurCourant){
+                                         var d6 =  Math.floor(Math.random()*6)+1
+                                          var d4 =  Math.floor(Math.random()*4)+1 
+                                     
+                                  var dmg =  Math.abs(d6-d4);
                                   if (partie.takeDamage(cible,dmg)==false){//ça ne tue pas
                                   if (cible.révélé){io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+pseudos[partie.joueurCourant],"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible.idJoueur],"dégâts":dmg,"personnages":[joueur.character,cible.character]}},"idPartie":data.idPartie})}
                                   else{io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a infligé "+dmg+" dégâts à "+pseudos[partie.joueurCourant],"rapportAction":{"type":"dégatsSubits","valeur":{"pseudo":pseudos[cible.idJoueur],"dégâts":dmg,"personnages":[joueur.character,false]}},"idPartie":data.idPartie})}
@@ -1844,6 +1854,7 @@ io.on('connection', (socket) => {
                                     }, 2500);
                                 }//Fin cas de kill
                               }
+                            }
                                 }
                                 else{//Cas de non contre-attaque
                                   partie.state = "finTour"
@@ -2217,7 +2228,7 @@ io.on('connection', (socket) => {
                                           var cible;
                                           joueur.pouvoirCeTour= true
                                           for (var joueu of partie.joueurs){if (joueu.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueu}}
-                                          if (cible.position!=partie.getIndexFromZone("Zone2")){return}
+                                          if (cible.position!=partie.getIndexFromZone("zone2")){return}
                                           partie.state="débutTour"
                                           var dmg = 3
                                           if (cible.protected){dmg=0}
@@ -2530,7 +2541,7 @@ io.on('connection', (socket) => {
                                                       joueur.objets.push(z)
                                                     }
                                                     test.éliminé=true
-                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était " +cible.character.replace(/_/g," ")+ " et volé tous ses objets","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
+                                                    io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a tué "+pseudos[test.idJoueur]+" qui était " +test.character.replace(/_/g," ")+ " et volé tous ses objets","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[test.idJoueur]}},"idPartie":data.idPartie})
                                                     partie.state = "finTour"
                                                     setTimeout(() => {
                                                       tourPasseDeCirconstance(partie)

@@ -93,19 +93,33 @@ function ApresJeu({ listeGagnants }) {
 
     let messageGagnants;
     if (listeGagnants.length === 1) {
-        messageGagnants = `Le gagnant est ${listeGagnants[0]}`;
+        messageGagnants = `Le gagnant est :`;
     } else {
-        messageGagnants = `Les gagnants sont ${listeGagnants.join(', ')}`;
-    }
 
+
+        messageGagnants = `Les gagnants sont:`;
+    }
+    //{"pseudo":pseudos[j.idJoueur],"carte":j.character}
     return (
         <div>
-            <p>{messageGagnants}.</p>
-            <br />
+                <p class="messageGagnant">{messageGagnants}</p>
+            <div className="fin">
+
+                {listeGagnants.map((joueur, index) => (
+                    <div className="divGagnant">
+                        <p>{joueur.pseudo}</p>
+                        <img src={"http://localhost:8888/carteshadow/" + joueur.carte + ".png"} alt={joueur.carte} key={index} />
+                    </div>
+                ))}
+                </div>
+            <div className="finBouton">
+
             <button className="joliebouton2" onClick={() => navigate("/games")}>
                 Revenir à l'écran de sélection des jeux
             </button>
-        </div>
+            </div>
+
+        </div >
     );
 }
 
@@ -122,7 +136,6 @@ function Connecte() {
     useEffect(() => {
         socket.emit("quisuisje?");
         socket.on("quisuisje", (data) => {
-            console.log("Pseudo reçu :", data.pseudos);
             setPseudo(data);
         })
         return () => {
@@ -409,6 +422,7 @@ function Jouer() {
         socket.on("gameFinished", (data) => {
             if (data.idPartie === idPartie) {
                 setFinish(true);
+
                 setListeGagnants(data.gagnants);
             }
 

@@ -1072,6 +1072,12 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 case "Bob":
                     if (joueur.objets.length>=5){this.winners.push(joueur.idJoueur)}
                     break
+
+                case "Bryan":
+                        if (this.zones[joueur.position]=="zone6"){
+                            this.winners.push(joueur.idJoueur)
+                        }
+                break
             }   
         }
 
@@ -1174,10 +1180,18 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 }
             }
             else{
+                if (this.joueursMax>3){
                 if (compte>=4){
                     this.winners.push(joueur.idJoueur);
                     return true
                 }
+            }
+            else{
+                if (compte>=1){
+                    this.winners.push(joueur.idJoueur)
+                    return true
+                }
+            }
             }
     return false 
           }
@@ -1325,7 +1339,7 @@ attaquant.vol=false
         retour.dégâts = totalDamage
   
         if (attaquant.character=="Bob"&&attaquant.vol){
-            if (défenseur.objets.length>0 && totalDamageDamage>=2){
+            if (défenseur.objets.length>0 && totalDamage>=2){
                 attaquant.objets.push(défenseur.objets.splice(+Math.floor(Math.random()*défenseur.objets.length),1))
                 attaquant.vol = false
                 return retour

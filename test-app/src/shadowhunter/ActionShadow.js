@@ -108,7 +108,7 @@ export default function Action({ rapportAction, idJoueurLocal }) {
                         />
 
                         :<img src={"http://localhost:8888/carteShadow/Carte_Vision.png"} alt={actV.vision} 
-                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+actV.vision+".png")}
+                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Carte_Vision.png")}
                         />
                     }
                 </div>
@@ -137,7 +137,7 @@ export default function Action({ rapportAction, idJoueurLocal }) {
 
                         :<img src={"http://localhost:8888/carteShadow/Carte_Vision.png"} alt={actV} 
 
-                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/"+actV.vision+".png")}
+                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Carte_Vision.png")}
                         />
                     }
                 </div>
