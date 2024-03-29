@@ -30,14 +30,24 @@ function ListeSauvegardesPartiesBataille(){
 
     return (
         <div>
-            <h1>Liste des sauvegardes</h1>
+            {sauvegardes.length === 0 ? (
+                <center><h1 style={{ color: 'aliceblue' }}>Aucune sauvegarde</h1></center>
+                ) : (
+                <center><h1 style={{ color: 'aliceblue' }}>Liste des sauvegardes :</h1></center>
+            )}
             <ul>
-                {sauvegardes.map((sauvegarde) => (
-                    <li key={sauvegarde.idB}>
-                        Partie ID : {sauvegarde.idB} <button onClick={() => chargerPartie(sauvegarde.idB)}>Charger</button><button onClick={() => supprimerPartie(sauvegarde.idB)}>Supprimer</button>
-                    </li>
+                {sauvegardes.map((sauvegarde, index) => (
+                    <div className={"test".concat(index%2)} key={index}>
+                        <p>Partie ID :</p>
+                        <p>{sauvegarde.idB}</p>
+                        <button class="joliebouton" onClick={() => chargerPartie(sauvegarde.idB)}>Charger</button>
+                        <button class="joliebouton" onClick={() => supprimerPartie(sauvegarde.idB)}>Supprimer</button>
+                    </div>
                 ))}
             </ul>
+            <button class="joliebouton" onClick={()=>navigate("/bataille")}>Accueil Bataille</button>
+            <button class="joliebouton" onClick={()=>navigate("/ListePartiesRejointes")}>Liste Parties Rejointes</button>
+            <button class="joliebouton" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
         </div>
     );
 

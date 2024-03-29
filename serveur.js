@@ -299,7 +299,7 @@ function loadPartieBataille(idPartie){
       var partie_json = JSON.parse(partiedb);
       // transformer en objet bataille
       var partie = Bataille.fromJSON(partie_json);
-      partiesEnCours.push(partie);
+      if (!partiesEnCours.includes(partie)){partiesEnCours.push(partie);}
       resolve(partie); // Résoudre la promesse avec la partie chargée
     })
     .catch((err) => {
@@ -744,7 +744,9 @@ io.on('connection', (socket) => {
               if (partie.joueurs.length==partie.joueursMax){
                 lancerPartie(partie.id);
                 //Renvoi de choses différentes selon le type de partie
-                if (partie.type=="Bataille"){io.emit("gameStarting",{"idPartie":data.idPartie})}
+                setTimeout(() => {
+                  if (partie.type=="Bataille"){io.emit("gameStarting",{"idPartie":data.idPartie})}
+                }, 1000);
                 
                 setTimeout(() => {
                   
@@ -760,11 +762,11 @@ io.on('connection', (socket) => {
                   
                   let listejoueurs = [];
                   for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur])}
-                  io.emit("gameStarting",{"idPartie":data.idPartie,"joueurs":listejoueurs,"zones":partie.zones})}
+                  io.emit("gameStarting",{"idPartie":data.idPartie,"joueurs":listejoueurs,"zones":partie.zones})
                   setTimeout(()=>{
                     io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant,"défaut":false}},"idPartie":data.idPartie})
-                    },200)
-                }, 1000);
+                    },200)}
+                  }, 1000);
                 
                 
               }
@@ -1475,7 +1477,7 @@ io.on('connection', (socket) => {
                               console.log(retour)
                               partie.state = "finished"
                               io.emit("gameFinished",{"idPartie":partie.id,"gagnants":retour})
-                              for (var v of partie.winner){
+                              for (var v of partie.winners){
                                 db.run("UPDATE users SET score6quiprend = score6quiprend+"+1+" WHERE idU="+v )
                               }
                               setTimeout(() => {

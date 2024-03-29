@@ -28,10 +28,13 @@ function ListeSauvegardesParties6quiprend(){
             setSauvegardes(data);
         });
     }
-
     return (
         <div>
-            <h1>Liste des sauvegardes</h1>
+            {sauvegardes.length === 0 ? (
+                <center><h1 style={{ color: 'aliceblue' }}>Aucune sauvegarde</h1></center>
+                ) : (
+                <center><h1 style={{ color: 'aliceblue' }}>Liste des sauvegardes :</h1></center>
+            )}
             <ul>
                 {sauvegardes.map((sauvegarde, index) => (
                     <div className={"test".concat(index%2)} key={index}>
@@ -42,6 +45,9 @@ function ListeSauvegardesParties6quiprend(){
                     </div>
                 ))}
             </ul>
+            <button class="joliebouton" onClick={()=>navigate("/6quiprend")}>Accueil 6quiprend</button>
+            <button class="joliebouton" onClick={()=>navigate("/ListePartiesRejointes")}>Liste Parties Rejointes</button>
+            <button class="joliebouton" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
         </div>
     );
 
