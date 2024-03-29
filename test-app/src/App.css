@@ -656,14 +656,13 @@ top:0;
 #sauvegarde-btn{
   position: fixed;
   top: 0;
-  left: 50%;
-  /* transform: translateX(-50%); */
+  left: 45%;
   margin-top: 10px;
 }
 
 #sauvegarde-btn p{
   margin-top: 40px;
-  color: aqua;
+  color: rgb(0, 0, 0);
 }
 
 .input-area {
