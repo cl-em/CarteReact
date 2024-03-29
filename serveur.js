@@ -762,11 +762,11 @@ io.on('connection', (socket) => {
                   
                   let listejoueurs = [];
                   for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur])}
-                  io.emit("gameStarting",{"idPartie":data.idPartie,"joueurs":listejoueurs,"zones":partie.zones})}
+                  io.emit("gameStarting",{"idPartie":data.idPartie,"joueurs":listejoueurs,"zones":partie.zones})
                   setTimeout(()=>{
                     io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant,"défaut":false}},"idPartie":data.idPartie})
-                    },200)
-                }, 1000);
+                    },200)}
+                  }, 1000);
                 
                 
               }
