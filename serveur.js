@@ -1219,7 +1219,7 @@ io.on('connection', (socket) => {
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché une peau de banane... L'un de ses équipements lui glisse des mains ! Reste à cliquer pour décider duquel...","rapportAction": {type:"cartePiochée",valeur:"Peau_de_Banane"},"idPartie":partie.id})
                               break
                               case "Peau_De_Banane_2":
-                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit qui trouvera son objet...","rapportAction": {type:"cartePiochée",valeur:partie.variableTemp},"idPartie":partie.id})
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit qui trouvera son objet...","rapportAction": {type:"cartePiochée","valeur":partie.variableTemp},"idPartie":partie.id})
                                 break
                                 case "Poupée_Démoniaque":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé une poupée étrange et s'amuse avec... Mais l'image d'un autre joueur lui vient en tête. Qui est-ce ?","rapportAction":{type:"cartePiochée",valeur:"Poupée_Démoniaque"},"idPartie":partie.id})
