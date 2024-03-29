@@ -83,8 +83,8 @@ function MainJoueur() {
     const [joueTour, setJoueTour] = useState(false);
     const [host, setHost] = useState(false);
 
-
     let urlP = new URL(document.location).searchParams;
+    let idPartie =  urlP.get("idPartie");
     let isEgalite = false;
     let gagnant = false;
 
@@ -92,10 +92,10 @@ function MainJoueur() {
 
     useEffect(() => {
         socket.on("gameStarting", (data) => {
-            if (data.idPartie === urlP.get("idPartie")) {
+            if (data.idPartie === idPartie) {
                 setGameStart(true);
             }
-            socket.emit("isHost", { idPartie: urlP.get("idPartie") });
+            socket.emit("isHost", { idPartie: idPartie });
             socket.on("isHost", (data) => {
                 if (data === true) {
                     setHost(true);
@@ -107,14 +107,14 @@ function MainJoueur() {
         return () => {
             socket.off("gameStarting"); //Pour la mémoire
         };
-    }, [urlP.get("idPartie")]);
+    }, [idPartie]);
 
     useEffect(() => {
 
         //if(gameStart){
         if (!listeCarteRecu || !listeJoueursRecu || isEgalite || gagnant || gameStart || joueTour) {
 
-            socket.emit("wantCarte", { "idPartie": urlP.get("idPartie") });
+            socket.emit("wantCarte", { "idPartie": idPartie });
             console.log()
 
             socket.on("getCarte", (data) => {
@@ -158,7 +158,7 @@ function MainJoueur() {
 
     const TourPasse = (data) => {
         // test si c'est la bonne partie 
-        if (urlP.get("idPartie") === data.idPartie) {
+        if (idPartie === data.idPartie) {
             // tout ça se passe après que tous les joueurs aient envoyé leur carte que le résultat du tour soit calculé
             // dans le cas où ils n'y a pas de gagnat le tour s'arrête
             if (!data.winner) {
@@ -255,11 +255,11 @@ function MainJoueur() {
     useEffect(() => {
         socket.on("partieSauvegardee", (data) => {
             console.log(data);
-            if (data.idPartie == urlP.get("idPartie")) {
+            if (data.idPartie == idPartie) {
                 navigate("/bataille"); // regler
             }
         });
-    }, [socket, urlP]);
+    }, []);
 
     // const emitQuitte = () => {
     //     socket.emit("joueurQuitte", {"idPartie":urlP.get("idPartie")});
@@ -271,7 +271,7 @@ function MainJoueur() {
 
     function sauvegarderPartie() {
         // console.log("coucou")
-        socket.emit("sauvegarderPartieBataille", { "idPartie": urlP.get("idPartie") })
+        socket.emit("sauvegarderPartieBataille", { "idPartie": idPartie })
         navigate("/bataille")
     }
 
@@ -287,7 +287,7 @@ function MainJoueur() {
                     <img key={index} id={index + 1}
                         src={CheminImage(carte)}
                         alt={`Carte ${carte.valeur} ${carte.couleur}`}
-                        onClick={() => carteJouee({ "idPartie": urlP.get("idPartie"), "choix": { couleur: carte.couleur, valeur: carte.valeur } })}
+                        onClick={() => carteJouee({ "idPartie": idPartie, "choix": { couleur: carte.couleur, valeur: carte.valeur } })}
                     />
                 ))}
             </div>

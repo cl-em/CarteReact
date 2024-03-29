@@ -299,7 +299,7 @@ function loadPartieBataille(idPartie){
       var partie_json = JSON.parse(partiedb);
       // transformer en objet bataille
       var partie = Bataille.fromJSON(partie_json);
-      partiesEnCours.push(partie);
+      if (!partiesEnCours.includes(partie)){partiesEnCours.push(partie);}
       resolve(partie); // Résoudre la promesse avec la partie chargée
     })
     .catch((err) => {
