@@ -1,0 +1,11 @@
+Le dossier .rar n'est pas complet et nécessite d'exécuter une installation des modules node et react (npm install et npx install).
+
+Si cela pose des problèmes, vous trouverez ci-dessous le lien du dépôt github permettant de télécharger la dernière version en date ainsi qu'un lien médiafire vers une archive rar contenant tout le code (y compris les modules)
+
+Dépôt github:
+https://github.com/cl-em/CarteReact
+
+Archive complète:
+https://www.mediafire.com/file/0xe6qf8vbhed49v/DepotCodeGroupe1_Phase3_ProjetL2-2023-2024.rar/file
+
+
