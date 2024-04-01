@@ -30,7 +30,7 @@ function LoginForm() {
         <br></br>
         <button type="submit">Envoyer</button>
         </form>
-        <p>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></p>
+        <div>Vous n'avez pas de compte? Créez en un <p onClick={()=>navigate("/register")} className="lien">ici.</p></div>
       </div>
     );
   }

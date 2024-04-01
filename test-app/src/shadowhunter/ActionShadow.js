@@ -112,7 +112,7 @@ export default function Action({ rapportAction, idJoueurLocal }) {
                         />
                     }
                 </div>
-            )
+            );
             break;
 
             case "vision2":

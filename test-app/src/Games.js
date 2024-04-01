@@ -23,7 +23,7 @@ function MyGame(){
       <img className='clem' src="http://localhost:8888/fichier/sixQuiPrendRègles.png"></img>
     </div>
 
-    <div className='choixJeu3'S>
+    <div className='choixJeu3'>
     <img src="http://localhost:8888/fichier/kylian.png" className='règlesMagic'></img>
       <img onClick={()=>navigate("/changementunivers")} className='kyky' src="http://localhost:8888/fichier/spirale.gif"></img>
     </div>
