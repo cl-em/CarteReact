@@ -420,7 +420,7 @@ export const SixQuiPrend = () => {
     return (
         <div>
 
-          <QuittePartie typePartie={"6suiprend"} />
+          <QuittePartie typePartie={"6quiprend"} />
           <Jouer />
         </div>
     );
