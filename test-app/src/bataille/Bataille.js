@@ -8,6 +8,8 @@ import {
     useNavigate
 } from "react-router-dom";
 
+import { QuittePartie } from '../6quiprend/6quiprend';
+
 // const socket = io('http://localhost:8888');
 // socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
 
@@ -305,48 +307,19 @@ function MainJoueur() {
     );
 
 
-    //     return (
-    //         <div>
-    //             {gameStart ? (
-    //                 <div>
-    //                     <Lobby listesjoueurs={onlyJoueurs} />
-    //                     <div className='divCartes'>
-    //                         {listeCartes.map((carte, index) => (
-    //                             <img key={index} id={index + 1}
-    //                                 src={CheminImage(carte)}
-    //                                 alt={`Carte ${carte.valeur} ${carte.couleur}`}
-    //                                 onClick={() => carteJouee({"idJoueur": idJoueur,"idPartie": urlP.get("idPartie"),"choix": { couleur: carte.couleur, valeur: carte.valeur }
-    //                                 })}
-    //                             />
-    //                         ))}
-    //                     </div>
-    //                 </div>
-    //             ) : (
-    //                 <AvantPartie />
-    //             )}
-    //         </div>
-    //     );
+
 }
-
-// function AvantPartie() {
-//     return (
-//         <div>
-//             <p>La partie n'a pas encore démarré.</p>
-//         </div>
-//     );
-// }
-
-//<Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} />
-// socket.emit("infosLobby",data.)
 
 export const Bataille = () => {
     return (
         <div>
+
+
             <Connecte />
+            <QuittePartie typePartie={"bataille"} />
             <div id='gagnant'>
 
             </div>
-            {/* <Lobby listesjoueurs={playersList} nbjoueurs={playersList.length} joueursmax={10} /> */}
             <MainJoueur />
         </div>
     );

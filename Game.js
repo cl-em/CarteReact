@@ -1251,7 +1251,7 @@ if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCoura
         if (attaquant==null||défenseur==null){return null}
         var retour = {"dés":null,"dégâts":null,"lg":false,"killed":false}
         var d6 =  Math.floor(Math.random()*6)+1
-        var d4 =  Math.floor(Math.random()*4)+1
+        var d4 =  Math.floor(Math.random()*4)+1 
 
         var baseDamage
         

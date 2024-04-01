@@ -45,14 +45,14 @@ function ListeParties6quiprend(){
     }
     return (
     <div className='main'>
-      <button class="joliebouton" onClick={()=>navigate("/leaderboard6quiprend")}>Afficher le leaderboard</button> <br></br> <br></br>
+      <button className="joliebouton" onClick={()=>navigate("/leaderboard6quiprend")}>Afficher le leaderboard</button> <br></br> <br></br>
       <div className='joinPartieId'>
-        <input  class="input1" type="text" placeholder="Id de la partie" id="idPartie"></input> 
-        <button  class="joliebouton" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>
+        <input  className="input1" type="text" placeholder="Id de la partie" id="idPartie"></input> 
+        <button  className="joliebouton" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>
       </div>
       <div className="createPartie">
-        <input class="input1" type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input> 
-        <button class="joliebouton" onClick={createPartie}>Créer !</button> <br></br> <br></br>
+        <input className="input1" type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input> 
+        <button className="joliebouton" onClick={createPartie}>Créer !</button> <br></br> <br></br>
       </div>
     
 
@@ -66,14 +66,14 @@ function ListeParties6quiprend(){
               <p>{partie.joueursActuels}/{partie.joueursMax}</p>
               <p>6quiprend</p>
               {/* <button onClick={()=>navigate("/6quiprend")}>Rejoindre !</button> */}
-              <button class="joliebouton"onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
+              <button className="joliebouton"onClick={()=>rejoindrePartie(partie.id)}>Rejoindre !</button>
             </div>
           )
         })}
       </div>
-      <button class="joliebouton" onClick={()=>navigate("/sauvegardeSixQuiPrend")}>Liste Parties Sauvegardees</button>
-      <button class="joliebouton" onClick={()=>navigate("/ListePartiesRejointes")}>Liste Parties Rejointes</button>
-      <button class="joliebouton" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
+      <button className="joliebouton" onClick={()=>navigate("/sauvegardeSixQuiPrend")}>Liste Parties Sauvegardees</button>
+      <button className="joliebouton" onClick={()=>navigate("/ListePartiesRejointes")}>Liste Parties Rejointes</button>
+      <button className="joliebouton" onClick={()=>navigate("/games")}>Revenir au menu de sélection des jeux</button>
       {/* importer la leaderboard  faut ajouter le css
       <div className='Leaderboard'> 
         <Leaderboard/>

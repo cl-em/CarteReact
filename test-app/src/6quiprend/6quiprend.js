@@ -17,7 +17,7 @@ function Connecte() {
   useEffect(() => {
       socket.emit("quisuisje?");
       socket.on("quisuisje", (data) => {
-          console.log("Pseudo reçu :", data.pseudos);
+          // console.log("Pseudo reçu :", data.pseudos);
           setPseudo(data);
       })
       return () => {
@@ -105,7 +105,7 @@ function AfficherLigne({listeLignes}){ //Pour afficher les 4 lignes du jeu (pren
         {listeLignes.map((ligne,index)=>(
 
             <tr key={index} onClick={()=>{
-              // console.log("ligne"+ index);
+              // // console.log("ligne"+ index);
               socket.emit("choixLigne",{idPartie:idPartie,idLigne:index});
             }}>
               {ligne.map((numCarte,idx)=>(
@@ -209,11 +209,11 @@ function Jouer(){
 
   useEffect(() => {
     const handleGameStarting = data => {
-      console.log("gameStarting");
+      // console.log("gameStarting");
       if (data.idPartie === idPartie) {
         setgameStart(true);
         // setHost(data.Host);
-        console.log(data);
+        // console.log(data);
         setListeLignes(data.lignes);
         socket.emit("wantCarte", { "idPartie": idPartie}); //Demande de la main. 
         socket.on("getCarte", (data) => { //Récupération des cartes (de la main)
@@ -223,7 +223,7 @@ function Jouer(){
     };
   
     const handleGameFinished = data => {
-      console.log("gameFinished");
+      // console.log("gameFinished");
       if (data.idPartie === idPartie) {
         setFinish(true);
         setInfosFinPartie(data.classement);
@@ -231,14 +231,14 @@ function Jouer(){
     };
 
     const handleGetScores = data => {
-      console.log("getScores");
+      // console.log("getScores");
       if(data.idPartie===idPartie){
         setInfosJoueurs(data.infosJoueurs);
       }
     };
 
     const handleChoixCarte = data => {
-      console.log("choixCarte");
+      // console.log("choixCarte");
       socket.emit("wantCarte", { "idPartie": idPartie});
       if(data!==false){
         setnumeroCarteEval(data);
@@ -246,7 +246,7 @@ function Jouer(){
     };
 
     const handleTourPasse = data => {
-      console.log("tourPasse");
+      // console.log("tourPasse");
       if (data.idPartie === idPartie) {
         if (data.lignes) {
           setListeLignes(data.lignes);
@@ -259,8 +259,8 @@ function Jouer(){
     };
 
     const handleIsHost = data => {
-      console.log("isHost");
-      console.log(data);
+      // console.log("isHost");
+      // console.log(data);
       if (data === true){
         setHost(true);
     }}
@@ -286,7 +286,7 @@ function Jouer(){
 
   useEffect(() => {
     const handlePartieSauvegardee = data => {
-      console.log("partieSauvegardee");
+      // console.log("partieSauvegardee");
       if(data.idPartie === idPartie){
         navigate("/6quiprend");
       }
@@ -298,7 +298,7 @@ function Jouer(){
   }, []);
 
   useEffect(()=>{
-    console.log("isloaded")
+    // console.log("isloaded")
       socket.emit('isloaded', {idPartie: idPartie});
       socket.on('isloaded', (data) => {
       if(data !== false){
@@ -317,20 +317,20 @@ function Jouer(){
 
 
 useEffect(()=>{
-  console.log("listeCartes");
+  // console.log("listeCartes");
   let nouvelleMain2 =[]; //Futur liste d'entiers
   listeCartes.forEach((element,index)=>{ //C'est une boucle sur liste listeCartes
     nouvelleMain2.push(element.valeur); //Tout les elements de listeCartes sont mits dans la liste nouvelle main
   });
   setNouvelleMain(nouvelleMain2);
 
-  // console.log(nouvelleMain);
+  // // console.log(nouvelleMain);
 
 }, [listeCartes]); //S'effectue a chaque changement de listeCartes
 
 
 useEffect(()=>{
-  console.log("listeLignes");
+  // console.log("listeLignes");
   let nouvelleListeLignes2 = []; //Futur liste de listes d'entiers
   
   listeLignes.forEach((ligne,index)=>{
@@ -341,14 +341,14 @@ useEffect(()=>{
   });
   setNouvelleListeLignes(nouvelleListeLignes2);
   
-  // console.log(nouvelleListeLignes);
+  // // console.log(nouvelleListeLignes);
 
 },[listeLignes]); //S'effectue a chaque chanement de listeLignes
 
   // INFO ENVOYEES AU SERVEUR
 
   function sauvegarderPartie(){
-    // console.log("coucou")
+    // // console.log("coucou")
     socket.emit("sauvegarderPartieSixQuiPrend",{"idPartie":idPartie});
     navigate("/6quiprend")
 }
@@ -365,6 +365,7 @@ useEffect(()=>{
           <ApresJeu tableauFin={infosFinPartie}/>
         ) : (
           <>
+          
             <Connecte/>
             <Chat/>
             <AfficherStats infosJoueursFun={infosJoueurs} />
@@ -393,17 +394,35 @@ useEffect(()=>{
   );
 }  
   
+export function QuittePartie({typePartie,ajoutStyle={}}){
+  
+  let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+  let idPartie =  urlP.get("idPartie");
+  
+  
+  
+  const socket = React.useContext(SocketContext); //Pour les sockets
+  const navigate = useNavigate();
 
+
+  return (<div className='joliebouton ' style={{position:'absolute',top:1,alignItems:'center',zIndex:12,...ajoutStyle}}
+  onClick={()=>{  
+    socket.emit("quittePartie",{idPartie:idPartie,typePartie:typePartie})
+    navigate("/games")}}>
+    Quitter la partie
+  </div>)
+}
 
 
 export const SixQuiPrend = () => {
+
+
+
     return (
         <div>
-            {/* <AfficherLigne listeLignes={AAA}/>
-            <Main6QuiPrend listeNombre={[5,11,20,35,2,5,89,57,35,2]}/>
-            <Boeuf width="25%"/> */}
-            {/* <GereJeu/> */}
-            <Jouer />
+          
+          <QuittePartie typePartie={"6quiprend"} />
+          <Jouer />
         </div>
     );
 };

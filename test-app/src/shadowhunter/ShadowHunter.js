@@ -3,14 +3,12 @@
 import "./ShadowHunter.css";
 import React, { createContext, useEffect, useState, useRef, useContext } from 'react';
 import SocketContext from '../SocketContext';
-import Chat from '../Chat';
 import { useNavigate } from "react-router-dom";
-import { createPortal } from 'react-dom';
 import Action from "./ActionShadow";
-import Des from "./Des/Des";
-import { ImageProvider } from './ImageContext';
-import { useImageContext } from './ImageContext';
+import { ImageProvider ,useImageContext } from './ImageContext';
 import ImageComponent from './ImageComponent';
+
+import { QuittePartie } from "../6quiprend/6quiprend";
 
 function ChatSH() {
     const currentUrl = window.location.href;
@@ -483,6 +481,8 @@ function Jouer() {
 
     return (
         <div>
+
+            <QuittePartie typePartie={"shadowHunter"} ajoutStyle={{right:"16%"}}/>
             {gameStart ? (
                 gameFinish ? (
                     <ApresJeu listeGagnants={listeGagnants} />
@@ -538,6 +538,8 @@ export default function ShadowHunter() {
 
     return (
         <div id="default">
+            
+
             <Jouer />
         </div>
     );

@@ -962,32 +962,6 @@ io.on('connection', (socket) => {
                 
               })
               
-              socket.on("joueurQuitte",data=>{  
-                
-                for (var partie of partiesOuvertes){//enleversi la partie n'a pas commencé
-                  if (partie.id==data.idPartie){
-                    for (var joueur in partie.joueurs){
-                      if (partie.joueurs[joueur].idJoueur==socket.data.userId){
-                        partie.joueurs.splice[joueur];
-                        return;
-                      }
-                    }
-                  }
-                }
-                
-                for (var partie of partiesEnCours){//Cas où la partie a commencé (plus complexe, heureusement il y a une méthode dans game)
-                  if (partie.id==data.idPartie){
-                    partie.removePlayer(socket.data.userId);
-                    var finipartie = partie.existeWinner();
-                    if (finipartie!=false){ db.run("UPDATE users SET scoreBataille = scoreBataille+1 WHERE idU="+finipartie.idJoueur );
-                    socket.emit('partieFinie',{'gagnant':pseudos[finipartie.idJoueur]})}
-                    return;
-                  }
-                }
-                
-                
-                
-              })
               
               socket.on("quisuisje?",data=>{
                 socket.emit("quisuisje",pseudos[socket.data.userId])
@@ -1005,6 +979,7 @@ io.on('connection', (socket) => {
                 for (var joueur of classement){
                   db.run("UPDATE users SET score6quiprend = score6quiprend+"+((66-joueur.score)*2)+" WHERE idU="+joueur.idJoueur )
                   retour.push({"pseudo":pseudos[joueur.idJoueur],"score":joueur.score})
+                  
                 }
                 console.log(retour)
 
@@ -1500,7 +1475,7 @@ io.on('connection', (socket) => {
                           }
 
                           function testAprèsKill(partie,attaquant,victime){
-                            partie.test
+                         
                             partie.testCatherine()
                             partie.testDaniel()
                             partie.testCharles(attaquant)
@@ -2793,7 +2768,6 @@ io.on('connection', (socket) => {
                                           }, 2500);
                                           return
                                       
-                                          //Avènement suprême accepter la lumière","poursuivre son chemin"]
                                           case "accepter la lumière":
                                             if (partie.state!="Avènement_Suprême"){return}
                                             for (var joueur of partie.joueurs){
@@ -3029,7 +3003,87 @@ io.on('connection', (socket) => {
 
                               }
                             }
-                             }})
+
+                          }}//Fin utiliser capacité
+                        )
+
+                             socket.on("quittePartie",data=>{
+                              console.log("partie "+data.idPartie+" quittée par "+pseudos[socket.data.userId])
+                      
+                              for (var partie of partiesEnCours){
+
+                                if (partie.id==data.idPartie){
+                                  for (var test of partie.joueurs){
+                                    if (test.idJoueur==socket.data.userId){
+                             
+                                      switch (partie.type){
+
+                                        case "shadowHunter":
+                                          if(data.typePartie!="shadowHunter"){return}
+                                        
+                                          tuer(partie,test)
+                                          io.emit("tourPasse", { "Message": pseudos[socket.data.userId] + " a quitté la partie.", "rapportAction": {"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[socket.data.userId]}}, "idPartie": data.idPartie })
+                                          partie.testCatherine()
+                                          partie.testDaniel()
+                                          partie.hasDied = true
+                                          testFinPartie(partie)  
+                                          setTimeout(() => {
+                                            tourPasseDeCirconstance(partie)
+                                          }, 2500);
+                                        break
+
+                                        case "6quiprend":
+
+                                        for (var test in partie.joueurs){
+                                          if (partie.joueurs[test].idJoueur==socket.data.userId){
+                                            partie.joueurs.splice(test,1)
+                                          }
+                                        }
+
+                                        if (partie.joueurs.length<=1){
+                                          var retour = []
+                                          for (var zz of partie.joueurs){
+                                            retour.push({"pseudo":pseudos[zz.idJoueur],"score":zz.score})
+                                            db.run("UPDATE users SET score6quiprend = score6quiprend+"+((66-zz.score)*2)+" WHERE idU="+zz.idJoueur )
+                                          }
+                                          io.emit("gameFinished",{"idPartie":partie.id,"classement":retour})
+                                          return
+                                        }
+
+
+
+                                          if (partie.canTour()){
+                                            console.log("test3")
+                                            console.log("un tour passe")
+                                            partie.tourEnCours = true;
+                                            io.emit("tourPasse",{"idPartie":partie.id,"carteEval":partie.joueurMin().choix.valeur,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
+                                            setTimeout(()=>{poursuivreTour(partie)},1700)
+                                          }
+
+                                        break
+                                        default:
+
+                                        break
+
+                                      }
+                                      return
+                                    }
+                                  }
+                                }
+                              }
+
+
+
+  
+                            }
+
+
+                             
+
+
+
+                             )
+
             
             });
             
