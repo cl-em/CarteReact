@@ -394,17 +394,18 @@ useEffect(()=>{
   );
 }  
   
-export function QuittePartie({typePartie}){
+export function QuittePartie({typePartie,ajoutStyle={}}){
   
   let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
   let idPartie =  urlP.get("idPartie");
+  
   
   
   const socket = React.useContext(SocketContext); //Pour les sockets
   const navigate = useNavigate();
 
 
-  return (<div className='joliebouton ' style={{position:'absolute',top:0,alignItems:'center'}}
+  return (<div className='joliebouton ' style={{position:'absolute',top:1,alignItems:'center',zIndex:12,...ajoutStyle}}
   onClick={()=>{  
     socket.emit("quittePartie",{idPartie:idPartie,typePartie:typePartie})
     navigate("/games")}}>
@@ -419,7 +420,7 @@ export const SixQuiPrend = () => {
 
     return (
         <div>
-
+          
           <QuittePartie typePartie={"6quiprend"} />
           <Jouer />
         </div>

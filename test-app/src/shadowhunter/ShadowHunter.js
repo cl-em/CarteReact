@@ -481,6 +481,8 @@ function Jouer() {
 
     return (
         <div>
+
+            <QuittePartie typePartie={"shadowhunter"} ajoutStyle={{right:"16%"}}/>
             {gameStart ? (
                 gameFinish ? (
                     <ApresJeu listeGagnants={listeGagnants} />
@@ -536,8 +538,8 @@ export default function ShadowHunter() {
 
     return (
         <div id="default">
+            
 
-            <QuittePartie typePartie={"shadowhunter"} />
             <Jouer />
         </div>
     );
