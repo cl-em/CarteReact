@@ -19,7 +19,6 @@ function ChatSH() {
     const maxMessages = 50;
     const maxMessageLength = 250;
     const socket = React.useContext(SocketContext);
-
     useEffect(() => {
         const handleMessage = (msg) => {
             setMessages(prevMessages => {
@@ -524,10 +523,9 @@ function Jouer() {
 /*----------------------------------------------Default-----------------------------------------------------*/
 
 export default function ShadowHunter() {
-
+    
     useEffect(() => {
         const Obg = document.body.style.backgroundImage;
-
         document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
 
         return () => {

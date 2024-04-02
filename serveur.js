@@ -3007,6 +3007,71 @@ io.on('connection', (socket) => {
                           }}//Fin utiliser capacité
                         )
 
+
+                          socket.on("disconnect",()=>{
+                            for (var partie of partiesEnCours){
+                              for (var test of partie.joueurs){
+                                if (test.idJoueur==socket.data.userId){
+                                    console.log("partie "+partie.id+" quittée par "+pseudos[socket.data.userId])
+                           
+                                    switch (partie.type){
+
+                                      case "shadowHunter":
+                                      
+                                        tuer(partie,test)
+                                        io.emit("tourPasse", { "Message": pseudos[socket.data.userId] + " a quitté la partie.", "rapportAction": {"type":"carteRévélée","valeur":{"carteRévélée":test.character,"pseudo":pseudos[socket.data.userId]}}, "idPartie": partie.id })
+                                        partie.testCatherine()
+                                        partie.testDaniel()
+                                        partie.hasDied = true
+                                        testFinPartie(partie)  
+                                        setTimeout(() => {
+                                          tourPasseDeCirconstance(partie)
+                                        }, 2500);
+                                      break
+
+                                      case "6quiprend":
+
+                                      for (var test in partie.joueurs){
+                                        if (partie.joueurs[test].idJoueur==socket.data.userId){
+                                          partie.joueurs.splice(test,1)
+                                        }
+                                      }
+
+                                      if (partie.joueurs.length<=1){
+                                        var retour = []
+                                        for (var zz of partie.joueurs){
+                                          retour.push({"pseudo":pseudos[zz.idJoueur],"score":zz.score})
+                                          db.run("UPDATE users SET score6quiprend = score6quiprend+"+((66-zz.score)*2)+" WHERE idU="+zz.idJoueur )
+                                        }
+                                        io.emit("gameFinished",{"idPartie":partie.id,"classement":retour})
+                                        return
+                                      }
+
+
+
+                                        if (partie.canTour()){
+                                          console.log("test3")
+                                          console.log("un tour passe")
+                                          partie.tourEnCours = true;
+                                          io.emit("tourPasse",{"idPartie":partie.id,"carteEval":partie.joueurMin().choix.valeur,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
+                                          setTimeout(()=>{poursuivreTour(partie)},1700)
+                                        }
+
+                                      break
+                                      default:
+
+                                      break
+
+                                    }
+                                    return
+                                  }
+                              }
+                            }
+                          }
+                          )
+
+
+                          
                              socket.on("quittePartie",data=>{
                               console.log("partie "+data.idPartie+" quittée par "+pseudos[socket.data.userId])
                       
@@ -3071,10 +3136,6 @@ io.on('connection', (socket) => {
                                   }
                                 }
                               }
-
-
-
-  
                             }
 
 
