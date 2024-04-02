@@ -1164,7 +1164,16 @@ io.on('connection', (socket) => {
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" peut sonder l'âme de quelqu'un... mais qui ? ","rapportAction":{type:"vision1",valeur:{"vision":partie.variableTemp,"idJoueur":partie.joueurCourant}},"idPartie":partie.id})
                               break
                               case "vision2":
-                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" sonde l'âme de "+pseudos[partie.variableTemp.cible],"rapportAction":{"type":"vision2","valeur":{"boutons":["dire la vérité","mentir"],"vision":partie.variableTemp.vision,"idJoueur":partie.variableTemp.cible}},"idPartie":partie.id})
+                                for (var test of partie.joueurs){
+                                  if (test.idJoueur==partie.variableTemp.cible){
+                                    if (test.character=="Métamorphe"){
+                                  io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" sonde l'âme de "+pseudos[partie.variableTemp.cible],"rapportAction":{"type":"vision2","valeur":{"boutons":["dire la vérité","mentir"],"vision":partie.variableTemp.vision,"idJoueur":partie.variableTemp.cible}},"idPartie":partie.id})
+                                    }    
+else{
+  io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" sonde l'âme de "+pseudos[partie.variableTemp.cible],"rapportAction":{"type":"vision2","valeur":{"boutons":["dire la vérité"],"vision":partie.variableTemp.vision,"idJoueur":partie.variableTemp.cible}},"idPartie":partie.id})
+
+}
+                                }}
                               break                              
 
                               case "vision3":
@@ -1964,7 +1973,7 @@ io.on('connection', (socket) => {
                                         
 
 
-                                        if (z.character=="Métamorphe"&&!z.pouvoirUtilisé){
+                                        if (cible.character=="Métamorphe"&&!cible.pouvoirUtilisé){
                                           io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" sonde l'âme de "+data.joueurConcerne,"rapportAction":{"type":"vision2","valeur":{"boutons":["dire la vérité","mentir"],"vision":partie.variableTemp.vision,"idJoueur":getIdFromPseudo(data.joueurConcerne)}},"idPartie":data.idPartie})
                                         }
                                         else{
