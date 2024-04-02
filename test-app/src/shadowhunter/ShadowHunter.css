@@ -545,7 +545,8 @@
 }
 
 .divGagnant p{
-    font-size: 230%;
+    font-size: 200%;
+    height: 20%;
     font-weight: bolder;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
     -webkit-text-stroke: 2px aliceblue;
@@ -570,5 +571,5 @@
     align-items: center;
 }
 .divGagnant img{
-    max-height: 180px;
+    height: 80%;
 }

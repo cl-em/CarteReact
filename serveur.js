@@ -2449,7 +2449,7 @@ io.on('connection', (socket) => {
                                                     }
                                                     test.éliminé=true
                                                     partie.state = "finTour"
-                                                    testAprèsKill(partie,partie.getJoueurCourant(),test)
+                                                    testAprèsKill(partie,joueur,test)
 
                                                   setTimeout(() => {
                                                     tourPasseDeCirconstance(partie)
