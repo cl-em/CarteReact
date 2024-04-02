@@ -84,8 +84,8 @@ function ListePartiesMagic(){
       <div className="createPartie">
         
         {/* pour les personnages */}
-        <input className="input1" type='number'  placeholder='Nombre de Shadows/Hunters' min={0} onChange={(e)=>{setNbShadow(e.target.value)}}/>
-        <input className="input1" type='number'  placeholder='Nombre de Neutres' min={0} onChange={(e)=>{setNbNeutre(e.target.value)}}/>
+        <input className="input1" type='number'  placeholder='Nombre de Shadows/Hunters' min={0} max={6} onChange={(e)=>{setNbShadow(e.target.value)}}/>
+        <input className="input1" type='number'  placeholder='Nombre de Neutres' min={0} max={6} onChange={(e)=>{setNbNeutre(e.target.value)}}/>
 
         <br></br>
         {/* pour changer le mode de jeu  */}

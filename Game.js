@@ -518,7 +518,7 @@ class shadowHunter extends Game{
         this.joueurCourant = undefined
         this.state = undefined
         this.variableTemp = undefined
-        this.couleurs = ["Rouge","Jaune","Vert","Bleu","Rose","Orange","Blanc","Noir","Jaune","Cyan"]
+        this.couleurs = ["Rouge","Jaune","Vert","Bleu","Rose","Orange","Blanc","Noir","Jaune","Cyan","Praline","Noir","Aquamarine","crimson"]
         //Choix des personnages
         if (this.custom==false){//Personnages de base
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
@@ -527,7 +527,7 @@ class shadowHunter extends Game{
     }
      else{//Personnages custom
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
-        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin","Emi","Ellen",*/"Nicolas"]
+        this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen","Nicolas"]
         this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         }
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
@@ -542,7 +542,7 @@ class shadowHunter extends Game{
         }
 
         for (var i=0;i<this.nbneutres;i++){
-            this.personnages.push(this.neutresBase.shift())
+            this.personnages.push(this.neutres.shift())
         }
 
         

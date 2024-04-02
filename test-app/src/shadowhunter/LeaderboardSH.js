@@ -47,17 +47,23 @@ export default function LeaderboardSH({typeDeJeu}){
             <table>
               <thead>
                 <tr>
-                  <th>Pseudo</th>
-                  <th>Score {typeDeJeu}</th>
                   <th>Classement</th>
+                  <th>Pseudo</th>
+                  <th>ELO </th>
+                  <th>Winrate</th>
+                  <th>Victoires</th>
+                  <th>Parties Jouées</th>
                 </tr>
               </thead>
               <tbody>
                 {leaderboardData.joueursTop.map((player, index) => (
                   <tr key={index}>
-                    <td>{player.pseudo}</td>
-                    <td>{player["score" + typeDeJeu]}</td>
                     <td>{player.classement}</td>
+                    <td>{player.pseudo}</td>
+                    <td>{player["eloShadowHunter"]} points</td>
+                    <td>{player.winrate}%</td>
+                    <td>{player.scoreshadowHunter}</td>
+                    <td>{player.partiesShadowHunter}</td>
                   </tr>
                 ))}
               </tbody>

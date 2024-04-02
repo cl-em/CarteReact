@@ -421,11 +421,32 @@ io.on('connection', (socket) => {
     let localplayer;
     let typeJeu = data;
     let idJoueur = socket.data.userId;
-    console.log("demande leaderboard "+typeJeu)
-    db.all('SELECT pseudo, score' + typeJeu+', classement FROM (SELECT pseudo, score'+typeJeu+', row_number() OVER (ORDER BY score'+ typeJeu+' DESC) AS classement FROM users ) WHERE classement < 20 ORDER BY classement', (err, rows) => {
-      socket.emit("leaderboard",{"joueursTop":rows,"joueurLocal":localplayer});
+    if (typeJeu!="shadowHunter"){
+      db.all('SELECT pseudo, score' + typeJeu+', classement FROM (SELECT pseudo, score'+typeJeu+', row_number() OVER (ORDER BY score'+ typeJeu+' DESC) AS classement FROM users ) WHERE classement < 20 ORDER BY classement', (err, rows) => {
+        console.log("demande leaderboard "+typeJeu)
+        socket.emit("leaderboard",{"joueursTop":rows,"joueurLocal":localplayer});
+      })
+    }
+    else{
+      console.log("demande leaderboard shadowhunter meilleur jeu ")
+    db.all('SELECT * FROM (SELECT pseudo, eloShadowHunter,partiesShadowHunter,scoreshadowHunter, row_number() OVER (ORDER BY eloShadowHunter DESC) AS classement FROM users ) WHERE classement < 20 ORDER BY classement', (err, rows) => {
+      
+      var ret = []
+      for (var row in rows){
+      if (parseInt(rows[row].partiesShadowHunter)<=0){
+        ret.push(rows[row])
+        ret[row].winrate=0
+      }
+      else{
+        ret.push(rows[row])
+        console.log(parseFloat(rows[row].scoreshadowHunter)/parseFloat(rows[row].partiesShadowHunter))
+        ret[row].winrate=(100*(parseFloat(rows[row].scoreshadowHunter)/parseFloat(rows[row].partiesShadowHunter))).toFixed(2)
+      }
+    }
+   
+      socket.emit("leaderboard",{"joueursTop":ret,"joueurLocal":localplayer});
     })  
-    
+  }
   })
   socket.on('leaderboard6',data=>{
     let joueursTop;
@@ -1461,9 +1482,17 @@ io.on('connection', (socket) => {
                             if (partie.state=="finished"){return}
                             if (partie.finPartie()){
                               var retour = []
+                              var gagnantsGroupe = []
+                              var gagnantsSolo = []
                               for (var j of (partie.joueurs)){
                                 if (partie.winners.includes(j.idJoueur)){
                                   retour.push({"pseudo":pseudos[j.idJoueur],"carte":j.character})
+                                if (partie.shadowsBase.includes(j.character)||partie.hunterBase.includes(j.character)||j.character=="Allie"||j.character=="Agnès"){
+                                  gagnantsGroupe.push(j.idJoueur)
+                                }
+                                else{
+                                  gagnantsSolo.push(j.idJoueur)
+                                }
                                 }
                               }
                                  retour = retour.filter((value, index, self) => {
@@ -1471,12 +1500,46 @@ io.on('connection', (socket) => {
                                });
 
                               
-                              console.log("partie "+partie.id+ "finie. Gagnants:")
+                              console.log("partie "+partie.id+ " finie. Gagnants:")
                               console.log(retour)
                               partie.state = "finished"
                               io.emit("gameFinished",{"idPartie":partie.id,"gagnants":retour})
+                              for (var q of partie.joueurs){
+                                db.run("UPDATE users SET partiesShadowHunter = partiesShadowHunter+"+1+" WHERE idU="+q.idJoueur )
+                              }
+                              
                               for (var v of partie.winners){
                                 db.run("UPDATE users SET scoreshadowHunter = scoreshadowHunter+"+1+" WHERE idU="+v )
+                                if (partie.ranked){
+                                if (gagnantsGroupe.includes(v)){//Shadow, hunter ou Allie ou Agnès
+                                  db.run("UPDATE users SET eloShadowHunter = eloShadowHunter+"+10*partie.winners.length+" WHERE idU="+v )
+                                }
+                                else{
+                                  if (gagnantsSolo.includes(v)){//neutres
+                                    db.run("UPDATE users SET eloShadowHunter = eloShadowHunter+"+(10*partie.joueursMax)/partie.winners.length+" WHERE idU="+v )
+                                  }
+                                
+                            }
+                          }
+                              }
+
+                              for (var l of partie.joueurs){
+                                if (!partie.winners.includes(l.idJoueur)){
+                                 
+                                  for (var l of partie.joueurs) {
+                                    if (!partie.winners.includes(l.idJoueur)) {
+                                        db.run(`UPDATE users 
+                                                 SET eloShadowHunter = 
+                                                     CASE 
+                                                         WHEN (eloShadowHunter -`+partie.winners.length*10+` ) < 0 THEN 0 
+                                                         ELSE eloShadowHunter -`+partie.winners.length*10+`
+                                                     END 
+                                                 WHERE idU = ?`, [l.idJoueur], (err) => {});
+                                    }
+                                }
+                                
+
+                                }
                               }
                               setTimeout(() => {
                                 for (var test in partiesEnCours){
