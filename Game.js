@@ -504,8 +504,12 @@ class sixquiprend extends Game{
 class shadowHunter extends Game{
 
     
-    constructor(host,nbJoueurs){
-        super([""],105,host,nbJoueurs);
+    constructor(host,neutres,SH,ranked,custom){
+        super([""],105,host,(neutres+SH*2));
+        this.custom = custom
+        this.nbsh = SH
+        this.nbneutres = neutres
+        this.ranked = ranked
         this.deck = null//Le deck ne servira pas et on utilisera trois piles à la place
         this.couleurs = null//Pareil pour les couleurs. On préférera utiliser l'attribut "type" des cartes
         this.type="shadowHunter"
@@ -516,44 +520,31 @@ class shadowHunter extends Game{
         this.variableTemp = undefined
         this.couleurs = ["Rouge","Jaune","Vert","Bleu","Rose","Orange","Blanc","Noir","Jaune","Cyan"]
         //Choix des personnages
+        if (this.custom==false){//Personnages de base
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
-        this.shadows = this.shuffle(Array.from(this.shadowsBase))
         this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen"]
-        this.hunters = this.shuffle(Array.from(this.hunterBase))
         this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
+    }
+     else{//Personnages custom
+        this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
+        this.hunterBase = [/*"Gregor","Georges","Fu-ka","Franklin","Emi","Ellen",*/"Nicolas"]
+        this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
+        }
+        this.shadows = this.shuffle(Array.from(this.shadowsBase))
+        this.hunters = this.shuffle(Array.from(this.hunterBase))
         this.neutres = this.shuffle(Array.from(this.neutresBase))  
         this.personnages = []
         
 
-        var s = 0
-        var h = 0
-        var n = 0
-        while(this.personnages.length<this.joueursMax){
+        for (var i=0;i<this.nbsh;i++){
+            this.personnages.push(this.shadows.shift())
+            this.personnages.push(this.hunters.shift())
+        }
 
-            if ((this.joueursMax-this.personnages.length==1 || s+h>n*2) && (s==h)){
-                this.personnages.push(this.neutres.shift())
-                n++
-                console.log("neutres: "+n)
-            }
-            else{
-    
-                    if (s<h){
-                        this.personnages.push(this.shadows.shift())
-                        s++
-                        console.log("shadow: "+s)
-                    }
-                    else{
-                        this.personnages.push(this.hunters.shift())
-                        h++
-                        console.log("hunters: "+h)
-                    
-                }
-            }
-            this.personnages = this.shuffle(this.personnages)
-            this.personnages = this.shuffle(this.personnages)
-            this.personnages = this.shuffle(this.personnages)
+        for (var i=0;i<this.nbneutres;i++){
+            this.personnages.push(this.neutresBase.shift())
+        }
 
-        } 
         
         this.joueurs= [new JoueurShadowHunter(host,true,this.personnages.shift())]
 
@@ -694,7 +685,7 @@ class shadowHunter extends Game{
                 if (char=="Catherine" ||char=="Charles" || char=="Métamorphe" || char=="Momie"){hp=11}
                 if (char=="Franklin"||char=="Fu-ka"){hp=12}
                 if (char=="Valkyrie"||char=="Vampire"||char=="Daniel"||char=="David"){hp=13}
-                if (char=="Liche"||char=="Loup-Garou"||char=="Georges"||char=="Gregor"){hp=13}
+                if (char=="Liche"||char=="Loup-Garou"||char=="Georges"||char=="Gregor"||char=="Nicolas"){hp=14}
 
 
             joueur.hp = hp
@@ -860,8 +851,8 @@ class shadowHunter extends Game{
                                 this.state="phase_Attaque"
                                 break
                                 case "Miroir_Divin":
-                                    if (this.shadowsBase.includes(joueur.character)&&joueur.character!="Métamorphe"){
-                                        joueur.révélé=true
+                                    if (this.shadowsBase.includes(joueur.character) && joueur.character!="Métamorphe"){
+                                        joueur.révélé=true 
                                         data = true
                                     }
                                     else { data = false}
@@ -956,7 +947,6 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                         }
                     }
                     data.destination = destination
-                    console.log("destination de la dynamite:"+data.destination)
                 }
 
               
@@ -1005,6 +995,8 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
             if (damage==0 || player.protected){return false}
             if (player.hasItem("Toge_Sainte")){player.hurtPoint+=damage-1}
             else{player.hurtPoint+=damage}
+            if (player.character=="Nicolas"&&player.révélé){player.hurtPoint-=1}
+            if (player.hurtPoint<=0){player.hurtPoint==0}
 
             if (player.isDead()){return true}
             return false
@@ -1116,7 +1108,6 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
         //Test agnès en tout dernier
         for (var joueur of this.joueurs){
             if (joueur.character=="Agnès"){
-                console.log(joueur.conditionVictoire)
                 if (this.winners.includes(joueur.conditionVictoire)){
                     this.winners.push(joueur.idJoueur)
                 }
@@ -1350,7 +1341,7 @@ attaquant.vol=false
         }
 
         if (this.takeDamage(défenseur,totalDamage)==false){
-            if (défenseur.character=="Loup-Garou"&&défenseur.révélé&&!défenseur.pouvoirUtilisé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true;console.log("aaaa")}
+            if (défenseur.character=="Loup-Garou"&&défenseur.révélé&&!défenseur.pouvoirUtilisé){this.state = "contre-attaque";this.variableTemp = défenseur.idJoueur;retour.lg=true;}
         }
         else{
             retour.killed = true;

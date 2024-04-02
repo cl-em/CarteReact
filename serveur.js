@@ -176,6 +176,7 @@ const { Joueur,JoueurShadowHunter } = require('./Joueur.js');
 const { Carte,CarteShadowHunter } = require('./Carte.js');
 const { Console } = require('console');
 const { setTimeout } = require('timers');
+const { parse } = require('path');
 
 
 
@@ -639,11 +640,28 @@ io.on('connection', (socket) => {
           socket.emit("creerPartie",partie.id)}
 
           if (data.type=="shadowHunter"){
+
+            /*
+ socket.emit('creerPartie',{ 
+          "joueursMax": joueursMax, 
+          "type": "shadowHunter", 
+          neutres: parseInt(nbNeutre), 
+          shadows: parseInt(nbShadow), 
+          hunters: parseInt(nbHunter), 
+          ranked: estRanked, 
+          customCharacters: estCustom 
+        });
+            */
+
             var joueursMax = data.joueursMax;
-            if (!Number.isInteger(parseInt(joueursMax))||joueursMax>10||joueursMax<2){
-              joueursMax=4
-            }
-            let partie = new shadowHunter(socket.data.userId,joueursMax)
+            var shadowHunters = data.shadowHunters
+            var neutres = data.neutres
+            if (!Number.isInteger(parseInt(data.shadowHunters))||parseInt(data.shadowHunters)>6||parseInt(data.shadowHunters)<1){
+              shadowHunters=2
+            } 
+            if (!Number.isInteger(parseInt(data.neutres))||parseInt(data.neutres)>6||parseInt(data.neutres)<0){
+              neutres=2}
+            let partie = new shadowHunter(socket.data.userId,neutres,shadowHunters,data.ranked,data.customCharacters)
             partiesOuvertes.push(partie)
             console.log("| Creation d'une partie de shadowHunter par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
             socket.emit("creerPartie",partie.id)}
@@ -1277,7 +1295,6 @@ io.on('connection', (socket) => {
 
                                 else{
                                   tourPasseDeCirconstance(partie)
-                               
                                 }
                             }//Fin piocheNoire
 

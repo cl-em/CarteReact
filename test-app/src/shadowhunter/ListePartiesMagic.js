@@ -43,8 +43,7 @@ function ListePartiesMagic(){
           "joueursMax": joueursMax, 
           "type": "shadowHunter", 
           neutres: parseInt(nbNeutre), 
-          shadows: parseInt(nbShadow), 
-          hunters: parseInt(nbHunter), 
+          "shadowHunters": parseInt(nbShadow), 
           ranked: estRanked, 
           customCharacters: estCustom 
         });
@@ -83,18 +82,16 @@ function ListePartiesMagic(){
         <button  className="joliebouton2" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>
       </div>
       <div className="createPartie">
-        <input className="input1" type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input> 
         
         {/* pour les personnages */}
-        <input className="input1" type='number'  placeholder='Nombre de Hunters' min={0} onChange={(e)=>{setNbHunter(e.target.value)}}/>
+        <input className="input1" type='number'  placeholder='Nombre de Shadows/Hunters' min={0} onChange={(e)=>{setNbShadow(e.target.value)}}/>
         <input className="input1" type='number'  placeholder='Nombre de Neutres' min={0} onChange={(e)=>{setNbNeutre(e.target.value)}}/>
-        <input className="input1" type='number'  placeholder='Nombre de Shadows' min={0} onChange={(e)=>{setNbShadow(e.target.value)}}/>
 
         <br></br>
         {/* pour changer le mode de jeu  */}
         <label className='' htmlFor="ranked">Classé</label>
         <input id="ranked "className="input1" type='checkbox'   min={0} onChange={(e)=>{setRanked(e.target.checked)}}  /> 
-        <label htmlFor="custom"> Caractères personnalisés</label>
+        <label htmlFor="custom"> Personnages spéciaux</label>
         <input id="custom" className="input1" type='checkbox'   min={0} onChange={(e)=>{setCustom(e.target.checked)}}/>
 
 
