@@ -30,8 +30,25 @@ function ListePartiesMagic(){
     }, []);
 
     const [joueursMax, setJoueursMax] = useState(2);
+
+    const [nbShadow,setNbShadow] = useState(2);
+    const [nbHunter,setNbHunter] = useState(2);
+    const [nbNeutre,setNbNeutre] = useState(2);
+
+    const [estRanked,setRanked] = useState(false);
+    const [estCustom,setCustom ] = useState(false);
+
     const createPartie = () => {
-        socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"shadowHunter"});
+        socket.emit('creerPartie',{ 
+          "joueursMax": joueursMax, 
+          "type": "shadowHunter", 
+          neutres: parseInt(nbNeutre), 
+          shadows: parseInt(nbShadow), 
+          hunters: parseInt(nbHunter), 
+          ranked: estRanked, 
+          customCharacters: estCustom 
+        });
+      
         socket.on('creerPartie', (idPartie) => {
             console.log(idPartie);
             if (idPartie === false) {
@@ -67,7 +84,23 @@ function ListePartiesMagic(){
       </div>
       <div className="createPartie">
         <input className="input1" type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input> 
+        
+        {/* pour les personnages */}
+        <input className="input1" type='number'  placeholder='Nombre de Hunters' min={0} onChange={(e)=>{setNbHunter(e.target.value)}}/>
+        <input className="input1" type='number'  placeholder='Nombre de Neutres' min={0} onChange={(e)=>{setNbNeutre(e.target.value)}}/>
+        <input className="input1" type='number'  placeholder='Nombre de Shadows' min={0} onChange={(e)=>{setNbShadow(e.target.value)}}/>
+
+        <br></br>
+        {/* pour changer le mode de jeu  */}
+        <label className='' htmlFor="ranked">Classé</label>
+        <input id="ranked "className="input1" type='checkbox'   min={0} onChange={(e)=>{setRanked(e.target.checked)}}  /> 
+        <label htmlFor="custom"> Caractères personnalisés</label>
+        <input id="custom" className="input1" type='checkbox'   min={0} onChange={(e)=>{setCustom(e.target.checked)}}/>
+
+
+
         <button className="joliebouton2" onClick={createPartie}>Créer !</button> <br></br> <br></br>
+
       </div>
     
 
