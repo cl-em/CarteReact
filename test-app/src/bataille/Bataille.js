@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 
 import { QuittePartie } from '../6quiprend/6quiprend';
-// const socket = io('http://localhost:8888');
+// const socket = io('http://85.215.189.178:8888');
 // socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
 
 function Connecte() {
@@ -146,7 +146,7 @@ function MainJoueur() {
     const CheminImage = (carte) => {
         const { valeur, couleur } = carte;
         const nomImage = `${valeur}_${couleur}.png`;
-        return `http://localhost:8888/carte/${nomImage}`;
+        return `http://85.215.189.178:8888/carte/${nomImage}`;
     };
 
     function carteJouee(carte) {
@@ -206,7 +206,7 @@ function MainJoueur() {
                 for (var player of data.cartesJouees) {
                     document.getElementById(player.pseudo).innerHTML = `<p>${player.pseudo}</p>`;
                     if (player.choix != null) {
-                        document.getElementById(player.pseudo).innerHTML += (`<img class='hop' src="http://localhost:8888/carte/` + player.choix.valeur + `_` + player.choix.couleur + `.png" />`);
+                        document.getElementById(player.pseudo).innerHTML += (`<img class='hop' src="http://85.215.189.178:8888/carte/` + player.choix.valeur + `_` + player.choix.couleur + `.png" />`);
                     }
                     gagnant = data.winner;
 
@@ -245,7 +245,7 @@ function MainJoueur() {
             //Sinon c'est comme une carte, il y a data.choix et data.valeur et data.pseudo -Elouand & kyky (merci a lui pour les use effect)
             // unsigned clement
             document.getElementById(data.pseudo).innerHTML = `<p>${data.pseudo}</p>`
-            document.getElementById(data.pseudo).innerHTML += `<img class='hop' src=http://localhost:8888/carte/` + data.valeur + `_` + data.couleur + `.png/>`
+            document.getElementById(data.pseudo).innerHTML += `<img class='hop' src=http://85.215.189.178:8888/carte/` + data.valeur + `_` + data.couleur + `.png/>`
 
         });
     }, []);
