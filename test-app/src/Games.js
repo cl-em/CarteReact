@@ -6,26 +6,26 @@ import {
 
 function MyGame(){
   const navigate = useNavigate();
-  document.body.style.backgroundImage = `url("http://85.215.189.178:8888/fichier/table.jpg")`;
+  document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table.jpg")`;
 
   return (
     <div className='jeu'>
       <h3 className='headerJeux'>Cliquez sur  un jeu pour commencer !</h3>
 
     <div className='choixJeu1' onClick={()=>navigate("/bataille")}>
-    <img src="http://85.215.189.178:8888/fichier/elouand.png" className='règlesBataille'></img>
-      <img className='elouand' src="http://85.215.189.178:8888/fichier/batailleRègles.png"></img>
+    <img src="http://localhost:8888/fichier/elouand.png" className='règlesBataille'></img>
+      <img className='elouand' src="http://localhost:8888/fichier/batailleRègles.png"></img>
       {/* <p>bataille</p> */}
     </div>
 
     <div className='choixJeu2' onClick={()=>navigate("/6quiprend")}>
-    <img src="http://85.215.189.178:8888/fichier/Clem.png" className='règlesSixQuiPrend'></img>
-      <img className='clem' src="http://85.215.189.178:8888/fichier/sixQuiPrendRègles.png"></img>
+    <img src="http://localhost:8888/fichier/Clem.png" className='règlesSixQuiPrend'></img>
+      <img className='clem' src="http://localhost:8888/fichier/sixQuiPrendRègles.png"></img>
     </div>
 
     <div className='choixJeu3'>
-    <img src="http://85.215.189.178:8888/fichier/kylian.png" className='règlesMagic'></img>
-      <img onClick={()=>navigate("/changementunivers")} className='kyky' src="http://85.215.189.178:8888/fichier/spirale.gif"></img>
+    <img src="http://localhost:8888/fichier/kylian.png" className='règlesMagic'></img>
+      <img onClick={()=>navigate("/changementunivers")} className='kyky' src="http://localhost:8888/fichier/spirale.gif"></img>
     </div>
 
     </div>

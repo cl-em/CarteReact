@@ -39,7 +39,7 @@
 
 
 .plateau-container {
-    background-image: ("http://85.215.189.178:8888/fichier/shbg.jpg") center/cover no-repeat;
+    background-image: ("http://localhost:8888/fichier/shbg.jpg") center/cover no-repeat;
     color: aliceblue;
     display: flex;
     flex-direction: column;
@@ -504,7 +504,7 @@
     margin: auto;
     width: 56%;
     height: 70vh;
-    background-image: url('http://85.215.189.178:8888/fichier/shadoter.png');
+    background-image: url('http://localhost:8888/fichier/shadoter.png');
     background-size: cover;
     background-position: center;
     background-size: contain;

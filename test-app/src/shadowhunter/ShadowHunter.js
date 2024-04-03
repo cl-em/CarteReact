@@ -105,7 +105,7 @@ function ApresJeu({ listeGagnants }) {
                 {listeGagnants.map((joueur, index) => (
                     <div className="divGagnant">
                         <p>{joueur.pseudo}</p>
-                        <img src={"http://85.215.189.178:8888/carteshadow/" + joueur.carte + ".png"} alt={joueur.carte} key={index} />
+                        <img src={"http://localhost:8888/carteshadow/" + joueur.carte + ".png"} alt={joueur.carte} key={index} />
                     </div>
                 ))}
                 </div>
@@ -175,11 +175,11 @@ function Main({ listeDeCarte }) { // liste de string
             )}
             <br></br>
             {listeDeCarte.map((element, index) => (
-                <img key={index} src={"http://85.215.189.178:8888/carteShadow/" + element + ".png"} alt={element}
+                <img key={index} src={"http://localhost:8888/carteShadow/" + element + ".png"} alt={element}
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, idCarte: element, type: "stuffSelf" });
                     }}
-                    onMouseEnter={() => handleHoveredImageChange("http://85.215.189.178:8888/carteShadow/" + element + ".png")}
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow/" + element + ".png")}
                 />
             ))}
         </div>
@@ -196,7 +196,7 @@ function Role({ nomCarte }) {
     let socket = React.useContext(SocketContext);
 
 
-    const imageSrc = `http://85.215.189.178:8888/carteShadow/${nomCarte}.png`;
+    const imageSrc = `http://localhost:8888/carteShadow/${nomCarte}.png`;
     return (
         <div id="role-carte-sh">
             <img src={imageSrc} alt={nomCarte} onMouseEnter={() => handleHoveredImageChange(imageSrc)} />
@@ -245,13 +245,13 @@ function Stats({ listeJoueurs }) {
                         </div>
                         <div id="Joueurs-carte">
                             {joueur.révélé ?
-                                <img src={"http://85.215.189.178:8888/carteShadow2/" + joueur.révélé + ".png"} alt={joueur.révélé}
-                                    onMouseEnter={() => handleHoveredImageChange("http://85.215.189.178:8888/carteShadow2/" + joueur.révélé + ".png")}
+                                <img src={"http://localhost:8888/carteShadow2/" + joueur.révélé + ".png"} alt={joueur.révélé}
+                                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/" + joueur.révélé + ".png")}
                                     onClick={() => {
                                         socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: joueur.révélé, joueurConcerne: joueur.pseudo });
                                     }} /> :
-                                <img src={"http://85.215.189.178:8888/carteShadow2/Personnage.png"}
-                                    onMouseEnter={() => handleHoveredImageChange("http://85.215.189.178:8888/carteShadow2/Personnage.png")}
+                                <img src={"http://localhost:8888/carteShadow2/Personnage.png"}
+                                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Personnage.png")}
                                     onClick={() => {
                                         socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: "Personnage", joueurConcerne: joueur.pseudo });
                                     }} />
@@ -266,8 +266,8 @@ function Stats({ listeJoueurs }) {
                     <div id="stuff">
                         {joueur.stuff.length ?
                             joueur.stuff.map((carte, index) => (
-                                <img key={index} src={"http://85.215.189.178:8888/carteShadow2/" + carte + ".png"} alt={carte}
-                                    onMouseEnter={() => handleHoveredImageChange("http://85.215.189.178:8888/carteShadow2/" + carte + ".png")}
+                                <img key={index} src={"http://localhost:8888/carteShadow2/" + carte + ".png"} alt={carte}
+                                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/" + carte + ".png")}
                                     onClick={() => {
                                         socket.emit("choixCarte", { idPartie: idPartie, type: "stuffOther", carte: carte, joueurConcerne: joueur.pseudo });
                                         socket.emit("choixCarte", { idPartie: idPartie, idCarte: carte, type: "stuffSelf" });
@@ -304,8 +304,8 @@ function CartePlateau({ deuxCarte, position, listeJoueurs }) {
         <div className={"plateau"}>
             {deuxCarte.map((carte, index) => (
                 <div className={`carte ${carte}`} key={index}>
-                    <img src={"http://85.215.189.178:8888/carteShadow/" + carte + ".png"} alt={carte}
-                        onMouseEnter={() => handleHoveredImageChange("http://85.215.189.178:8888/carteShadow/" + carte + ".png")}
+                    <img src={"http://localhost:8888/carteShadow/" + carte + ".png"} alt={carte}
+                        onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow/" + carte + ".png")}
                         onClick={() => {
                             socket.emit("choixCarte", { idPartie: idPartie, type: "zone", carte: carte });
                         }}
@@ -353,24 +353,24 @@ function Pioches() {
     return (
         <div id="pioches">
             <div>
-                <img src={"http://85.215.189.178:8888/carteShadow2/Carte_Lumiere.png"}
+                <img src={"http://localhost:8888/carteShadow2/Carte_Lumiere.png"}
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, type: "pioche", carte: "Lumiere" });
                     }}
-                    onMouseEnter={() => handleHoveredImageChange("http://85.215.189.178:8888/carteShadow2/Carte_Lumiere.png")}
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Carte_Lumiere.png")}
 
                 />
-                <img src={"http://85.215.189.178:8888/carteShadow2/Carte_Tenebres.png"}
+                <img src={"http://localhost:8888/carteShadow2/Carte_Tenebres.png"}
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, type: "pioche", carte: "Tenebres" });
                     }}
-                    onMouseEnter={() => handleHoveredImageChange("http://85.215.189.178:8888/carteShadow2/Carte_Tenebres.png")}
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Carte_Tenebres.png")}
                 />
-                <img src={"http://85.215.189.178:8888/carteShadow2/Carte_Vision.png"}
+                <img src={"http://localhost:8888/carteShadow2/Carte_Vision.png"}
                     onClick={() => {
                         socket.emit("choixCarte", { idPartie: idPartie, type: "pioche", carte: "Vision" });
                     }}
-                    onMouseEnter={() => handleHoveredImageChange("http://85.215.189.178:8888/carteShadow2/Carte_Vision.png")}
+                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Carte_Vision.png")}
                 />
             </div>
         </div>
@@ -526,7 +526,7 @@ export default function ShadowHunter() {
     
     useEffect(() => {
         const Obg = document.body.style.backgroundImage;
-        document.body.style.backgroundImage = `url("http://85.215.189.178:8888/fichier/table_spooky.png")`;
+        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
 
         return () => {
             document.body.style.backgroundImage = Obg;

@@ -21,7 +21,7 @@ function ListePartiesMagic(){
         backgroundImage : document.body.style.backgroundImage
       }
 
-        document.body.style.backgroundImage = `url("http://85.215.189.178:8888/fichier/table_spooky.png")`;
+        document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
 
         return () => {
           document.body.style.backgroundImage = bg.backgroundImage;
