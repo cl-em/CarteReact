@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
-
 function LoginForm() {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");

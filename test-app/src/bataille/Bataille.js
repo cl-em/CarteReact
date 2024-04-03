@@ -9,7 +9,6 @@ import {
 } from "react-router-dom";
 
 import { QuittePartie } from '../6quiprend/6quiprend';
-
 // const socket = io('http://localhost:8888');
 // socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
 

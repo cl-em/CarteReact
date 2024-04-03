@@ -11,6 +11,7 @@ const SocketProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
+        console.log(process.env.REACT_APP_API_BASE_URL);
         const cookies = new Cookies();
         const newSocket = io('http://localhost:8888', {
         auth: {
