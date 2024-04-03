@@ -1,11 +1,13 @@
 const express = require('express');
 const app = express();
 const http = require('http');
+const ip = "localhost"
+const PORT = 8888;
 const server = http.createServer(app);
 const cors = require('cors');
 const io = require('socket.io')(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://"+ip+":3000",
     methods: ["GET", "POST"],
     transports: ['websocket', 'polling'],
     credentials: true
@@ -13,7 +15,7 @@ const io = require('socket.io')(server, {
   allowEIO3: true
 });
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "http://"+ip+":3000",
   methods: ["GET", "POST"],
   credentials: true
 }));
@@ -25,9 +27,8 @@ const tokenStore = {};
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('cards_game.sqlite');
 //-------------------------------Express-----------------------------------------------
-const PORT = 8888;
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://"+ip+":${PORT}`);
 });
 
 app.get('/fichier/:nomFichier', function(request, response) {
