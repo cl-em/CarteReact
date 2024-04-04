@@ -11,7 +11,7 @@ function ListePartiesBataille(){
 
     const navigate = useNavigate();
     const [partiesOuvertes, setPartiesOuvertes] = useState([]);
-    const socket = io('http://localhost:8888');
+    const socket = io('http://85.215.189.178:8888');
     useEffect(() => {
         socket.emit('parties ouvertes');
         socket.on('parties ouvertes', (data) => {
