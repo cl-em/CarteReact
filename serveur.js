@@ -28,7 +28,7 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('cards_game.sqlite');
 //-------------------------------Express-----------------------------------------------
 server.listen(PORT, () => {
-  console.log(`Server is running on http://"+ip+":${PORT}`);
+  console.log(`Server is running on http://`+ip+`:${PORT}`);
 });
 
 app.get('/fichier/:nomFichier', function(request, response) {
@@ -685,6 +685,9 @@ io.on('connection', (socket) => {
               neutres=2}
             let partie = new shadowHunter(socket.data.userId,neutres,shadowHunters,data.ranked,data.customCharacters)
             partiesOuvertes.push(partie)
+            if (partiesOuvertes.length>=10){
+              partiesOuvertes.shift()
+            }
             console.log("| Creation d'une partie de shadowHunter par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
             socket.emit("creerPartie",partie.id)}
         }
@@ -1226,7 +1229,7 @@ else{
 
 
                                 case "Forêt_Hantée_1":
-                                  io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit s'il veut faire le bien... ou faire le mal.","rapportAction":{"type":"choix","valeur":{"boutons":["attaquer","soigner"],"défaut":"Zone5","idJoueur":partie.joueurCourant}}})
+                                  io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" choisit s'il veut faire le bien... ou faire le mal.","rapportAction":{"type":"choix","valeur":{"boutons":["attaquer","soigner"],"défaut":"zone5","idJoueur":partie.joueurCourant}}})
                                 break
                                 case "Forêt_Hantée_2":
                                   io.emit("tourPasse",{"idPartie":partie.id,"Message":pseudos[partie.joueurCourant]+" clique sur le joueur sur qui utiliser la magie de la forêt.","rapportAction":false})
@@ -1243,7 +1246,7 @@ else{
                               break
                             
                               case "Peau_De_Banane_1":
-                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché une peau de banane... L'un de ses équipements lui glisse des mains ! Reste à cliquer pour décider duquel...","rapportAction": {type:"cartePiochée",valeur:"Peau_de_Banane"},"idPartie":partie.id})
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché une peau de banane... L'un de ses équipements lui glisse des mains ! Reste à cliquer pour décider duquel...","rapportAction": {type:"cartePiochée",valeur:"Peau_De_Banane"},"idPartie":partie.id})
                               break
                               case "Peau_De_Banane_2":
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit qui trouvera son objet...","rapportAction": {type:"cartePiochée","valeur":partie.variableTemp},"idPartie":partie.id})
@@ -1262,7 +1265,7 @@ else{
                                 io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" est touché d'une lumière bienveillante... Mais cette personne veut-elle révéler la couleur de son âme ?","rapportAction":{"type":"choix","valeur":{"idJoueur":partie.joueurCourant,"boutons":["accepter la lumière","poursuivre son chemin"],"défaut":"Avènement_Suprême"}},"idPartie":partie.id})
                               break
                               case "Barre_De_Chocolat":
-                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé... une barre de chocolat ?","rapportAction":{"type":"choix","valeur":{"idJoueur":partie.joueurCourant,"boutons":["la manger","l'ignorer"],"défaut":"Barre_De_Chocolat"}},"idPartie":partie.id})
+                                io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé... une barre de chocolat ? (La manger révèlera de qui il s'agit).","rapportAction":{"type":"choix","valeur":{"idJoueur":partie.joueurCourant,"boutons":["la manger","l'ignorer"],"défaut":"Barre_De_Chocolat"}},"idPartie":partie.id})
                                 break
                                 case "Bénédiction":
                                   io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" offre sa bénédiction à un joueur... mais lequel ?","rapportAction": {type:"cartePiochée",valeur:"Bénédiction"},"idPartie":partie.id})
@@ -1281,6 +1284,16 @@ else{
 
                           function piocheNoire(partie,joueur){//Fonction serveur pour faire piocher une carte noire au joueur passé en paramètre dans l'environnement de la partie
                             var cartePiochée = partie.drawNoire(joueur.idJoueur)
+
+                            if (cartePiochée.type=="équipement"){
+                              io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a pioché un équipement !","rapportAction":{type:"cartePiochée",valeur:cartePiochée.valeur},"idPartie":partie.id})
+                              setTimeout(() => {
+                                tourPasseDeCirconstance(partie)
+                              }, 2500);
+                              return
+                            }
+
+
                             if (cartePiochée.valeur=="Peau_De_Banane" && cartePiochée.data=="noItems"){
 
                               if (joueur.isDead()){
@@ -1297,6 +1310,14 @@ else{
                               }, 2500);
                               return
                             }
+
+                            if (cartePiochée.valeur=="Succube_Tentatrice"&&cartePiochée.data=="noItems"){
+                              io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" a trouvé une succube... mais rien ne semble l'intéresser. Elle disparaît aussi vite qu'elle est apparue. ","rapportAction":{type:"cartePiochée",valeur:"Succube_Tentatrice"},"idPartie":partie.id})
+                              setTimeout(() => {
+                                tourPasseDeCirconstance(partie)
+                              }, 2500);
+                            }
+
                               if (cartePiochée.valeur=="Dynamite"){
                                 if (cartePiochée.data.victimes>0){
                                   var liste = ""
@@ -1698,7 +1719,7 @@ else{
 
                                           case "Vision_Clairvoyante":
                                             if (cible.hp<=11 && !mentir){
-                                              cible.hurtPoint+=2
+                                              cible.hurtPoint+=1
                                               io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a subit 2 dégâts !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
                                             }
                                             else{
@@ -1780,7 +1801,7 @@ else{
 
                                             case "Vision_Divine":
                                               if ((partie.hunterBase.includes(cible.character) || mentir) && cible.hurtPoint>0){
-                                                cible.hurtPoint-=2
+                                                cible.hurtPoint-=1
                                                 if (cible.hurtPoint<=0){cible.hurtPoint=0}
                                                 io.emit("tourPasse",{"Message":pseudos[cible.idJoueur]+" a été soigné de 1 point de vie !","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
                                               }
@@ -1793,6 +1814,8 @@ else{
                                                 io.emit("tourPasse",{"Message":"Rien ne se passe","rapportAction":{type:"vision1",valeur:{"vision":"Carte_Vision","idJoueur":partie.joueurCourant}},"idPartie":partie.id})
                                                 }
                                               }
+                                              partie.state="vision3"
+                                              break
 
 
                                       case "Vision_Furtive":
@@ -2219,7 +2242,7 @@ else{
                                         for (var joueu of partie.joueurs){if (joueu.idJoueur==getIdFromPseudo(data.joueurConcerne)){cible=joueu}}
                                         cible.hurtPoint = 7
                                         joueur.pouvoirUtilisé = true
-                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a ciblé "+data.joueurConcerne+" avec le pouvoir de Fu-ka !","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":"Fu-Ka","pseudo":pseudos[socket.data.userId]}},"idPartie":data.idPartie})
+                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" a ciblé "+data.joueurConcerne+" avec le pouvoir de Fu-ka !","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":"Fu-ka","pseudo":pseudos[socket.data.userId]}},"idPartie":data.idPartie})
                                         partie.state="débutTour"
                                         setTimeout(() => {
                                           io.emit("tourPasse",{"Message":pseudos[partie.joueurCourant]+" choisit s'il veut lancer les dés","rapportAction":{"type":"choix","valeur":{"boutons":["lancer les dés !"],"idJoueur":partie.joueurCourant}},"idPartie":data.idPartie})
@@ -3010,7 +3033,7 @@ else{
                                     case "Fu-ka":
                                       if (partie.joueurCourant==socket.data.userId && partie.state=="débutTour"){
                                         partie.state = "pouvoirFu-ka"
-                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir de Fu-ka !","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":"Fu-Ka","pseudo":pseudos[socket.data.userId]}},"idPartie":data.idPartie})
+                                        io.emit("tourPasse",{"Message":pseudos[socket.data.userId]+" utilise le pouvoir de Fu-ka !","rapportAction":{"type":"carteRévélée","valeur":{"carteRévélée":"Fu-ka","pseudo":pseudos[socket.data.userId]}},"idPartie":data.idPartie})
                                         return
                                 }
                                 break
@@ -3174,6 +3197,16 @@ else{
                                       switch (partie.type){
 
                                         case "shadowHunter":
+
+                                        if (partie.hasStarted==false){
+                                          for (var h in partie.joueurs){
+                                            if (partie.joueurs[h].idJoueur==socket.data.userId){
+                                              partie.joueurs.splice(h,1)
+                                            }
+                                          }
+                                          return
+                                        }
+
                                           if(data.typePartie!="shadowHunter"){return}
                                         
                                           tuer(partie,test)

@@ -530,6 +530,7 @@ class shadowHunter extends Game{
         this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen","Nicolas"]
         this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         }
+
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
         this.hunters = this.shuffle(Array.from(this.hunterBase))
         this.neutres = this.shuffle(Array.from(this.neutresBase))  
@@ -545,6 +546,7 @@ class shadowHunter extends Game{
             this.personnages.push(this.neutres.shift())
         }
 
+        this.personnages = this.shuffle(this.personnages)
         
         this.joueurs= [new JoueurShadowHunter(host,true,this.personnages.shift())]
 
@@ -606,6 +608,7 @@ class shadowHunter extends Game{
         this.défausseNoire = []
         this.défausseBlanche = []
         this.défausseVisions = []
+
         this.zones = []
         for (var i=1;i<=6;i++){
             this.zones.push(("zone"+i))
@@ -651,8 +654,9 @@ class shadowHunter extends Game{
         this.blanches =this.shuffle(this.blanches)
        this.noires = this.shuffle(this.noires)
       this.visions = this.shuffle(this.visions)
-      
+      this.zones = this.shuffle(this.zones)
 
+        }
 
 
       
@@ -673,9 +677,8 @@ class shadowHunter extends Game{
             }
 
 
-       this.shuffle(this.zones)
-    }
-    //Don des PV aux joueurs
+    
+    //Don des PV au x joueurs
     
     for (var joueur of this.joueurs){
         var char = joueur.character
@@ -980,14 +983,16 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
                 if (this.canSteal(this.joueurCourant)){
                 this.state = "Succube_Tentatrice"
                 this.joueurCourant = joueur.idJoueur}
-                else{this.state="phase_Attaque"}
+                else{this.state="phase_Attaque"
+                data = "noItems"
+            }
             break;
         
             default:
                 break;
         }
     }
-    return {"valeur":carte.valeur,"data":data}
+    return {"valeur":carte.valeur,"data":data,"type":carte.type}
 }
         //---------------------------------FONCTIONS DE JEU---------------------------------------------
 
