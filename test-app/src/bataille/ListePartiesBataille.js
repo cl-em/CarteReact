@@ -45,7 +45,7 @@ function ListePartiesBataille(){
     }
     return (
     <div className='main'>
-      <button class="joliebouton" onClick={()=>navigate("/leaderboardbataille")}>Afficher le leaderboard</button> <br></br> <br></br>
+      <button class="joliebouton" onClick={()=>navigate("/leaderboardbataille")}>Afficher le classement</button> <br></br> <br></br>
       <div className='joinPartieId'>
         <input class="input1" type="text" placeholder="Id de la partie" id="idPartie"></input>
         <button class="joliebouton" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>

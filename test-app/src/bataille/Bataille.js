@@ -85,7 +85,7 @@ function MainJoueur() {
     const [host, setHost] = useState(false);
 
     let urlP = new URL(document.location).searchParams;
-    let idPartie =  urlP.get("idPartie");
+    let idPartie = urlP.get("idPartie");
     let isEgalite = false;
     let gagnant = false;
 
@@ -112,11 +112,11 @@ function MainJoueur() {
 
     useEffect(() => {
         socket.emit("isHost", { idPartie: idPartie });
-            socket.on("isHost", (data) => {
-                if (data === true) {
-                    setHost(true);
-                }
+        socket.on("isHost", (data) => {
+            if (data === true) {
+                setHost(true);
             }
+        }
         )
     }, [idPartie]);
 
@@ -288,9 +288,15 @@ function MainJoueur() {
 
     return (
         <div>
+            <div id="sauvegarde-container">
             {host && (
                 <button id="sauvegarde-btn" className='joliebouton' onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
             )}
+            <QuittePartie typePartie={"bataille"} />
+            <div id="connecte-container">
+            <Connecte/>
+            </div>
+            </div>
             <Chat />
             <Lobby listesjoueurs={onlyJoueurs} />
             <div className='divCartes'>
@@ -314,8 +320,7 @@ export const Bataille = () => {
         <div>
 
 
-            <Connecte />
-            <QuittePartie typePartie={"bataille"} />
+
             <div id='gagnant'>
 
             </div>

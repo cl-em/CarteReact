@@ -365,15 +365,19 @@ useEffect(()=>{
           <ApresJeu tableauFin={infosFinPartie}/>
         ) : (
           <>
-          
-            <Connecte/>
             <Chat/>
             <AfficherStats infosJoueursFun={infosJoueurs} />
             <AfficherLigne listeLignes={nouvelleListeLignes} />
             <Main6QuiPrend listeNombre={nouvelleMain.sort()} />
+            <div id="sauvegarde-container">
             { host && cansave && (
                 <button id="sauvegarde-btn" className="joliebouton"onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
             )}
+            <QuittePartie typePartie={"6quiprend"} />
+            <div id="connecte-container">
+            <Connecte/>
+            </div>
+            </div>
             <div className='infopartie'>
               {choixNecessaire ? 
                 <h3 style={{ color: 'aliceblue' }}>{joueurEval}, clique sur une ligne</h3> :
@@ -405,7 +409,7 @@ export function QuittePartie({typePartie,ajoutStyle={},className="joliebouton"})
   const navigate = useNavigate();
 
 
-  return (<div className={className} style={{position:'absolute',top:1,alignItems:'center',zIndex:12,...ajoutStyle}}
+  return (<div className={className} style={{zIndex:12,}}
   onClick={()=>{  
     socket.emit("quittePartie",{idPartie:idPartie,typePartie:typePartie})
     navigate("/games")}}>
@@ -420,8 +424,6 @@ export const SixQuiPrend = () => {
 
     return (
         <div>
-          
-          <QuittePartie typePartie={"6quiprend"} />
           <Jouer />
         </div>
     );

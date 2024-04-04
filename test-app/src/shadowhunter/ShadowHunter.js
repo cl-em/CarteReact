@@ -5,10 +5,12 @@ import React, { createContext, useEffect, useState, useRef, useContext } from 'r
 import SocketContext from '../SocketContext';
 import { useNavigate } from "react-router-dom";
 import Action from "./ActionShadow";
-import { ImageProvider ,useImageContext } from './ImageContext';
+import { ImageProvider, useImageContext } from './ImageContext';
 import ImageComponent from './ImageComponent';
 
 import { QuittePartie } from "../6quiprend/6quiprend";
+
+/*----------------------------------------------ChatSH (ajout de différents onglets selon rôle a venir..)-----------------------------------------------------*/
 
 function ChatSH() {
     const currentUrl = window.location.href;
@@ -54,12 +56,23 @@ function ChatSH() {
     const [accessibilite, setAccessibilite] = useState(false);
 
 
+    const FinMessageRef = useRef(null);
+
+    const scrollChat = () => {
+        FinMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollChat();
+    }, [messages]);
+
     return (
         <div className={`container-chat ${accessibilite ? "accessibilite" : ""}`}>
             <ul className="messages">
                 {messages.map((msg, index) => (
                     <li key={index}>{msg}</li>
                 ))}
+                <li ref={FinMessageRef} />
             </ul>
 
             <div className="input-area2">
@@ -72,7 +85,6 @@ function ChatSH() {
             </div>
         </div>
     );
-
 }
 
 /*----------------------------------------------Avant jeu + Apres jeu-----------------------------------------------------*/
@@ -99,7 +111,7 @@ function ApresJeu({ listeGagnants }) {
     //{"pseudo":pseudos[j.idJoueur],"carte":j.character}
     return (
         <div>
-                <p class="messageGagnant">{messageGagnants}</p>
+            <p class="messageGagnant">{messageGagnants}</p>
             <div className="fin">
 
                 {listeGagnants.map((joueur, index) => (
@@ -108,12 +120,12 @@ function ApresJeu({ listeGagnants }) {
                         <img src={"http://localhost:8888/carteshadow/" + joueur.carte + ".png"} alt={joueur.carte} key={index} />
                     </div>
                 ))}
-                </div>
+            </div>
             <div className="finBouton">
 
-            <button className="joliebouton2" onClick={() => navigate("/games")}>
-                Revenir à l'écran de sélection des jeux
-            </button>
+                <button className="joliebouton2" onClick={() => navigate("/games")}>
+                    Revenir à l'écran de sélection des jeux
+                </button>
             </div>
 
         </div >
@@ -169,7 +181,7 @@ function Main({ listeDeCarte }) { // liste de string
     return (
         <div id="main-cartes-sh">
             {listeDeCarte.length === 0 ? (
-                <p>Vous n'avez pas encore d'équipements</p>
+                <p>Pas d'équipement..</p>
             ) : (
                 <p>Vos équipements :</p>
             )}
@@ -235,48 +247,47 @@ function Stats({ listeJoueurs }) {
     return (
         <div id="stats-sh">
             {listeJoueurs.map((joueur, index) => (
-
-                <div id="Joueurs">
+                <div id="Joueurs" onClick={() => { socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: "Personnage", joueurConcerne: joueur.pseudo }) }}>
                     <div id="Joueurs-display">
-                        <div id="Joueurs-name">
-                            <p onClick={() => {
-                                socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: "Personnage", joueurConcerne: joueur.pseudo });
-                            }}>{joueur.pseudo}</p>
-                        </div>
                         <div id="Joueurs-carte">
                             {joueur.révélé ?
                                 <img src={"http://localhost:8888/carteShadow2/" + joueur.révélé + ".png"} alt={joueur.révélé}
                                     onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/" + joueur.révélé + ".png")}
-                                    onClick={() => {
-                                        socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: joueur.révélé, joueurConcerne: joueur.pseudo });
-                                    }} /> :
+                                /> :
                                 <img src={"http://localhost:8888/carteShadow2/Personnage.png"}
                                     onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/Personnage.png")}
-                                    onClick={() => {
-                                        socket.emit("choixCarte", { idPartie: idPartie, type: "CartePersonnage", carte: "Personnage", joueurConcerne: joueur.pseudo });
-                                    }} />
+                                />
                             } <br></br> <br></br>
                         </div>
-                        <div id="Joueurs-revele">
-                            {joueur.révélé ? <p style={{ color: "green" }}>Le joueur s'est révélé</p> : <p style={{ color: "red" }}>Le joueur ne s'est pas révélé</p>}
+                        <div>
+                            <div id="Joueurs-name">
+                                <p>{joueur.pseudo}</p>
+                            </div>
+                            <div className="degâts">
+                                <p>Degâts : {joueur.dégats}</p>
+                            </div>
+                            <div id="Joueurs-revele">
+                                {joueur.révélé ? <p style={{ color: "green" }}>Révélé</p> : <p style={{ color: "red" }}>Non révélé</p>}
+                            </div>
                         </div>
                     </div>
-                    Le joueur a pris {joueur.dégats} degâts
-                    <br></br> <br></br>
                     <div id="stuff">
-                        {joueur.stuff.length ?
+                        {joueur.stuff.length > 0 ? (
                             joueur.stuff.map((carte, index) => (
-                                <img key={index} src={"http://localhost:8888/carteShadow2/" + carte + ".png"} alt={carte}
-                                    onMouseEnter={() => handleHoveredImageChange("http://localhost:8888/carteShadow2/" + carte + ".png")}
+                                <img
+                                    src={`http://localhost:8888/carteShadow2/${carte}.png`}
+                                    onMouseEnter={() => handleHoveredImageChange(`http://localhost:8888/carteShadow2/${carte}.png`)}
                                     onClick={() => {
                                         socket.emit("choixCarte", { idPartie: idPartie, type: "stuffOther", carte: carte, joueurConcerne: joueur.pseudo });
                                         socket.emit("choixCarte", { idPartie: idPartie, idCarte: carte, type: "stuffSelf" });
                                     }}
                                 />
                             ))
-                            : <div></div>
-                        }
+                        ) : (
+                            <p>{joueur.pseudo} a les poches vides..</p>
+                        )}
                     </div>
+
                 </div>
             ))}
         </div >
@@ -493,13 +504,16 @@ function Jouer() {
                             </div>
                             <div className="gauche">
                                 <div className="elements-gauche-haut">
-                                    <QuittePartie typePartie={"shadowHunter"}  className={"joliebouton2"}/>
                                     <Pioches />
                                     <Main listeDeCarte={stuff} />
                                     <Role nomCarte={personnage} />
                                     <div className="carte-hover">
                                         <ImageComponent />
                                     </div>
+                                    <div style={{ marginBottom: '20px' }}>
+                                        <QuittePartie typePartie={"shadowHunter"} className={"joliebouton3"} />
+                                    </div>
+
                                 </div>
                             </div>
                             <div className="milieu-sh">
@@ -522,7 +536,7 @@ function Jouer() {
 /*----------------------------------------------Default-----------------------------------------------------*/
 
 export default function ShadowHunter() {
-    
+
     useEffect(() => {
         const Obg = document.body.style.backgroundImage;
         document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table_spooky.png")`;
@@ -535,8 +549,6 @@ export default function ShadowHunter() {
 
     return (
         <div id="default">
-            
-
             <Jouer />
         </div>
     );

@@ -45,7 +45,7 @@ function ListeParties6quiprend(){
     }
     return (
     <div className='main'>
-      <button className="joliebouton" onClick={()=>navigate("/leaderboard6quiprend")}>Afficher le leaderboard</button> <br></br> <br></br>
+      <button className="joliebouton" onClick={()=>navigate("/leaderboard6quiprend")}>Afficher le classement</button> <br></br> <br></br>
       <div className='joinPartieId'>
         <input  className="input1" type="text" placeholder="Id de la partie" id="idPartie"></input> 
         <button  className="joliebouton" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>

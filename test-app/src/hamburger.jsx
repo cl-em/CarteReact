@@ -26,6 +26,7 @@ const HamburgerMenu = () => {
                 <li><a href="/magic">Shadow hunter</a> </li>
                 <li><a href='/leaderboardbataille'>Classement bataille</a></li>
                 <li><a href='/leaderboard6quiprend'>Classement 6QuiPrend</a></li>
+                <li><a href='/leaderboardMagic'>Classement du Shadow hunter</a></li>
                 </ul>
             </section>
         </div>

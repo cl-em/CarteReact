@@ -76,7 +76,7 @@ function ListePartiesMagic(){
     }
     return (
     <div className='main'>
-      <button className="joliebouton2" onClick={()=>navigate("/leaderboardMagic")}>Afficher le leaderboard</button> <br></br> <br></br>
+      <button className="joliebouton2" onClick={()=>navigate("/leaderboardMagic")}>Afficher le classement</button> <br></br> <br></br>
       <div className='joinPartieId'>
         <input  className="input1" type="text" placeholder="Id de la partie" id="idPartie"></input> 
         <button  className="joliebouton2" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>
@@ -89,14 +89,13 @@ function ListePartiesMagic(){
 
         <br></br>
         {/* pour changer le mode de jeu  */}
+        <div className='divcreagames'>
         <label className='' htmlFor="ranked">Classé</label>
-        <input id="ranked "className="input1" type='checkbox'   min={0} onChange={(e)=>{setRanked(e.target.checked)}}  /> 
+        <input className="input2" type='checkbox'   min={0} onChange={(e)=>{setRanked(e.target.checked)}}  /> 
         <label htmlFor="custom"> Personnages spéciaux</label>
-        <input id="custom" className="input1" type='checkbox'   min={0} onChange={(e)=>{setCustom(e.target.checked)}}/>
-
-
-
-        <button className="joliebouton2" onClick={createPartie}>Créer !</button> <br></br> <br></br>
+        <input className="input2" type='checkbox'   min={0} onChange={(e)=>{setCustom(e.target.checked)}}/>
+        <button className="joliebouton2" onClick={createPartie}>Créer</button> <br></br> <br></br>
+        </div>
 
       </div>
     
