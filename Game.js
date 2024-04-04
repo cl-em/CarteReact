@@ -699,6 +699,7 @@ class shadowHunter extends Game{
         this.state = "débutTour"
      
 
+
         }
         
 

@@ -480,8 +480,6 @@ function Jouer() {
 
     return (
         <div>
-
-            <QuittePartie typePartie={"shadowHunter"} ajoutStyle={{right:"16%"}}/>
             {gameStart ? (
                 gameFinish ? (
                     <ApresJeu listeGagnants={listeGagnants} />
@@ -495,6 +493,7 @@ function Jouer() {
                             </div>
                             <div className="gauche">
                                 <div className="elements-gauche-haut">
+                                    <QuittePartie typePartie={"shadowHunter"}  className={"joliebouton2"}/>
                                     <Pioches />
                                     <Main listeDeCarte={stuff} />
                                     <Role nomCarte={personnage} />
