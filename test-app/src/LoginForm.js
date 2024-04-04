@@ -8,7 +8,7 @@ function LoginForm() {
     axios.defaults.withCredentials = true;
     const onSubmit = (e) => {
       e.preventDefault();
-      axios.post('http://85.215.189.178:8888/login', { username, password })
+      axios.post('http://localhost:8888/login', { username, password })
       .then((response) => {
         if (response.data.validation) {
           navigate("/games");
