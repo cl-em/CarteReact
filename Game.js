@@ -528,7 +528,7 @@ class shadowHunter extends Game{
      else{//Personnages custom
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
         this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen","Nicolas"]
-        this.neutresBase = ["Bob","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
+        this.neutresBase = ["Bob","Thibaud","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         }
 
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
@@ -682,12 +682,12 @@ class shadowHunter extends Game{
     
     for (var joueur of this.joueurs){
         var char = joueur.character
-        var hp
+        var hp=10
         if (char=="Allie" ||char=="Agnès"){hp=8}
                 if (char=="Bob" ||char=="Bryan" ||char=="Emi" || char=="Ellen"){hp=10}
                 if (char=="Catherine" ||char=="Charles" || char=="Métamorphe" || char=="Momie"){hp=11}
                 if (char=="Franklin"||char=="Fu-ka"){hp=12}
-                if (char=="Valkyrie"||char=="Vampire"||char=="Daniel"||char=="David"){hp=13}
+                if (char=="Valkyrie"||char=="Vampire"||char=="Daniel"||char=="David"||char=="Thibaud"){hp=13}
                 if (char=="Liche"||char=="Loup-Garou"||char=="Georges"||char=="Gregor"||char=="Nicolas"){hp=14}
 
 
@@ -1104,13 +1104,24 @@ drawNoire(idJoueur){//Retourne {valeur,data}, valeur c'est le nom de la carte et
  
         for (var joueur of this.joueurs){
             if (joueur.character=="Catherine"){
-            if (joueursEnVie==2 && !joueur.éliminé){this.winners.push(joueur.idJoueur)}
+            if (joueursEnVie<=2 && !joueur.éliminé){this.winners.push(joueur.idJoueur)}
             }
         }
         for (var joueur of this.joueurs){
             if (joueur.character=="Allie"&&this.winners.length>0){
                 if (!joueur.éliminé){this.winners.push(joueur.idJoueur)}
             }}
+
+            if (this.winners.length>0){
+            var condThibaud = true
+        for (var joueur of this.joueurs){
+            if (joueur.éliminé && this.neutresBase.includes(joueur.character)&&joueur.character!="Thibaud"){condThibaud=false}
+        }
+        if (condThibaud){
+        for (var joueur of this.joueurs){if (joueur.character=="Thibaud"){this.winners.push(joueur.idJoueur)}}
+        }
+    }
+
         //Test agnès en tout dernier
         for (var joueur of this.joueurs){
             if (joueur.character=="Agnès"){
