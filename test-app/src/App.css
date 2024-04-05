@@ -9,7 +9,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  background: url("http://85.215.189.178:8888/fichier/table.jpg") center/cover no-repeat;
+  background: url("http://localhost:8888/fichier/table.jpg") center/cover no-repeat;
 }
 
 .login-form {
@@ -140,17 +140,17 @@ body {
 }
 
 .jeu1 {
-  background: url("http://85.215.189.178:8888/fichier/bataille.jpg") center/cover no-repeat;
+  background: url("http://localhost:8888/fichier/bataille.jpg") center/cover no-repeat;
   filter : blur(3px);
 }
 
 .jeu2 {
-  background: url("http://85.215.189.178:8888/fichier/belote.jpg") center/cover no-repeat;
+  background: url("http://localhost:8888/fichier/belote.jpg") center/cover no-repeat;
   filter : blur(3px);
 }
 
 .jeu3 {
-  background: url("http://85.215.189.178:8888/fichier/poker.jpg") center/cover no-repeat;
+  background: url("http://localhost:8888/fichier/poker.jpg") center/cover no-repeat;
   filter : blur(3px);
 }
 
@@ -339,7 +339,7 @@ body {
   overflow-y: hidden;
   left: 52.5%;
   transform: translateX(-50%);
-  /* background: url("http://85.215.189.178:8888/fichier/carpet.jpg") center/cover repeat; */
+  /* background: url("http://localhost:8888/fichier/carpet.jpg") center/cover repeat; */
 
   background-size: 20%;
   /* border: 5px goldenrod solid; */
