@@ -528,7 +528,7 @@ class shadowHunter extends Game{
      else{//Personnages custom
         this.shadowsBase = ["Liche","Loup-Garou","Métamorphe","Vampire","Valkyrie","Momie"]
         this.hunterBase = ["Gregor","Georges","Fu-ka","Franklin","Emi","Ellen","Nicolas"]
-        this.neutresBase = ["Bob","Thibaud"/*,"Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"*/]
+        this.neutresBase = ["Bob","Thibaud","Allie","Agnès","Bryan","David","Daniel","Catherine","Charles"]
         }
 
         this.shadows = this.shuffle(Array.from(this.shadowsBase))
