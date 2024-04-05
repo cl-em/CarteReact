@@ -9,7 +9,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  background: url("http://85.215.189.178:8888/fichier/table.jpg") center/cover no-repeat;
+  background: url("http://localhost:8888/fichier/table.jpg") center/cover no-repeat;
 }
 
 .login-form {
@@ -140,32 +140,26 @@ body {
 }
 
 .jeu1 {
-  background: url("http://85.215.189.178:8888/fichier/bataille.jpg") center/cover no-repeat;
+  background: url("http://localhost:8888/fichier/bataille.jpg") center/cover no-repeat;
   filter : blur(3px);
 }
 
 .jeu2 {
-  background: url("http://85.215.189.178:8888/fichier/belote.jpg") center/cover no-repeat;
+  background: url("http://localhost:8888/fichier/belote.jpg") center/cover no-repeat;
   filter : blur(3px);
 }
 
 .jeu3 {
-  background: url("http://85.215.189.178:8888/fichier/poker.jpg") center/cover no-repeat;
+  background: url("http://localhost:8888/fichier/poker.jpg") center/cover no-repeat;
   filter : blur(3px);
 }
 
-/* .listeParties {
-  max-height: 700px;
-  width: 100%;
-  background-color: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.295);
-  backdrop-filter: blur(5px);
-  align-items: center;
-  text-align: center;
-  border-radius: 3%;
-  box-shadow: 0 0 10px rgb(0, 0, 0);
-  overflow-x: auto;
-} */
+.listeParties {
+  overflow:scroll;
+  overflow-x:hidden;
+  height: 50vh;
+  width: 750px;
+} 
 
 .test0{
   /* pour afficher la liste des joueurs de maniere à ce que une sur 2 soit foncé et pas l'autre */
@@ -339,7 +333,7 @@ body {
   overflow-y: hidden;
   left: 52.5%;
   transform: translateX(-50%);
-  /* background: url("http://85.215.189.178:8888/fichier/carpet.jpg") center/cover repeat; */
+  /* background: url("http://localhost:8888/fichier/carpet.jpg") center/cover repeat; */
 
   background-size: 20%;
   /* border: 5px goldenrod solid; */

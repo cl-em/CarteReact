@@ -11,7 +11,7 @@ function RegisterForm() {
   const onSubmit = (e) => {
     e.preventDefault();
     if (password === confirmPassword) {
-      axios.post('http://85.215.189.178:8888/register', { username, password })
+      axios.post('http://localhost:8888/register', { username, password })
       .then((response) => {
         if (response.data.validation) {
           navigate("/registerConfirm");
