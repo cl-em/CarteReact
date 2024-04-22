@@ -54,6 +54,10 @@ app.get('/socket.io/', (req, res) => {
 });
 
 
+app.get("/mario",(req,res)=>{
+  response.sendFile("mario.mp3",{root:__dirname+"/music/"})
+})
+
 //-------------------------------Login-----------------------------------------------
 app.use(express.json());
 app.use(cookieParser());

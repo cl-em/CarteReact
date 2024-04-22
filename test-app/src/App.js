@@ -84,7 +84,7 @@ function MyApp() {
 
 
           {/* route pour tester des composants */}
-          <Route path='/test' element={<img />} />
+          <Route path='/test' element={<img></img>} />
 
         </Routes>
       </Router>
