@@ -1,6 +1,7 @@
 from players.player import Player
 from game.card import Card
 from random import randint, choice,shuffle
+from enum import Enum
 
 class Bot(Player):
     def info(self,game):
@@ -304,4 +305,102 @@ class BotMinMax(Bot):
                 index+=1
 
 
-  
+
+            
+class TypeNoeud(Enum):
+    RACINE = "Racine"
+    MESCARTES = True
+    ADVERSAIRE=False
+
+class Arbre():
+    def __init__(self,valeur:Card,mesCartes) -> None:
+        self.fils = []
+        self.mesCartes  = mesCartes
+        self.carte:Card = valeur
+
+
+
+    def ajoutFils(self,enfant):
+        self.fils.append(enfant)
+ 
+
+def creerArbre(arbre:Arbre,maMain:list,mainAdversaire:list,index:int):
+    # arbre : toutes les possibilité
+    # la cas d'arret c'est quand on a pas de carte dans la main
+
+    if index==0:
+        return "fin"
+
+    for carte in maMain:
+        arbre.ajoutFils(Arbre(carte,TypeNoeud.MESCARTES))
+
+
+    for fils in arbre.fils:
+        for carte in mainAdversaire:
+            fils.ajoutFils(Arbre(carte,TypeNoeud.ADVERSAIRE))
+            
+
+            # pour ce fils, sans la carte et sa
+
+            maMain.remove(fils.carte)
+            mainAdversaire.remove(carte)
+
+            creerArbre(fils,maMain,mainAdversaire,index-1)
+
+            maMain.append(fils.carte)
+            mainAdversaire.append(carte)
+
+
+def calculerTeteBoeuf(arbre:Arbre,profondeur:int):
+    if profondeur==0:
+        return arbre.carte.cowsNb
+    
+    else:
+        somme = 0
+        for fils in arbre.fils:
+            somme+=calculerTeteBoeuf(fils,profondeur-1)
+
+        return arbre.carte.cowsNb+somme
+
+def minIndex(tab:list):
+    indexMin=0
+
+    for i in range(1,len(tab)):
+        if tab[i]<tab[indexMin]: 
+            indexMin=i
+
+    return indexMin
+
+class BotMinMax(Bot):
+    def player_turn(self, game):
+        return Card(self.getCardToPlay(game))
+    
+    
+    def getCardToPlay(self,game):
+        
+        # creation de la liste de toutes les cartes que peut jouer l'adversaire
+        carteJouableEnnemi=[Card(i) for i in range(1,105)]
+
+        # suppression des cartes que l'adversaire ne peut pas avoir (ma main,carte sur la table et defausse)
+        for carte in self.hand:
+            carteJouableEnnemi.remove(carte)
+
+        for ligne in game.table:
+            for carte in ligne:
+                carteJouableEnnemi.remove(carte)
+
+        for carte in game.alreadyPlayedCards:
+            carteJouableEnnemi.remove(carte)
+
+        toutePossibilite = Arbre(-1,TypeNoeud.RACINE)
+
+        creerArbre(toutePossibilite,self.hand,carteJouableEnnemi,3)
+
+
+        listeChoix=[]
+
+        for i in range(len(toutePossibilite.fils)):
+            listeChoix.append(calculerTeteBoeuf(toutePossibilite.fils[i]))
+
+
+        return toutePossibilite.fils[minIndex(listeChoix)].carte.value        

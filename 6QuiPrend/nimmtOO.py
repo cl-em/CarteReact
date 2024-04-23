@@ -1,5 +1,5 @@
 from players.humanPlayer import HumanPlayer
-from players.Bot import BotRandomFake,BotTrueRandom, BotMin, BotMax, BotEchantillon,BotEchantillonMieux
+from players.Bot import BotRandomFake,BotTrueRandom, BotMin, BotMax, BotEchantillon,BotEchantillonMieux,BotMinMax
 from random import randint
 from game.nimmtGame import NimmtGame
 from game.nimmtGameBot import *
@@ -12,17 +12,9 @@ def interactiveRun():
             players=[]
             for i in range(num_players):
                 # name=input("Nom du joueur : ")
-                r = randint(1,20)
-                if (r<7):
-                    name = "Bot Elouand (echantillonnage)"+str(i)
-                    players.append(BotEchantillonMieux(name))
-                else:
-                    if (r<14):
-                        name = "Bot Matox (true random)"+str(i)
-                        players.append(BotTrueRandom(name))
-                    else:
-                        name = "Bot Thibaud (max)"+str(i)
-                        players.append(BotMax(name))
+                
+                
+                players.append(BotMinMax("Bot "+str(i)))
 
             game=NimmtGame(players)
             scores, winners=game.play()
