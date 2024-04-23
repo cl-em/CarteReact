@@ -522,6 +522,7 @@ function Jouer() {
                             <div className="droite">
                                 <Connecte />
                                 <Stats listeJoueurs={listeJoueurs} />
+                                <ChatSH />
                             </div>
                             <div className="gauche">
                                 <div className="elements-gauche-haut">
@@ -550,7 +551,6 @@ function Jouer() {
                     </div>
                 )
             ) : <AvantJeu />}
-            <ChatSH />
         </div>
     );
 }

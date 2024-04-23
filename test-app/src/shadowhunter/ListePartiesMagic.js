@@ -95,7 +95,7 @@ function ListePartiesMagic() {
         );
     }
 
-    const [messages,setMessages] = useState(["salut",'les',"negres"]);
+    const [messages,setMessages] = useState();
     useEffect(()=>{
         socket.on("maj",(data)=>{
             setMessages(data);
@@ -104,7 +104,7 @@ function ListePartiesMagic() {
     
     return (
         <div className='main'>
-            <Update messages={messages} className={"divcreagames"}/>
+            {/* <Update messages={messages} className={"divcreagames"}/> */}
 
 
             <button className="joliebouton2" onClick={() => navigate("/leaderboardMagic")}>Afficher le classement</button> <br></br> <br></br>

@@ -155,10 +155,11 @@ body {
 }
 
 .listeParties {
-  overflow:scroll;
+  overflow:auto;
   overflow-x:hidden;
-  height: 50vh;
-  width: 750px;
+  max-height: 50vh;
+  width: auto;
+  margin-bottom: 2vh;
 } 
 
 .test0{
