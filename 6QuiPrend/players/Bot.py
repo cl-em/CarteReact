@@ -191,6 +191,8 @@ class BotEchantillonMieux(Bot):
             cartesRestantes = [j for j in main if j != carte]
             
             for t in range(10):#On évalue 10 échantillons
+                pasMain2 = pasMain.copy()
+                shuffle(pasMain2)
                 lignesEvaluees=lignesEval.copy()
                 descente = [carte]
                 oaizrjoi = cartesRestantes.copy()
@@ -198,11 +200,10 @@ class BotEchantillonMieux(Bot):
                 descente+=oaizrjoi#création d'une descente random
             
                 descentesAutres = [[] for i in range(len(game.players)-1)]
-                while len(pasMain)>len(descentesAutres):    
+                while len(pasMain2)>len(descentesAutres):    
                     for j in descentesAutres:
-                        j.append(pasMain.pop(0))
+                        j.append(pasMain2.pop(0))
 
-                print(len(descentesAutres))
               
 
                 
@@ -211,7 +212,9 @@ class BotEchantillonMieux(Bot):
                 tour = 0
                 while tour<len(descente)-1:
                     cartesEval=[descente[tour]]
-                    for a in range(len(descentesAutres)):
+                    for a in range(len(descente)-1):
+                        print("tour: "+str(tour))
+                        print("longueur de descentesAutres[0]: "+str(len(descentesAutres[0])))
                         cartesEval.append(descentesAutres[a][tour])
                     for cartee in cartesEval:#cartee car carte est déjà utilisé
                         #Jeu de chaque carte de façon optimale
@@ -249,14 +252,22 @@ class BotEchantillonMieux(Bot):
                             lignesEvaluees[ligneChoisie]=[cartee]
                     tour+=1
                 scores[carte]+=scoreDeLaCarte
-        
+              
     
         return min(scores, key=lambda k: scores[k])
 
 
 
             
-        
+
+class ABR():
+    def __init__(self) -> None:
+        self.fils = []
+
+    def ajoutFils(self,enfant):
+        self.fils.append(enfant)
+
+
 
 
 
