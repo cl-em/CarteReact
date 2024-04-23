@@ -177,7 +177,7 @@ class BotEchantillonMieux(Bot):
                 jouees.append(zz.value)
         for z in game.alreadyPlayedCards:
             jouees.append(z.value)
-        for i in range(1,104):
+        for i in range(1,105):
             if i not in jouees:
                 pasMain.append(i)
                 
@@ -191,7 +191,7 @@ class BotEchantillonMieux(Bot):
         for carte in main:
             cartesRestantes = [j for j in main if j != carte]
             scoreDeLaCarte=0
-            for t in range(100):#On évalue des échantillons
+            for t in range(200):#On évalue des échantillons
                 pasMain2 = pasMain.copy()
                 shuffle(pasMain2)
                 lignesEvaluees=lignesEval.copy()
