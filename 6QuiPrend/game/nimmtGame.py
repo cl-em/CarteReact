@@ -35,7 +35,6 @@ class NimmtGame:
         """
         Distribue les cartes aux joueurs.
         """
-        self.alreadyPlayedCards = []
         cards = list(map(lambda c:Card(c),list(range(1, 105))))
         shuffle(cards)
         self.table=[]
@@ -110,8 +109,10 @@ class NimmtGame:
         """
         Effectue un round de jeu complet.
         """
-        for _ in range(len(self.players)):
+        
+        for _ in range(10):
             plays = []
+
             for player in self.players:
                 card = player.player_turn(self)
                 plays.append((player, card))
@@ -125,6 +126,7 @@ class NimmtGame:
         """
         while not any(map(lambda player:player.score>=66,self.players)):
             try:
+                self.alreadyPlayedCards=[]
                 self.distribute_cards()
             except ValueError as e:
                 print(e)

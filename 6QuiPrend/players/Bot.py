@@ -43,6 +43,7 @@ class BotRandomFake(Bot):
 
         :return: La réponse du bot.
         """    
+        
         return choice(self.hand).value
 
 class BotTrueRandom(BotRandomFake): 
@@ -167,6 +168,7 @@ class BotEchantillonMieux(Bot):
         #---------------------------------Obtention de la main et des cartes encore possibles--------------------
         main = []
         pasMain = []
+       
         for i in self.hand:
             main.append(i.value)
         jouees = main.copy()
@@ -187,10 +189,9 @@ class BotEchantillonMieux(Bot):
                     lignesEval.append(zz)
 
         for carte in main:
-            scoreDeLaCarte=0
             cartesRestantes = [j for j in main if j != carte]
-            
-            for t in range(10):#On évalue 10 échantillons
+            scoreDeLaCarte=0
+            for t in range(100):#On évalue des échantillons
                 pasMain2 = pasMain.copy()
                 shuffle(pasMain2)
                 lignesEvaluees=lignesEval.copy()
@@ -212,9 +213,7 @@ class BotEchantillonMieux(Bot):
                 tour = 0
                 while tour<len(descente)-1:
                     cartesEval=[descente[tour]]
-                    for a in range(len(descente)-1):
-                        print("tour: "+str(tour))
-                        print("longueur de descentesAutres[0]: "+str(len(descentesAutres[0])))
+                    for a in range(len(game.players)-1):
                         cartesEval.append(descentesAutres[a][tour])
                     for cartee in cartesEval:#cartee car carte est déjà utilisé
                         #Jeu de chaque carte de façon optimale
@@ -235,25 +234,39 @@ class BotEchantillonMieux(Bot):
                             if len(lignesEvaluees[ligneChoisie])>=5:#Cas où la carte termine la ligne
                                 lignesEvaluees[ligneChoisie]=[cartee]
                                 if cartee==descente[tour]:
-                                    scoreDeLaCarte+=sum(lignesEvaluees[ligneChoisie])
+                                        aj = 0 ##fix les scores
+                                        for j in lignesEvaluees[ligneChoisie]:
+                                            aj+=Card(j).cowsNb
+                                        scoreDeLaCarte=aj
+                                    
                             else:
                                 lignesEvaluees[ligneChoisie].append(cartee)
 
                         else:#soit on prend la ligne
                             ligneChoisie = 0
                             index = 0
+                            som=0
+                            for zz in lignesEvaluees[0]:
+                                    som+=Card(zz).cowsNb
                             for z in lignesEvaluees:
-                                if sum(z)<sum(lignesEvaluees[ligneChoisie]):
+                                ts = 0
+                                for zz in z:
+                                    ts+=Card(zz).cowsNb
+                                if ts<som:
                                     ligneChoisie=index
+                                    som = ts
                                 index+=1
 
                             if cartee==descente[tour]:
-                                    scoreDeLaCarte+=sum(lignesEvaluees[ligneChoisie])#Si c'est la carte du bot, alors cette carte gagne le score de ce cas de figure précis
+                                    aj = 0
+                                    for j in lignesEvaluees[ligneChoisie]:
+                                        aj+=Card(j).cowsNb
+                                    scoreDeLaCarte=aj
                             lignesEvaluees[ligneChoisie]=[cartee]
                     tour+=1
-                scores[carte]+=scoreDeLaCarte
-              
-    
+            scores[carte]+=scoreDeLaCarte
+        
+          
         return min(scores, key=lambda k: scores[k])
 
 
