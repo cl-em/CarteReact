@@ -165,7 +165,7 @@ app.get('/verify', verifyUser, (req, res) => {
 //-------------------------------Variables-----------------------------------------------
 var partiesOuvertes = []
 var partiesEnCours = []
-var pseudos = {"Matox":"Bot Matox","Elouand":"Bot Elouand","Nico":"Bot Nico","Clément":"Bot Clément","Vincent":"Bot Vincent","Casa Pizza":"Bot Casa Pizza","Yanis":"Bot Yanis"};
+var pseudos = {"Matox":"Bot Matox","Elouand":"Bot Elouand","Nico":"Bot Nico","Clément":"Bot Clément","Kylian":"Bot Kylian","Casa Pizza":"Bot Casa Pizza","Yanis":"Bot Yanis"};
 
 
 function getIdFromPseudo(pseudo){
