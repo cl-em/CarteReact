@@ -165,7 +165,8 @@ app.get('/verify', verifyUser, (req, res) => {
 //-------------------------------Variables-----------------------------------------------
 var partiesOuvertes = []
 var partiesEnCours = []
-var pseudos = {};
+var pseudos = {"Matox":"Bot Matox","Elouand":"Bot Elouand","Nico":"Bot Nico","Clément":"Bot Clément","Vincent":"Bot Vincent","Casa Pizza":"Bot Casa Pizza","Yanis":"Bot Yanis"};
+
 
 function getIdFromPseudo(pseudo){
   for (var test in pseudos){
@@ -666,9 +667,29 @@ io.on('connection', (socket) => {
           }
           let partie = new sixquiprend(socket.data.userId,joueursMax)
           partiesOuvertes.push(partie)
-          console.log("| Creation d'une partie de 6quiprend par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
-          socket.emit("creerPartie",partie.id)}
+          for (var i=0;i<data.bot1;i++){
+            partie.addBot("facile")
+            console.log("ajout d'un bot facile")
+          }
+          for (var i=0;i<data.bot2;i++){
+            partie.addBot("difficile")
+            console.log("ajout d'un bot difficile")
+          }
 
+          console.log("| Creation d'une partie de 6quiprend par "+socket.data.userId+" ("+pseudos[socket.data.userId]+") dont l'id sera "+partie.id)
+          socket.emit("creerPartie",partie.id)
+          setTimeout(() => {
+            if (partie.joueurs.length>=partie.joueursMax && !partie.hasStarted){
+              lancerPartie(partie.id)
+              var listejoueurs = []
+              for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur]);};
+              io.emit("gameStarting",{"idPartie":partie.id,"lignes":partie.lignes,"joueurs":listejoueurs})
+
+            }
+          }, 200);
+          return
+        }
+          
           if (data.type=="shadowHunter"){
 
             /*
@@ -1028,9 +1049,10 @@ io.on('connection', (socket) => {
                 var classement = partie.rank();
                 var retour = [];
                 for (var joueur of classement){
+                  if (joueur.type!="Bot"){
                   db.run("UPDATE users SET score6quiprend = score6quiprend+"+((66-joueur.score)*2)+" WHERE idU="+joueur.idJoueur )
                   retour.push({"pseudo":pseudos[joueur.idJoueur],"score":joueur.score})
-                  
+                  }
                 }
                 console.log(retour)
 
@@ -1046,11 +1068,13 @@ io.on('connection', (socket) => {
               }
 
               async function poursuivreTour(partie){//Fonction essentielle, permet le déroulement asynchrone des tours
+                partie.playBots()
 
                 
                 var joueur = partie.joueurMin();
                 if (joueur==false){return;}
                 var valCarte = joueur.choix.valeur
+                console.log(joueur.idJoueur+" est évalué avec son choix "+valCarte)
 
                 if (partie.placerCarte(joueur.idJoueur)){//Cas où la carte a été placée, pas de problème, aucun autre joueur à évaluer
                     if (partie.joueurMin()==false){
@@ -1058,6 +1082,7 @@ io.on('connection', (socket) => {
                       io.emit("tourPasse",{"idPartie":partie.id,"carteEval":false,"joueurEval":false,"choixNecessaire":false,"lignes":partie.lignes})
                       partie.tourEnCours = false;
                       tryWinner(partie);
+                      partie.playBots()
                       return;}
                     else{//Cas où la carte a été placée, aucun problème, on envoie le prochain joueur évalué
                       io.emit("tourPasse",{"idPartie":partie.id,"carteEval":partie.joueurMin().choix.valeur,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
@@ -1066,11 +1091,27 @@ io.on('connection', (socket) => {
                   }
 
                   else{//Cas où un choix de ligne est nécessaire
+                    if (joueur.type=="Bot"){
+                      joueur.takeLine(partie)
+                      partie.joueurQuiChoisit = null;
+                      if (partie.joueurMin()!=false){
+                        io.emit("tourPasse",{"idPartie":partie.id,"carteEval":partie.joueurMin().choix.valeur,"joueurEval":pseudos[partie.joueurMin().idJoueur],"choixNecessaire":false,"lignes":partie.lignes})
+                        setTimeout(()=>{poursuivreTour(partie)},1700)                                
+                      }
+                      else{
+                        io.emit("tourPasse",{"idPartie":partie.id,"carteEval":false,"joueurEval":false,"choixNecessaire":false,"lignes":partie.lignes})
+                        partie.tourEnCours = false;
+                       
+                      }                             
+                    }
+                    
+                    else{
                     io.emit("tourPasse",{"idPartie":partie.id,"carteEval":valCarte,"joueurEval":pseudos[joueur.idJoueur],"choixNecessaire":true,"lignes":partie.lignes})
                     return;
+                    }
                   }
                 }
-              
+
 
 
 
