@@ -8,6 +8,13 @@ function ListeParties6quiprend(){
     const navigate = useNavigate();
     const socket = useContext(SocketContext);
     const [partiesOuvertes, setPartiesOuvertes] = useState([]);
+    const [joueursMax, setJoueursMax] = useState(2);
+    const [bot1, setbot1] = useState(0);
+    const [bot2, setbot2] = useState(0);
+    const [maxJoueurs, setMaxJoueurs] = useState(10);
+    const [maxBot1, setMaxBot1] = useState(10);
+    const [maxBot2, setMaxBot2] = useState(10);
+
     useEffect(() => {
         socket.emit('demandepartiesouvertes', '6quiprend');
         socket.on('partiesOuvertes', (data) => {
@@ -15,9 +22,9 @@ function ListeParties6quiprend(){
             setPartiesOuvertes(data);
         });
     }, [partiesOuvertes]);
-    const [joueursMax, setJoueursMax] = useState(2);
+    
     const createPartie = () => {
-        socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"6quiprend"});
+        socket.emit('creerPartie', {"joueursMax":joueursMax, "type":"6quiprend", "bot1":bot1, "bot2":bot2});
         socket.on('creerPartie', (idPartie) => {
             // console.log(idPartie);
             if (idPartie === false) {
@@ -29,6 +36,13 @@ function ListeParties6quiprend(){
         }
         );
     }
+
+    useEffect(() => {
+      setMaxJoueurs(Math.max(0, 10 - bot1 - bot2));
+      setMaxBot1(Math.max(0, 10 - joueursMax - bot2));
+      setMaxBot2(Math.max(0, 10 - joueursMax - bot1));
+  }, [joueursMax, bot1, bot2]);
+
     const rejoindrePartie = (idPartie) => {
         socket.emit('rejoindrePartie', {"idPartie":idPartie, "type":"6quiprend"});
         console.log(idPartie);
@@ -51,7 +65,10 @@ function ListeParties6quiprend(){
         <button  className="joliebouton" onClick={()=>rejoindrePartie(document.getElementById("idPartie").value)}>Rejoindre !</button> <br></br> <br></br>
       </div>
       <div className="createPartie">
-        <input className="input1" type="text" placeholder="Nombre de joueurs max" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)}></input> 
+        <input className="input1" type="number" placeholder="Nombre de joueurs" id="joueursMax" onChange={(e)=>setJoueursMax(e.target.value)} max={maxJoueurs} min="0"></input> 
+        <br></br> <br></br>
+        <input className="input1" type="number" placeholder="Nombre de bots 1" id="bot1" onChange={(e)=>setbot1(e.target.value)} max={maxBot1} min="0"></input> 
+        <input className="input1" type="number" placeholder="Nombre de bots 2" id="bot2" onChange={(e)=>setbot2(e.target.value)} max={maxBot2} min="0"></input> 
         <button className="joliebouton" onClick={createPartie}>Créer !</button> <br></br> <br></br>
       </div>
     
