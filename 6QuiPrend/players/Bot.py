@@ -1,5 +1,6 @@
 from players.player import Player
 from game.card import Card
+from math import floor
 from random import randint, choice,shuffle
 from enum import Enum
 
@@ -70,92 +71,6 @@ class BotMax(Bot):
     
 
 
-class BotEchantillon(Bot):
-   
-    def player_turn(self, game):
-        return Card(self.getCardToPlay(game))
-    
-    def getCardToPlay(self,game):
-        scores = {}
-        for i in self.hand:
-            scores[i.value]=0
-
-        #---------------------------------Obtention du sous-ensemble des cartes non-utilisées--------------------
-        main = []
-        pasMain = []
-        for i in self.hand:
-            main.append(i.value)
-        jouees = main.copy()
-        for z in game.table:
-            for zz in z:#z est une ligne, zz est une carte
-                jouees.append(zz.value)
-        for z in game.alreadyPlayedCards:
-            jouees.append(z.value)
-        
-        for i in range(1,104):
-            if i not in jouees:
-                pasMain.append(i)
-                
-        lignesEval = []#Mise sous forme de tableau de nombres entiers des lignes de la game
-        for z in game.table:
-                    zz = []
-                    for zzz in z:
-                        zz.append(zzz.value)
-                    lignesEval.append(zz)
-        #On va faire 100 sous-ensembles et pour chacun calculer le nombre de têtes offertes par la carte
-        for _ in range(1000):
-#-------------------------------------UN SOUS-ENSEMBLE------------------------------------------------------------------
-            cartesAutres = []#représente les autres cartes jouées par d'autres joueurs
-            for i in range(len(game.players)-1):
-                cartesAutres.append(randint(0,len(pasMain)-1))
-
-            for carte in main:
-#-----------------------un test avec une carte------------------------
-                lignesEvaluees = lignesEval.copy()
-                cartesEval = cartesAutres.copy()
-                cartesEval.append(carte)
-                list.sort(cartesEval)
-
-                for cartee in cartesEval:#cartee car carte est déjà utilisé
-                    #Jeu de chaque carte de façon optimale
-                    cartePosable = False
-                    for z in lignesEvaluees:
-                      
-                        if cartee>z[len(z)-1]:
-                            cartePosable=True
-
-                    if cartePosable:#Soit on pose la carte et on modifie la ligne en conséquence
-                        ligneChoisie = 0
-                        index = 0
-                        for z in lignesEvaluees:
-                            if abs(z[len(z)-1]-cartee)<abs(lignesEvaluees[ligneChoisie][len(lignesEvaluees[ligneChoisie])-1]-cartee):
-                                ligneChoisie=index
-                            index+=1
-
-                        if len(lignesEvaluees[ligneChoisie])>=5:#Cas où la carte termine la ligne
-                            lignesEvaluees[ligneChoisie]=[cartee]
-                            if cartee==carte:
-                                scores[carte]=scores[carte]+sum(lignesEvaluees[ligneChoisie])#Si c'est la carte du bot, alors cette carte gagne le score de ce cas de figure précis
-                        else:
-                            lignesEvaluees[ligneChoisie].append(cartee)
-
-                    else:#soit on prend la ligne
-                        ligneChoisie = 0
-                        index = 0
-                        for z in lignesEvaluees:
-                            if sum(z)<sum(lignesEvaluees[ligneChoisie]):
-                                ligneChoisie=index
-                            index+=1
-
-                        if cartee==carte:
-                                scores[carte]=scores[carte]+sum(lignesEvaluees[ligneChoisie])#Si c'est la carte du bot, alors cette carte gagne le score de ce cas de figure précis
-                        lignesEvaluees[ligneChoisie]=[cartee]
-        
-
-        return min(scores, key=lambda k: scores[k])
-    
-
-
 class BotEchantillonMieux(Bot):
    
     def player_turn(self, game):
@@ -192,7 +107,7 @@ class BotEchantillonMieux(Bot):
         for carte in main:
             cartesRestantes = [j for j in main if j != carte]
             scoreDeLaCarte=0
-            for t in range(200):#On évalue des échantillons
+            for t in range(50):#On évalue des échantillons
                 pasMain2 = pasMain.copy()
                 shuffle(pasMain2)
                 lignesEvaluees=lignesEval.copy()
@@ -272,6 +187,38 @@ class BotEchantillonMieux(Bot):
 
 
 
+class BotModéré(Bot):
+    def getCardToPlay(self):
+        return self.hand[floor(len(self.hand)/2)].value
+
+
+class BotElouand(Bot):
+    def player_turn(self, game):
+        return Card(self.getCardToPlay(game))
+      
+    def getCardToPlay(self,game):
+        peutJouer = False
+        jouables = []
+        for z in self.hand:
+            index = 0
+            for zz in game.table:
+                for zzz in zz:
+                    if zzz.value<z.value and len(zz)<5:
+                        peutJouer=True
+                        jouables.append(z)
+                index+=1
+
+        res = self.hand[0].value
+        if peutJouer==True:
+            res = jouables[0].value
+            for z in jouables:
+                if z.value<res:
+                    res=z.value
+            return res
+        else:
+            return self.hand[len(self.hand)-1].value
+
+
             
 
 class ABR():
@@ -280,12 +227,6 @@ class ABR():
 
     def ajoutFils(self,enfant):
         self.fils.append(enfant)
-
-
-
-
-
-
 
 class BotMinMax(Bot):
     def getCardToPlay(self,game):
