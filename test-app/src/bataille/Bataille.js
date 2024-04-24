@@ -7,10 +7,28 @@ import Chat from '../Chat';
 import {
     useNavigate
 } from "react-router-dom";
-
-import { QuittePartie } from '../6quiprend/6quiprend';
 // const socket = io('http://localhost:8888');
 // socket.emit("infoLobby",{idJoueur:"",idPartie:""}); 
+
+function QuittePartie({ typePartie, ajoutStyle = {}, className = "joliebouton" }) {
+
+    let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+    let idPartie = urlP.get("idPartie");
+
+
+
+    const socket = React.useContext(SocketContext); //Pour les sockets
+    const navigate = useNavigate();
+
+
+    return (<div className={className} style={{ zIndex: 12, }}
+        onClick={() => {
+            socket.emit("quittePartie", { idPartie: idPartie, typePartie: typePartie })
+            navigate("/games")
+        }}>
+        Quitter la partie
+    </div>)
+}
 
 function Connecte() {
     let urlP = new URL(document.location).searchParams;
@@ -289,13 +307,13 @@ function MainJoueur() {
     return (
         <div>
             <div id="sauvegarde-container">
-            {host && (
-                <button id="sauvegarde-btn" className='joliebouton' onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
-            )}
-            <QuittePartie typePartie={"bataille"} />
-            <div id="connecte-container">
-            <Connecte/>
-            </div>
+                {host && (
+                    <button id="sauvegarde-btn" className='joliebouton' onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
+                )}
+                <QuittePartie typePartie={"bataille"} />
+                <div id="connecte-container">
+                    <Connecte />
+                </div>
             </div>
             <Chat />
             <Lobby listesjoueurs={onlyJoueurs} />

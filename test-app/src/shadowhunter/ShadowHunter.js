@@ -8,9 +8,28 @@ import Action from "./ActionShadow";
 import { ImageProvider, useImageContext } from './ImageContext';
 import ImageComponent from './ImageComponent';
 
-import { QuittePartie } from "../6quiprend/6quiprend";
 
 /*----------------------------------------------ChatSH (ajout de différents onglets selon rôle a venir..)-----------------------------------------------------*/
+
+function QuittePartie({ typePartie, ajoutStyle = {}, className = "joliebouton" }) {
+
+    let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
+    let idPartie = urlP.get("idPartie");
+  
+  
+  
+    const socket = React.useContext(SocketContext); //Pour les sockets
+    const navigate = useNavigate();
+  
+  
+    return (<div className={className} style={{ zIndex: 12, }}
+      onClick={() => {
+        socket.emit("quittePartie", { idPartie: idPartie, typePartie: typePartie })
+        navigate("/games")
+      }}>
+      Quitter la partie
+    </div>)
+  }
 
 function ChatSH() {
     const currentUrl = window.location.href;

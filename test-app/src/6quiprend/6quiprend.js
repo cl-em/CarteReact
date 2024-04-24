@@ -1,11 +1,87 @@
 import '../App.css';
-import React, { useEffect, useState } from 'react';
+import './6quiprend.css';
+import React, { useEffect, useState, useRef } from 'react';
 import SocketContext from '../SocketContext.js';
 import Chat from '../Chat.js';
 import {
-    useNavigate
+  useNavigate
 } from "react-router-dom";
 import CarteJeu from './boeuf.js';
+
+function ChatSH() {
+  const currentUrl = window.location.href;
+  const urlParts = currentUrl.split('?idPartie=');
+  const idPartie = urlParts[urlParts.length - 1];
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const maxMessages = 50;
+  const maxMessageLength = 250;
+  const socket = React.useContext(SocketContext);
+  useEffect(() => {
+    const handleMessage = (msg) => {
+      setMessages(prevMessages => {
+
+        const updatedMessages = [...prevMessages, msg];
+        if (updatedMessages.length > maxMessages) {
+          return updatedMessages.slice(updatedMessages.length - maxMessages);
+        }
+        return updatedMessages;
+      });
+    };
+
+    const handleShadow = (messageShadow) => {
+      if (messageShadow.idPartie == idPartie) {
+        handleMessage(messageShadow.Message);
+      }
+    }
+
+    socket.on('message '.concat(idPartie), handleMessage);
+
+    return () => {
+      socket.off('message '.concat(idPartie), handleMessage);
+    };
+  }, [idPartie, socket]);
+
+  const sendMessage = () => {
+    if (message.trim() !== '' && message.length <= maxMessageLength) {
+      socket.emit('message', { message, idPartie });
+      setMessage('');
+    }
+  };
+
+  const [accessibilite, setAccessibilite] = useState(false);
+
+
+  const FinMessageRef = useRef(null);
+
+  const scrollChat = () => {
+    FinMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollChat();
+  }, [messages]);
+
+  return (
+    <div className={`container-chat ${accessibilite ? "accessibilite" : ""}`}>
+      <ul className="messages">
+        {messages.map((msg, index) => (
+          <li key={index}>{msg}</li>
+        ))}
+        <li ref={FinMessageRef} />
+      </ul>
+
+      <div className="input-area2">
+        <input className="input1"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' ? sendMessage() : null}
+          maxLength={maxMessageLength}
+        />
+      </div>
+    </div>
+  );
+}
 
 function Connecte() {
   let urlP = new URL(document.location).searchParams;
@@ -15,52 +91,52 @@ function Connecte() {
   const [pseudo, setPseudo] = useState("...");
 
   useEffect(() => {
-      socket.emit("quisuisje?");
-      socket.on("quisuisje", (data) => {
-          // console.log("Pseudo reçu :", data.pseudos);
-          setPseudo(data);
-      })
-      return () => {
-          socket.off("quisuisje");
-      };
+    socket.emit("quisuisje?");
+    socket.on("quisuisje", (data) => {
+      // console.log("Pseudo reçu :", data.pseudos);
+      setPseudo(data);
+    })
+    return () => {
+      socket.off("quisuisje");
+    };
   }, [])
 
   return (
-      <div id="sauvegarde-btn" className="quisuisje">
-          <p>Connecté en tant que {pseudo}</p>
-      </div>
+    <div className="quisuisje2">
+      <p>Connecté en tant que {pseudo}</p>
+    </div>
   )
 }
 
-function ProgressBar({progress}){
+function ProgressBar({ progress }) {
 
   // progress = progress*100/66;
 
-  const getColor = (p)=>{
-    if(p < 40)
+  const getColor = (p) => {
+    if (p < 40)
       return "#2ecc71";
-    else if (p < 70) 
+    else if (p < 70)
       return "#ffa500";
     else return "#ff0000";
   }
 
-  return(
+  return (
     <div className='container'>
       <div className='progress-bar' >
-        <div className='progress-bar-fill' style={{width: progress>0 && progress<5 ? "5%" : `${parseInt(progress*100/66)}%` , backgroundColor: getColor(parseInt(progress*100/66)), textAlign:"center"}}>
-            {progress}/66
+        <div className='progress-bar-fill' style={{ width: progress > 0 && progress < 5 ? "5%" : `${parseInt(progress * 100 / 66)}%`, backgroundColor: getColor(parseInt(progress * 100 / 66)), textAlign: "center" }}>
+          {progress}/66
         </div>
       </div>
     </div>
   )
 }
 
-function AfficherStats({infosJoueursFun}){
-  return(
+function AfficherStats({ infosJoueursFun }) {
+  return (
     <div className='afficherStats'>
-      {infosJoueursFun.map((element,index)=>(
+      {infosJoueursFun.map((element, index) => (
         <div key={index} className='infoJoueur6'>
-          <p className='labelStats'>{element.pseudo} a joué : {!element.doitJouer? "oui" : "non"}</p>
+          <p className='labelStats'>{element.pseudo} a joué : {!element.doitJouer ? "oui" : "non"}</p>
           <ProgressBar progress={element.tetes} />
         </div>
       ))}
@@ -74,62 +150,62 @@ function Main6QuiPrend({ listeNombre }) { //Pour afficher la main (prend en para
   const socket = React.useContext(SocketContext);
 
   let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
-  let idPartie =  parseInt(urlP.get("idPartie"));
+  let idPartie = parseInt(urlP.get("idPartie"));
   listeNombre.sort();
 
-    return (
-      <div className='divSVG'>
-        {listeNombre.map((numCarte, index) => (
-          <div key={index} onClick={()=>{
-            socket.emit("choixCarte",{idPartie:idPartie,idCarte:numCarte});
-            
-          }}>
-            <CarteJeu  numeroCarte={numCarte} />
-          </div>
-        ))}
-      </div>
-    );
+  return (
+    <div className='divMain6Qui'>
+      {listeNombre.map((numCarte, index) => (
+        <div key={index} onClick={() => {
+          socket.emit("choixCarte", { idPartie: idPartie, idCarte: numCarte });
+
+        }}>
+          <CarteJeu numeroCarte={numCarte} />
+        </div>
+      ))}
+    </div>
+  );
 }
 
-function AfficherLigne({listeLignes}){ //Pour afficher les 4 lignes du jeu (prend en param une liste de listes)
+function AfficherLigne({ listeLignes }) { //Pour afficher les 4 lignes du jeu (prend en param une liste de listes)
 
   const socket = React.useContext(SocketContext);
 
   let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
-  let idPartie =  urlP.get("idPartie");
+  let idPartie = urlP.get("idPartie");
 
   return (
     <div className='lignesTable'>
-    <table>
-      <tbody>
-        {listeLignes.map((ligne,index)=>(
+      <table>
+        <tbody>
+          {listeLignes.map((ligne, index) => (
 
-            <tr key={index} onClick={()=>{
+            <tr key={index} onClick={() => {
               // // console.log("ligne"+ index);
-              socket.emit("choixLigne",{idPartie:idPartie,idLigne:index});
+              socket.emit("choixLigne", { idPartie: idPartie, idLigne: index });
             }}>
-              {ligne.map((numCarte,idx)=>(
-                <td key={idx+index*ligne.lenght}><CarteJeu  numeroCarte={numCarte}/></td>
+              {ligne.map((numCarte, idx) => (
+                <td key={idx + index * ligne.lenght}><CarteJeu numeroCarte={numCarte} /></td>
               ))}
             </tr>
-      
-        ))}
-      </tbody>
-    </table>
+
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
 
 
-function AvantJeu(){
-  return(
+function AvantJeu() {
+  return (
     <div>
       <h3 style={{ color: 'aliceblue' }}>En attente des joueurs</h3>
     </div>
   )
 }
 
-function ApresJeu({tableauFin}){
+function ApresJeu({ tableauFin }) {
 
   const navigate = useNavigate();
 
@@ -153,7 +229,7 @@ function ApresJeu({tableauFin}){
                 <tr key={index}>
                   <td>{player.pseudo}</td>
                   <td>{player.score}</td>
-                  <td>{index+1}</td>
+                  <td>{index + 1}</td>
                 </tr>
               ))}
             </tbody>
@@ -161,7 +237,7 @@ function ApresJeu({tableauFin}){
         }
       </div>
       <br></br>
-      {<button class="joliebouton" onClick={()=>navigate("/games")}>Revenir à l'écran de sélection des jeux</button>}
+      {<button class="joliebouton3" onClick={() => navigate("/games")}>Revenir à l'écran de sélection des jeux</button>}
     </div>
   );
 
@@ -169,16 +245,16 @@ function ApresJeu({tableauFin}){
 }
 
 
-function Jouer(){
+function Jouer() {
 
   const socket = React.useContext(SocketContext); //Pour les sockets
 
   let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
-  let idPartie =  urlP.get("idPartie");
+  let idPartie = urlP.get("idPartie");
 
 
   const navigate = useNavigate();
-  
+
   // INFO RECU PAR LE SERVEUR
 
   // Recuperation avec les socket
@@ -186,24 +262,24 @@ function Jouer(){
   const [listeCartes, setListeCartes] = useState([]); // *** Création de la variable listeCartes ainsi que de son setter.
   const [listeLignes, setListeLignes] = useState([]);  // *** Création de la variable recevant les lignes ainsi que son setter. Tableau de tableau
 
-  const [numeroCarteEval,setnumeroCarteEval] = useState(false); // *** carte en train d'être evaluée
-  const [listeJoueurs,setListeJoueurs] = useState([]); //  listes de joueurs {pseudo,carteJouée,tetes}
-  const [choixNecessaire,setChoixNecessaire] = useState(""); // *** demande à un joueur de  cliquer sur une ligne 
-  const [joueurEval,setJourEval] = useState("");
+  const [numeroCarteEval, setnumeroCarteEval] = useState(false); // *** carte en train d'être evaluée
+  const [listeJoueurs, setListeJoueurs] = useState([]); //  listes de joueurs {pseudo,carteJouée,tetes}
+  const [choixNecessaire, setChoixNecessaire] = useState(""); // *** demande à un joueur de  cliquer sur une ligne 
+  const [joueurEval, setJourEval] = useState("");
   const [gameStart, setgameStart] = useState(false);
   const [gameFinish, setFinish] = useState(false);
 
 
   // Formatage pour correspondre aux fonctions
   const [nouvelleMain, setNouvelleMain] = useState([]); // ***
-  const [nouvelleListeLignes,setNouvelleListeLignes] = useState([]); // *** 
+  const [nouvelleListeLignes, setNouvelleListeLignes] = useState([]); // *** 
 
-  
+
   // Affichage des statistiques de la partie en direct 
-  const [infosJoueurs,setInfosJoueurs] = useState([]);
+  const [infosJoueurs, setInfosJoueurs] = useState([]);
 
   // Infos de fin de partie
-  const [infosFinPartie,setInfosFinPartie]= useState([]);
+  const [infosFinPartie, setInfosFinPartie] = useState([]);
 
   const [host, setHost] = useState(false);
 
@@ -215,13 +291,13 @@ function Jouer(){
         // setHost(data.Host);
         // console.log(data);
         setListeLignes(data.lignes);
-        socket.emit("wantCarte", { "idPartie": idPartie}); //Demande de la main. 
+        socket.emit("wantCarte", { "idPartie": idPartie }); //Demande de la main. 
         socket.on("getCarte", (data) => { //Récupération des cartes (de la main)
           setListeCartes(data.main); //Set la main (liste de cartes) [{valeur}]
         });
       }
     };
-  
+
     const handleGameFinished = data => {
       // console.log("gameFinished");
       if (data.idPartie === idPartie) {
@@ -232,15 +308,15 @@ function Jouer(){
 
     const handleGetScores = data => {
       // console.log("getScores");
-      if(data.idPartie===idPartie){
+      if (data.idPartie === idPartie) {
         setInfosJoueurs(data.infosJoueurs);
       }
     };
 
     const handleChoixCarte = data => {
       // console.log("choixCarte");
-      socket.emit("wantCarte", { "idPartie": idPartie});
-      if(data!==false){
+      socket.emit("wantCarte", { "idPartie": idPartie });
+      if (data !== false) {
         setnumeroCarteEval(data);
       }
     };
@@ -254,23 +330,24 @@ function Jouer(){
         setChoixNecessaire(data.choixNecessaire);
         setnumeroCarteEval(data.carteEval);
         setJourEval(data.joueurEval);
-        socket.emit("wantCarte", { "idPartie": idPartie});
+        socket.emit("wantCarte", { "idPartie": idPartie });
       }
     };
 
     const handleIsHost = data => {
       // console.log("isHost");
       // console.log(data);
-      if (data === true){
+      if (data === true) {
         setHost(true);
-    }}
-    
+      }
+    }
+
     socket.on("gameStarting", handleGameStarting);
     socket.on("gameFinished", handleGameFinished);
     socket.on("getScores", handleGetScores);
     socket.on("choixCarte", handleChoixCarte);
     socket.on("tourPasse", handleTourPasse);
-    socket.emit("isHost",{"idPartie": idPartie});
+    socket.emit("isHost", { "idPartie": idPartie });
     socket.on("isHost", handleIsHost);
 
     // Nettoyage
@@ -287,7 +364,7 @@ function Jouer(){
   useEffect(() => {
     const handlePartieSauvegardee = data => {
       // console.log("partieSauvegardee");
-      if(data.idPartie === idPartie){
+      if (data.idPartie === idPartie) {
         navigate("/6quiprend");
       }
     };
@@ -297,64 +374,64 @@ function Jouer(){
     }
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     // console.log("isloaded")
-      socket.emit('isloaded', {idPartie: idPartie});
-      socket.on('isloaded', (data) => {
-      if(data !== false){
+    socket.emit('isloaded', { idPartie: idPartie });
+    socket.on('isloaded', (data) => {
+      if (data !== false) {
         setgameStart(true);
         setListeLignes(data.lignes);
-        socket.emit("wantCarte", { "idPartie": idPartie});
+        socket.emit("wantCarte", { "idPartie": idPartie });
         socket.on("getCarte", (data) => {
-          if (data.main){
+          if (data.main) {
             setListeCartes(data.main);
           }
         });
       }
     }
     );
-  },[]);
+  }, []);
 
 
-useEffect(()=>{
-  // console.log("listeCartes");
-  let nouvelleMain2 =[]; //Futur liste d'entiers
-  listeCartes.forEach((element,index)=>{ //C'est une boucle sur liste listeCartes
-    nouvelleMain2.push(element.valeur); //Tout les elements de listeCartes sont mits dans la liste nouvelle main
-  });
-  setNouvelleMain(nouvelleMain2);
-
-  // // console.log(nouvelleMain);
-
-}, [listeCartes]); //S'effectue a chaque changement de listeCartes
-
-
-useEffect(()=>{
-  // console.log("listeLignes");
-  let nouvelleListeLignes2 = []; //Futur liste de listes d'entiers
-  
-  listeLignes.forEach((ligne,index)=>{
-    nouvelleListeLignes2.push([]); //Initialisation des sous tableaux
-    ligne.forEach((carte,idx)=>{ //Boucle dans chaque ligne
-      nouvelleListeLignes2[index].push(carte.valeur); //
+  useEffect(() => {
+    // console.log("listeCartes");
+    let nouvelleMain2 = []; //Futur liste d'entiers
+    listeCartes.forEach((element, index) => { //C'est une boucle sur liste listeCartes
+      nouvelleMain2.push(element.valeur); //Tout les elements de listeCartes sont mits dans la liste nouvelle main
     });
-  });
-  setNouvelleListeLignes(nouvelleListeLignes2);
-  
-  // // console.log(nouvelleListeLignes);
+    setNouvelleMain(nouvelleMain2);
 
-},[listeLignes]); //S'effectue a chaque chanement de listeLignes
+    // // console.log(nouvelleMain);
+
+  }, [listeCartes]); //S'effectue a chaque changement de listeCartes
+
+
+  useEffect(() => {
+    // console.log("listeLignes");
+    let nouvelleListeLignes2 = []; //Futur liste de listes d'entiers
+
+    listeLignes.forEach((ligne, index) => {
+      nouvelleListeLignes2.push([]); //Initialisation des sous tableaux
+      ligne.forEach((carte, idx) => { //Boucle dans chaque ligne
+        nouvelleListeLignes2[index].push(carte.valeur); //
+      });
+    });
+    setNouvelleListeLignes(nouvelleListeLignes2);
+
+    // // console.log(nouvelleListeLignes);
+
+  }, [listeLignes]); //S'effectue a chaque chanement de listeLignes
 
   // INFO ENVOYEES AU SERVEUR
 
-  function sauvegarderPartie(){
+  function sauvegarderPartie() {
     // // console.log("coucou")
-    socket.emit("sauvegarderPartieSixQuiPrend",{"idPartie":idPartie});
+    socket.emit("sauvegarderPartieSixQuiPrend", { "idPartie": idPartie });
     navigate("/6quiprend")
-}
+  }
   let cansave = true;
-  for (let i = 0; i < infosJoueurs.length; i++){
-    if (infosJoueurs[i].doitJouer === false){
+  for (let i = 0; i < infosJoueurs.length; i++) {
+    if (infosJoueurs[i].doitJouer === false) {
       cansave = false;
     }
   }
@@ -362,57 +439,67 @@ useEffect(()=>{
     <div>
       {gameStart ? (
         gameFinish ? (
-          <ApresJeu tableauFin={infosFinPartie}/>
+          <ApresJeu tableauFin={infosFinPartie} />
         ) : (
           <>
-            <Chat/>
-            <AfficherStats infosJoueursFun={infosJoueurs} />
-            <AfficherLigne listeLignes={nouvelleListeLignes} />
-            <Main6QuiPrend listeNombre={nouvelleMain.sort()} />
-            <div id="sauvegarde-container">
-            { host && cansave && (
-                <button id="sauvegarde-btn" className="joliebouton"onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
-            )}
-            <QuittePartie typePartie={"6quiprend"} />
-            <div id="connecte-container">
-            <Connecte/>
+            <div className='h'></div>
+            <div className='d'>
+              <div className='quisuisje2'>
+                <Connecte />
+              </div>
+              <ChatSH />
+              <AfficherStats infosJoueursFun={infosJoueurs} />
             </div>
+            <div className='m'>
+              <AfficherLigne listeLignes={nouvelleListeLignes} />
             </div>
-            <div className='infopartie'>
-              {choixNecessaire ? 
-                <h3 style={{ color: 'aliceblue' }}>{joueurEval}, clique sur une ligne</h3> :
-                (numeroCarteEval && joueurEval) ?
-                  <div>
-                    <h3 style={{ color: 'aliceblue' }}>{joueurEval} joue la carte :</h3>
-                    <CarteJeu numeroCarte={numeroCarteEval} />
-                  </div> :
-                  <h3 style={{ color: 'aliceblue' }}>En attente que tous les joueurs placent une carte</h3>
-              }
+            <div className='b'>
+              <Main6QuiPrend listeNombre={nouvelleMain.sort()} />
+            </div>
+            <div className='g'>
+              <div className='infopartie'>
+                {choixNecessaire ?
+                  <h3 style={{ color: 'aliceblue' }}>{joueurEval}, clique sur une ligne</h3> :
+                  (numeroCarteEval && joueurEval) ?
+                    <div>
+                      <h3 style={{ color: 'aliceblue' }}>{joueurEval} joue la carte :</h3>
+                      <CarteJeu numeroCarte={numeroCarteEval} />
+                    </div> :
+                    <h3 style={{ color: 'aliceblue' }}>En attente que tous les joueurs placent une carte</h3>
+                }
+              </div>
+              <div className='bouton_6qui'>
+                <QuittePartie typePartie={"6quiprend"} className={"joliebouton3"} />
+                {host && cansave && (
+                  <button id="sauvegarde-btn" className="joliebouton3" onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
+                )}
+              </div>
             </div>
           </>
         )
       ) : (
         <AvantJeu />
       )}
-    </div>  
+    </div>
   );
-}  
-  
-export function QuittePartie({typePartie,ajoutStyle={},className="joliebouton"}){
-  
+}
+
+function QuittePartie({ typePartie, ajoutStyle = {}, className = "joliebouton" }) {
+
   let urlP = new URL(document.location).searchParams; //Permet de récupérer les paramètres dans l'url.
-  let idPartie =  urlP.get("idPartie");
-  
-  
-  
+  let idPartie = urlP.get("idPartie");
+
+
+
   const socket = React.useContext(SocketContext); //Pour les sockets
   const navigate = useNavigate();
 
 
-  return (<div className={className} style={{zIndex:12,}}
-  onClick={()=>{  
-    socket.emit("quittePartie",{idPartie:idPartie,typePartie:typePartie})
-    navigate("/games")}}>
+  return (<div className={className} style={{ zIndex: 12, }}
+    onClick={() => {
+      socket.emit("quittePartie", { idPartie: idPartie, typePartie: typePartie })
+      navigate("/games")
+    }}>
     Quitter la partie
   </div>)
 }
@@ -420,11 +507,19 @@ export function QuittePartie({typePartie,ajoutStyle={},className="joliebouton"})
 
 export const SixQuiPrend = () => {
 
+  useEffect(() => {
+    const Obg = document.body.style.backgroundImage;
+    document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table6quiprend.png")`;
 
+    return () => {
+      document.body.style.backgroundImage = Obg;
 
-    return (
-        <div>
-          <Jouer />
-        </div>
-    );
+    };
+  }, []);
+
+  return (
+    <div>
+      <Jouer />
+    </div>
+  );
 };
