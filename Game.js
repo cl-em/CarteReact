@@ -1,5 +1,5 @@
 const { Carte,CarteShadowHunter } = require('./Carte.js');
-const { Joueur, JoueurShadowHunter } = require('./Joueur.js');
+const { Joueur, JoueurShadowHunter,bot6QuiPrendRandom,bot6QuiPrendElouand } = require('./Joueur.js');
 class Game {
 
     constructor(couleurs,nbvaleurs,host/*host est un id d'utilisateur et crée une instance de la classe "joueur*/,joueursMax/*Nombre maximal de joueurs dans la partie, on peut néanmoins la start avant*/) {
@@ -320,9 +320,26 @@ class sixquiprend extends Game{
         this.lignes = [[],[],[],[]]
         this.joueurQuiChoisit = null;
         this.tourEnCours = false;
-        
+        this.botNames = ["Matox","Elouand","Clément","Kylian","Nico","Vincent","Thibaud","Casa Pizza","Yanis"]
+        this.défausse = []
     }
 
+    addBot(type){
+    
+        if (this.joueurs.length<this.joueursMax){
+            if (type=="facile"){
+                this.joueurs.push(new bot6QuiPrendRandom(this.botNames.shift(),false));
+            }       
+            else{
+                if (type=="difficile"){
+                    this.joueurs.push(new bot6QuiPrendElouand(this.botNames.shift(),false));
+                }
+            } 
+
+        return true
+    }
+    else{return false;}
+    }
     initGame(){//Initialisation de la game lorsque l'hôte le souhaite OU que le nombre de joueurs == le nombre max de joueurs.
 
         for (var joueur of this.joueurs){
@@ -332,11 +349,12 @@ class sixquiprend extends Game{
 
                 }
             }
-        
+            
             for (let i=0;i<4;i++){
                 this.lignes[i].push(this.drawCarte())
             }
-           
+            
+            if (joueur.type=="Bot"){joueur.setChoice(this)}
         this.hasStarted = true;
        
         }
@@ -359,17 +377,27 @@ class sixquiprend extends Game{
             retour.tourEnCours = data.tourEnCours;
             return retour;
         }
-
+        playBots(){
+            for (var j of this.joueurs){
+                if (j.type=="Bot"){
+                    j.setChoice(this)
+                }
+            }
+        }
         canTour(){//Teste si le tour peut démarrer, donc si tous les joueurs ont fait un choix
     
             for (var joueur of this.joueurs){
-                if (joueur.choix==null){return false}
+                if (joueur.choix==null){
+                    if (joueur.type=="Bot"){
+                        joueur.setChoice(this)
+                    }
+                    else{return false}}
             }
             return true
         }
 
         prendreLigne(idJoueur,ligne){ //Le joueur désigné par l'idJoueur passé en paramètre prend la ligne désignée par l'entier ligne
-
+          
             for (var joueur of this.joueurs){
                 if ((joueur.idJoueur==idJoueur) && (joueur.choix==null)){
                     return false;}}
@@ -1279,7 +1307,7 @@ if (this.joueurs[indexCourant].character=="Catherine" && this.joueurs[indexCoura
         if (attaquant.hasItem("Mitrailleuse_Funeste")){
                 for (var défenseur of this.joueurs){
                 var tempDamage = totalDamage
-                if (this.canAttack(attaquant.idJoueur,défenseur.idJoueur) && attaquant.idJoueur!=défenseur.idJoueur){console.log(attaquant.idJoueur+" attaque "+défenseur.idJoueur)
+                if (this.canAttack(attaquant.idJoueur,défenseur.idJoueur) && attaquant.idJoueur!=défenseur.idJoueur){
             if (défenseur.protected==true){tempDamage=0}
                   
             
