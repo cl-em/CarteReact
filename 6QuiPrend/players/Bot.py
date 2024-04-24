@@ -112,7 +112,7 @@ class BotEchantillonMieux(Bot):
                 shuffle(pasMain2)
                 lignesEvaluees=lignesEval.copy()
                 descente = [carte]
-                oaizrjoi = cartesRestantes.copy()
+                oaizrjoi = cartesRestantes.copy() # c'est quoi ça 
                 shuffle(oaizrjoi)
                 descente+=oaizrjoi#création d'une descente random
             
@@ -219,89 +219,115 @@ class BotElouand(Bot):
             return self.hand[len(self.hand)-1].value
 
 
-            
-
-class ABR():
-    def __init__(self) -> None:
-        self.fils = []
-
-    def ajoutFils(self,enfant):
-        self.fils.append(enfant)
-
-class BotMinMax(Bot):
-    def getCardToPlay(self,game):
         
-        minCarte = min(min(game.table))
-
-        carteJouable = []
-        for carte in self.hand:
-            if carte > minCarte : 
-                carteJouable.append(carte)
-
-        if carteJouable==[]:
-            index =0
-            for ligne in game.table : 
-                if game.total_cows(ligne) < game.total_cows(game.table[retour]):
-                    retour = index
-                index+=1
-
-
-
             
 class TypeNoeud(Enum):
     RACINE = "Racine"
     MESCARTES = True
     ADVERSAIRE=False
-
 class Arbre():
-    def __init__(self,valeur:Card,mesCartes) -> None:
+    def __init__(self,carte:Card,mesCartes,table) -> None:
         self.fils = []
         self.mesCartes  = mesCartes
-        self.carte:Card = valeur
-
+        self.carte:Card = carte
+        self.table = table
+        self.totalBoeuf = 0
 
 
     def ajoutFils(self,enfant):
         self.fils.append(enfant)
- 
 
-def creerArbre(arbre:Arbre,maMain:list,mainAdversaire:list,index:int):
-    # arbre : toutes les possibilité
+    def update_table(self,carte:Card):
+        
+        if carte.value==-1:
+            return 
+
+
+        ecart=200
+        ecartIdx=0
+        for i in range(len(self.table)):
+            lastCard = self.table[i][-1] 
+            if (carte.value -lastCard.value )< ecart and (carte.value - lastCard.value) >0:
+                ecart = carte.value - lastCard.value
+                ecartIdx = i
+
+        if ecart!=200:
+            self.table[ecartIdx].append(carte)
+
+            if len(self.table[ecartIdx])>=5:
+                self.totalBoeuf= sum(card.cowsNb for card in self.table[ecartIdx])
+
+                self.table[ecartIdx] = [carte]
+
+        else : 
+            minBoeuf =2000
+            minBoeufIdx =0
+
+            for idx,ligne in enumerate(self.table):
+                sommeBoeuf=sum(card.cowsNb for card in ligne) 
+                if sommeBoeuf < minBoeuf :
+                    minBoeuf = sommeBoeuf
+                    minBoeufIdx = idx
+
+            
+            self.totalBoeuf= minBoeuf
+            self.table[minBoeufIdx]=[carte]
+
+        
+
+def creerArbre(arbre:Arbre,maMain:list,mainAdversaire:list,profondeur:int,game:list):
+    # arbre : toutes les possibilitÃ©
     # la cas d'arret c'est quand on a pas de carte dans la main
+    print("debut arbre")
 
-    if index==0:
-        return "fin"
+
+    if profondeur<=0:
+       print("fin") 
+       return
 
     for carte in maMain:
-        arbre.ajoutFils(Arbre(carte,TypeNoeud.MESCARTES))
-
+        arbre.ajoutFils(Arbre(carte,TypeNoeud.MESCARTES,game))
 
     for fils in arbre.fils:
         for carte in mainAdversaire:
-            fils.ajoutFils(Arbre(carte,TypeNoeud.ADVERSAIRE))
+
+            fils.ajoutFils(Arbre(carte,TypeNoeud.ADVERSAIRE,game))
+            fils.update_table(arbre.carte)
             
 
             # pour ce fils, sans la carte et sa
+            if  arbre.carte in maMain:
+                maMain.remove(arbre.carte)
 
-            maMain.remove(fils.carte)
+
             mainAdversaire.remove(carte)
 
-            creerArbre(fils,maMain,mainAdversaire,index-1)
+            creerArbre(fils,maMain,mainAdversaire,profondeur-1,fils.table)
 
-            maMain.append(fils.carte)
+            maMain.append(arbre.carte)
             mainAdversaire.append(carte)
+
+def nbTetePourLignes(table):
+
+    teteParLigne=[]
+    for ligne in table:
+        teteParLigne.append(sum(card.cowsNb for card in ligne))
+
+    return teteParLigne
+        
 
 
 def calculerTeteBoeuf(arbre:Arbre,profondeur:int):
-    if profondeur==0:
-        return arbre.carte.cowsNb
     
-    else:
-        somme = 0
-        for fils in arbre.fils:
-            somme+=calculerTeteBoeuf(fils,profondeur-1)
+    if arbre.fils==[] or profondeur==0:
+        return arbre.totalBoeuf
 
-        return arbre.carte.cowsNb+somme
+    else:
+        sommeBoeuf=0
+        for fils in arbre.fils:
+            sommeBoeuf+=calculerTeteBoeuf(fils,profondeur-1)
+
+        return arbre.totalBoeuf+sommeBoeuf
 
 def minIndex(tab:list):
     indexMin=0
@@ -324,24 +350,46 @@ class BotMinMax(Bot):
 
         # suppression des cartes que l'adversaire ne peut pas avoir (ma main,carte sur la table et defausse)
         for carte in self.hand:
-            carteJouableEnnemi.remove(carte)
+            if carte in carteJouableEnnemi:
+                carteJouableEnnemi.remove(carte)
 
         for ligne in game.table:
             for carte in ligne:
                 carteJouableEnnemi.remove(carte)
 
         for carte in game.alreadyPlayedCards:
-            carteJouableEnnemi.remove(carte)
+            if carte in carteJouableEnnemi:
+                carteJouableEnnemi.remove(carte)
 
-        toutePossibilite = Arbre(-1,TypeNoeud.RACINE)
+        toutePossibilite = Arbre(Card(-1),TypeNoeud.RACINE,game.table)
 
-        creerArbre(toutePossibilite,self.hand,carteJouableEnnemi,3)
+        creerArbre(toutePossibilite,self.hand,carteJouableEnnemi,2,game.table)
 
 
         listeChoix=[]
 
         for i in range(len(toutePossibilite.fils)):
-            listeChoix.append(calculerTeteBoeuf(toutePossibilite.fils[i]))
+            listeChoix.append(calculerTeteBoeuf(toutePossibilite.fils[i],2))
+
+        print("carte choisi")
+        return toutePossibilite.fils[minIndex(listeChoix)].carte.value
 
 
-        return toutePossibilite.fils[minIndex(listeChoix)].carte.value        
+
+def MinMax(arbre:Arbre,profondeur:int,maxJoueur:bool):
+    if profondeur<=0 or arbre.fils==[]:
+        return #estimer un coup (+ c'est mieux, - c'est pas bien)
+
+    if  maxJoueur:
+        valeur = float("-inf") #-math.inf
+
+        for fils in arbre.fils:
+            valeur+=max(valeur,MinMax(fils,profondeur-1,False)) # mettre la jour la partie en fonction du fils joué
+
+    else:
+        valeur = float("inf")
+
+        for fils in arbre.fils:
+            valeur = min(arbre,MinMax(fils,profondeur-1,True))
+
+    return valeur

@@ -115,7 +115,10 @@ class NimmtGame:
 
             for player in self.players:
                 card = player.player_turn(self)
+            
+
                 plays.append((player, card))
+                
                 player.hand.remove(card)
             plays.sort(key=lambda x: x[1])
             self.update_table(plays)
