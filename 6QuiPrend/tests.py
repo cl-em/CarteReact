@@ -1,9 +1,12 @@
 from players.humanPlayer import HumanPlayer
-from players.Bot import BotRandomFake,BotTrueRandom, BotMin, BotMax
+from players.Bot import BotRandomFake,BotTrueRandom, BotMin, BotMax, BotEchantillonMieux, BotModéré, BotElouand
+from players.MinMax import MinMaxZIZI
+# from players.DeepLearningBot import DeepLearningBot
 from game.nimmtGame import NimmtGame
 import json
 import matplotlib.pyplot as plt
-
+from tqdm import tqdm
+import threading
 class Tests():
     def __init__(self, nb_bots) -> None:
         self.nb_bots = nb_bots
@@ -67,56 +70,94 @@ class BotRandomFakeVsTrueRandom(Tests):
         for i in range(nb_bots//2):
             self.players.append(BotTrueRandom(f"BotTrueRandom {i}"))
 
-# def generate_graphs(battle_name):
-#         # quels types de graphiques ?
-#         # graphs des types de parties avec type de strat
-#         # courbe de score différente pour chaque type de strat
-#         # courbe de winner différente pour chaque type de strat
-#         filename = battle_name+".json"
-#         with open(filename, 'r') as file:
-#             data = json.load(file)
-#             scores_min, scores_max, scores_random_fake, scores_true_random = [], [], [], []
-#             winner_min, winner_max, winner_random_fake, winner_true_random = 0, 0, 0, 0
-#             for game in data:
-#                 for score in game["scores"]:
-#                     if "BotMin" in score:
-#                         scores_min.append(game["scores"][score])
-#                     elif "BotMax" in score:
-#                         scores_max.append(game["scores"][score])
-#                     elif "BotRandomFake" in score:
-#                         scores_random_fake.append(game["scores"][score])
-#                     elif "BotTrueRandom" in score:
-#                         scores_true_random.append(game["scores"][score])
-#                 for winner in game["winners"]:
-#                     if "BotMin" in winner:
-#                         winner_min+=1
-#                     elif "BotMax" in winner:
-#                         winner_max+=1
-#                     elif "BotRandomFake" in winner:
-#                         winner_random_fake+=1
-#                     elif "BotTrueRandom" in winner:
-#                         winner_true_random+=1
-#             if len(scores_min) > 0:
-#                 plt.plot(scores_min, label="BotMin")
-#             if len(scores_max) > 0:
-#                 plt.plot(scores_max, label="BotMax")
-#             if len(scores_random_fake) > 0:
-#                 plt.plot(scores_random_fake, label="BotRandomFake")
-#             if len(scores_true_random) > 0:
-#                 plt.plot(scores_true_random, label="BotTrueRandom")
-#             plt.legend()
-#             plt.legend()
-#             plt.savefig(battle_name+"_scores.png")
-#             # new plot for winners
-#             plt.clf()
-#             if winner_random_fake > 0:
-#                 plt.bar(["BotRandomFake", "BotTrueRandom"], [winner_random_fake, winner_true_random])
-#             elif winner_min > 0:
-#                 plt.bar(["BotMin", "BotMax"], [winner_min, winner_max])
-#             # plt.bar(["BotMin", "BotMax"], [winner_min, winner_max])
-#             plt.savefig(battle_name+"_winners.png")
-#             print("Graph generated")
+class BotEchantillonVsTrueRandom(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(BotEchantillonMieux(f"BotEchantillonMieux {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotTrueRandom(f"BotTrueRandom {i}"))
 
+class TestAllBots(Tests):
+    def __init__(self) -> None:
+        super().__init__(7)
+        self.players.append(BotTrueRandom(f"BotTrueRandom 0"))
+        self.players.append(BotRandomFake(f"BotRandomFake 0"))
+        self.players.append(BotMin(f"BotMin 0"))
+        self.players.append(BotMax(f"BotMax 0"))
+        self.players.append(BotEchantillonMieux(f"BotEchantillonMieux 0"))
+        self.players.append(BotModéré(f"BotModéré 0"))
+        self.players.append(BotElouand(f"BotElouand 0"))
+
+class BotTrueRandomVsElouand(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(BotTrueRandom(f"BotTrueRandom {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotElouand(f"BotElouand {i}"))
+
+class BotRandomFakeVsElouand(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(BotRandomFake(f"BotRandomFake {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotElouand(f"BotElouand {i}"))
+
+class BotMinMaxVsElouand(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotElouand(f"BotElouand {i}"))
+
+class BotMinMaxVsTrueRandom(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotTrueRandom(f"BotTrueRandom {i}"))
+class BotMinMaxVsRandomFake(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotRandomFake(f"BotRandomFake {i}"))
+
+class BotMinMaxVsEchantillonMieux(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotEchantillonMieux(f"BotEchantillonMieux {i}"))
+
+class BotMinMaxVsModéré(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotModéré(f"BotModéré {i}"))
+
+class BotMinMaxVsMin(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotMin(f"BotMin {i}"))
+class BotMinMaxVsMax(Tests):
+    def __init__(self, nb_bots) -> None:
+        super().__init__(nb_bots)
+        for i in range(nb_bots//2):
+            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+        for i in range(nb_bots//2):
+            self.players.append(BotMax(f"BotMax {i}"))
 
 def stats(filename="game_stats.json"):
     # ajouter nb joueurs
@@ -155,16 +196,25 @@ def generate_graphs(scores, winners):
     plt.savefig("_".join(winners.keys())+"_winners.png")
     print("Graph generated")
 
+def run_simulation(bot_type, filename):
+    scores = []
+    winners = []
+    for _ in tqdm(range(100)):
+        bots = bot_type(nb_bots=2)
+        bots.start_game()
+        bots.save_game_stats(filename)
+        score, winner = stats(filename)
+        scores.append(score)
+        winners.append(winner)
+    generate_graphs(scores, winners)
+
+
 if __name__ == "__main__":
-    for i in range(10):
-        testRandom = BotRandomFakeVsTrueRandom(nb_bots=10)
-        testRandom.start_game()
-        testRandom.save_game_stats("BotRandomFakeVsTrueRandom.json")
-    scores, winners = stats("BotRandomFakeVsTrueRandom.json")
-    generate_graphs(scores, winners)
-    for i in range(100):
-        testMinMax = BotMinVsMax(nb_bots=10)
-        testMinMax.start_game()
-        testMinMax.save_game_stats("BotMinMax.json")
-    scores, winners = stats("BotMinMax.json")
-    generate_graphs(scores, winners)
+    # run_simulation(BotMinMaxVsMax, "BotMinMaxVsMax.json")
+    # run_simulation(BotMinMaxVsMin, "BotMinMaxVsMin.json")
+    # run_simulation(BotMinMaxVsModéré, "BotMinMaxVsModéré.json")
+    # run_simulation(BotMinMaxVsEchantillonMieux, "BotMinMaxVsEchantillonMieux.json")
+    # run_simulation(BotMinMaxVsTrueRandom, "BotMinMaxVsTrueRandom.json")
+    # run_simulation(BotMinMaxVsRandomFake, "BotMinMaxVsRandomFake.json")
+    # run_simulation(BotMinMaxVsElouand, "BotMinMaxVsElouand.json")
+    pass
