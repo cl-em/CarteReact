@@ -1,6 +1,6 @@
 from players.humanPlayer import HumanPlayer
 from players.Bot import BotRandomFake,BotTrueRandom, BotMin, BotMax, BotEchantillonMieux, BotModéré, BotElouand
-from players.MinMax import MinMaxZIZI
+from players.MinMax import BotMinMax
 # from players.DeepLearningBot import DeepLearningBot
 from game.nimmtGame import NimmtGame
 import json
@@ -109,7 +109,7 @@ class BotMinMaxVsElouand(Tests):
     def __init__(self, nb_bots) -> None:
         super().__init__(nb_bots)
         for i in range(nb_bots//2):
-            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+            self.players.append(BotMinMax(f"BotMinMax {i}"))
         for i in range(nb_bots//2):
             self.players.append(BotElouand(f"BotElouand {i}"))
 
@@ -117,14 +117,14 @@ class BotMinMaxVsTrueRandom(Tests):
     def __init__(self, nb_bots) -> None:
         super().__init__(nb_bots)
         for i in range(nb_bots//2):
-            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+            self.players.append(BotMinMax(f"BotMinMax {i}"))
         for i in range(nb_bots//2):
             self.players.append(BotTrueRandom(f"BotTrueRandom {i}"))
 class BotMinMaxVsRandomFake(Tests):
     def __init__(self, nb_bots) -> None:
         super().__init__(nb_bots)
         for i in range(nb_bots//2):
-            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+            self.players.append(BotMinMax(f"BotMinMax {i}"))
         for i in range(nb_bots//2):
             self.players.append(BotRandomFake(f"BotRandomFake {i}"))
 
@@ -132,7 +132,7 @@ class BotMinMaxVsEchantillonMieux(Tests):
     def __init__(self, nb_bots) -> None:
         super().__init__(nb_bots)
         for i in range(nb_bots//2):
-            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+            self.players.append(BotMinMax(f"BotMinMax {i}"))
         for i in range(nb_bots//2):
             self.players.append(BotEchantillonMieux(f"BotEchantillonMieux {i}"))
 
@@ -140,7 +140,7 @@ class BotMinMaxVsModéré(Tests):
     def __init__(self, nb_bots) -> None:
         super().__init__(nb_bots)
         for i in range(nb_bots//2):
-            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+            self.players.append(BotMinMax(f"BotMinMax {i}"))
         for i in range(nb_bots//2):
             self.players.append(BotModéré(f"BotModéré {i}"))
 
@@ -148,14 +148,14 @@ class BotMinMaxVsMin(Tests):
     def __init__(self, nb_bots) -> None:
         super().__init__(nb_bots)
         for i in range(nb_bots//2):
-            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+            self.players.append(BotMinMax(f"BotMinMax {i}"))
         for i in range(nb_bots//2):
             self.players.append(BotMin(f"BotMin {i}"))
 class BotMinMaxVsMax(Tests):
     def __init__(self, nb_bots) -> None:
         super().__init__(nb_bots)
         for i in range(nb_bots//2):
-            self.players.append(MinMaxZIZI(f"MinMaxZIZI {i}"))
+            self.players.append(BotMinMax(f"BotMinMax {i}"))
         for i in range(nb_bots//2):
             self.players.append(BotMax(f"BotMax {i}"))
 
