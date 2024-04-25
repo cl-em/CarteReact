@@ -1054,8 +1054,8 @@ io.on('connection', (socket) => {
                 for (var joueur of classement){
                   if (joueur.type!="Bot"){
                   db.run("UPDATE users SET score6quiprend = score6quiprend+"+((66-joueur.score)*2)+" WHERE idU="+joueur.idJoueur )
-                  retour.push({"pseudo":pseudos[joueur.idJoueur],"score":joueur.score})
-                  }
+                }
+                retour.push({"pseudo":pseudos[joueur.idJoueur],"score":joueur.score})
                 }
                 console.log(retour)
 
