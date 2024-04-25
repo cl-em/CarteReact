@@ -38,7 +38,6 @@
     align-items: center;
     justify-content: center;
     overflow-y: auto;
-    background-color: rgba(0, 0, 0, 0.5);
     /* backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px); */
 }
@@ -55,7 +54,6 @@
     align-items: center;
     justify-content: center;
     overflow-y: auto;
-    background-color: rgba(0, 0, 0, 0.5);
     /* backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px); */
 }
@@ -75,7 +73,6 @@
     justify-content: center;
     overflow-y: auto;
     padding: 20px;
-    background-color: rgb(28, 29, 31);
     /* backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(10px); */
 }
@@ -118,13 +115,17 @@
     width: 56%;
     height: 65vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
     overflow-y: auto;
     z-index: 10;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.25);
 }
 
+
+.lignesTable{
+    cursor: pointer;
+    max-width: 160px;
+    margin-left: 30%;
+    margin-top: 6%;
+}
 
 .lignesTable img {
     cursor: pointer;
@@ -149,7 +150,6 @@
     align-items: center;
     justify-content: space-between;
     overflow-y: auto;
-    background-color: rgb(28, 29, 31);
     /* backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(10px); */
 }
@@ -190,5 +190,5 @@
 
 .quisuisje2 p {
     margin-top: 2vh;
-    color: #ec0423;
+    color: aliceblue;
 }
