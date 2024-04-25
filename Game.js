@@ -1,5 +1,5 @@
 const { Carte,CarteShadowHunter } = require('./Carte.js');
-const { Joueur, JoueurShadowHunter,bot6QuiPrendRandom,bot6QuiPrendElouand } = require('./Joueur.js');
+const { Joueur, JoueurShadowHunter,bot6QuiPrendModéré,bot6QuiPrendElouand } = require('./Joueur.js');
 class Game {
 
     constructor(couleurs,nbvaleurs,host/*host est un id d'utilisateur et crée une instance de la classe "joueur*/,joueursMax/*Nombre maximal de joueurs dans la partie, on peut néanmoins la start avant*/) {
@@ -320,7 +320,7 @@ class sixquiprend extends Game{
         this.lignes = [[],[],[],[]]
         this.joueurQuiChoisit = null;
         this.tourEnCours = false;
-        this.botNames = ["Matox","Elouand","Clément","Kylian","Nico","Vincent","Thibaud","Casa Pizza","Yanis"]
+        this.botNames = ["Matox","Elouand","Clément","Kylian","Nico","Vincent","Thibaud","Casa Pizza","Yanis","Lukas"]
         this.défausse = []
     }
 
@@ -328,7 +328,7 @@ class sixquiprend extends Game{
     
         if (this.joueurs.length<this.joueursMax){
             if (type=="facile"){
-                this.joueurs.push(new bot6QuiPrendRandom(this.botNames.shift(),false));
+                this.joueurs.push(new bot6QuiPrendModéré(this.botNames.shift(),false));
             }       
             else{
                 if (type=="difficile"){

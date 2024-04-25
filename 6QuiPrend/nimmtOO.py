@@ -8,11 +8,11 @@ from players.MinMax import MinMaxZIZI
 
 def interactiveRun():
     print("Bienvenue sur le jeu 6 qui prend !")
-    num_players = int(input("Combien de joueurs ? "))
+    # num_players = int(input("Combien de joueurs ? "))
     players=[]
 
     players.append(MinMaxZIZI("bot 1"))
-    players.append(MinMaxZIZI("bot 2"))
+    players.append(BotElouand("bot 2"))
 
 
     game=NimmtGame(players)

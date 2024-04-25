@@ -70,7 +70,7 @@ class JoueurShadowHunter extends Joueur{//Comme le shadow hunter a des règles b
 }
 
 
-class bot6QuiPrendRandom extends Joueur{//Classe représentant un bot random de six qui prend
+class bot6QuiPrendModéré extends Joueur{//Classe représentant le pire bot du monde créé par Kylian
     constructor(id,isHost){
         super(id,isHost)
         this.type="Bot"
@@ -78,9 +78,11 @@ class bot6QuiPrendRandom extends Joueur{//Classe représentant un bot random de 
     setChoice(partie){
         if (this.choix!=null && this.choix!=undefined){return false;}
         if (partie.tourEnCours){return false}
-        var carte = Math.floor(Math.random()*this.main.length)
-        this.choix = this.main.splice(carte,1)[0];
-  
+        var carte = Math.floor(this.main.length/2)
+        this.main.sort(function (a, b) {
+            return a.valeur - b.valeur;
+          });
+        this.choix = this.main.splice(carte,1)[0];  
         return true
 
     }
@@ -175,4 +177,4 @@ class bot6QuiPrendElouand extends Joueur{//Bot plus avancé qui joue soit son ma
     }
 }
 
-module.exports = { Joueur,JoueurShadowHunter,bot6QuiPrendElouand,bot6QuiPrendRandom };
+module.exports = { Joueur,JoueurShadowHunter,bot6QuiPrendElouand,bot6QuiPrendModéré };

@@ -337,7 +337,7 @@ function Jouer() {
     const handleIsHost = data => {
       // console.log("isHost");
       // console.log(data);
-      if (data === true) {
+      if (data == true) {
         setHost(true);
       }
     }
@@ -459,19 +459,19 @@ function Jouer() {
             <div className='g'>
               <div className='infopartie'>
                 {choixNecessaire ?
-                  <h3 style={{ color: 'aliceblue' }}>{joueurEval}, clique sur une ligne</h3> :
+                  <h2 style={{ color: 'aliceblue' }}>{joueurEval}, clique sur une ligne</h2> :
                   (numeroCarteEval && joueurEval) ?
                     <div>
-                      <h3 style={{ color: 'aliceblue' }}>{joueurEval} joue la carte :</h3>
+                      <h2 style={{ color: 'aliceblue' }}>{joueurEval} joue la carte :</h2>
                       <CarteJeu numeroCarte={numeroCarteEval} />
                     </div> :
-                    <h3 style={{ color: 'aliceblue' }}>En attente que tous les joueurs placent une carte</h3>
+                    <h2 style={{ color: 'aliceblue' }}>En attente que tous les joueurs placent une carte</h2>
                 }
               </div>
               <div className='bouton_6qui'>
-                <QuittePartie typePartie={"6quiprend"} className={"joliebouton3"} />
+                <QuittePartie typePartie={"6quiprend"} className={"joliebouton"} />
                 {host && cansave && (
-                  <button id="sauvegarde-btn" className="joliebouton3" onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
+                  <button id="sauvegarde-btn" className="joliebouton" onClick={() => sauvegarderPartie()}>Sauvegarder la partie</button>
                 )}
               </div>
             </div>
@@ -506,16 +506,6 @@ function QuittePartie({ typePartie, ajoutStyle = {}, className = "joliebouton" }
 
 
 export const SixQuiPrend = () => {
-
-  useEffect(() => {
-    const Obg = document.body.style.backgroundImage;
-    document.body.style.backgroundImage = `url("http://localhost:8888/fichier/table6quiprend.png")`;
-
-    return () => {
-      document.body.style.backgroundImage = Obg;
-
-    };
-  }, []);
 
   return (
     <div>

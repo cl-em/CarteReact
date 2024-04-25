@@ -37,10 +37,45 @@ def creerPossibilite(arbre:ArbrePartie,maMain,J1,mainAdversaire,J2,profondeur):
             for carteAdversaire in mainAdversaire:
                 arbre.ajoutFils(arbre.update_table([(J1,carteMoi),(J2,carteAdversaire)]))
 
-                #ici récursion
+                
+        for fils in arbre.fils :
+            creerPossibilite(fils,maMain,J1,mainAdversaire,J2,profondeur-1)
 
+def MinMax(arbre:ArbrePartie,profondeur:int,maxJoueur):
+    if profondeur<=0 or arbre.fils==[]:
+
+        
+        for j in arbre.partie.players:
+            if j.name != arbre.joueur.name:
+                ennemie=j
+
+        return (1,arbre.carteJouer,profondeur) if arbre.joueur.score<ennemie.score else (-1,arbre.carteJouer,profondeur)
+
+    if  maxJoueur:
+        valeur = (float("-inf"),Card(0),0)
+
+        for fils in arbre.fils:
+            mima = MinMax(fils,profondeur-1,False)
+            valeur=(max(valeur[0],mima[0]),fils.carteJouer if profondeur > mima[2] else mima[1],profondeur) # mettre la jour la partie en fonction du fils joué
+            # truple (1 ou -1, carte si la profondeur est la plus grande,profondeur)
+            # 
+
+
+
+    else:
+        valeur = (float("inf"),Card(0),0)
+
+        for fils in arbre.fils:
+            mima = MinMax(fils,profondeur-1,True)
+
+            valeur = (min(valeur[0],mima[0]),fils.carteJouer if profondeur > mima[2] else mima[1],profondeur)
+    return valeur
 
 class  MinMaxZIZI(Player):
+    def __init__(self, name) -> None:
+        super().__init__(name)
+        self.carte = Card(1)
+
     def info(self,message):
         return message
     
@@ -68,7 +103,6 @@ class  MinMaxZIZI(Player):
 
         possibilite = ArbrePartie(game,-1,self)
 
-
         creerPossibilite(possibilite,self.hand,self,carteJouableEnnemi,ennemie,2)
 
         toutesLesBoeufs=float("inf")
@@ -81,12 +115,25 @@ class  MinMaxZIZI(Player):
                     if joueur.score < toutesLesBoeufs:
                         toutesLesBoeufs = joueur.score
                         boeufIdx=index
-                    
-        if len(self.hand)==0:
-            return 0  
+
+        mima = MinMax(possibilite,2,True)
+
+        self.carte = mima[1]
+
+
+
+        if len(possibilite.fils)==0:
+            return self.hand[0].value
         else :
-            return possibilite.fils[boeufIdx].carteJouer.value
+            return mima[1].value
 
 
     def getLineToRemove(self,game):
-        return 1
+        
+        idxLigne = 0
+        # game.update_table([(self,self.carte)])
+        for index,ligne  in enumerate(game.table):
+            if ligne[-1] == self.carte:
+                idxLigne = index
+
+        return idxLigne
