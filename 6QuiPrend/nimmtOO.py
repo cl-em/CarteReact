@@ -9,21 +9,23 @@ from players.MinMax import MinMaxZIZI
 def interactiveRun():
     print("Bienvenue sur le jeu 6 qui prend !")
     # num_players = int(input("Combien de joueurs ? "))
-    players=[]
 
-    players.append(MinMaxZIZI("bot 1"))
-    players.append(BotElouand("bot 2"))
+    
+    for i in range(20):
+        players=[]
+        players.append(MinMaxZIZI("bot 1"))
+        players.append(BotElouand("bot 2"))
 
 
-    game=NimmtGame(players)
-    scores, winners=game.play()
+        game=NimmtGame(players)
+        scores, winners=game.play()
 
-    print("La partie est terminée!")
-    print("Scores finaux :")
-    for playername, score in scores.items(): 
-        print(f"Joueur {playername} : {score} points")
-    s=" ".join([player.name for player in winners])
-    print("Vainqueurs(s) : ",s," !")
+        # print("La partie est terminée!")
+        # print("Scores finaux :")
+        # for playername, score in scores.items(): 
+        #     print(f"Joueur {playername} : {score} points")
+        s=" ".join([player.name for player in winners])
+        print("Vainqueurs(s) : ",s," !")
 
 
 
