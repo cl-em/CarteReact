@@ -165,7 +165,7 @@ app.get('/verify', verifyUser, (req, res) => {
 //-------------------------------Variables-----------------------------------------------
 var partiesOuvertes = []
 var partiesEnCours = []
-var pseudos = {"Matox":"Bot Matox","Elouand":"Bot Elouand","Nico":"Bot Nico","Clément":"Bot Clément","Kylian":"Bot Kylian","Vincent":"Bot Vincent","Casa Pizza":"Bot Casa Pizza","Yanis":"Bot Yanis"};
+var pseudos = {"Matox":"Bot Matox","Elouand":"Bot Elouand","Nico":"Bot Nico","Clément":"Bot Clément","Kylian":"Bot Kylian","Vincent":"Bot Vincent","Casa Pizza":"Bot Casa Pizza","Yanis":"Bot Yanis","Thibaud":"Bot Thibaud","Lukas":"Bot Lukas"};
 
 
 function getIdFromPseudo(pseudo){
@@ -826,7 +826,6 @@ io.on('connection', (socket) => {
                   if (partie.type=="6quiprend"){
                   let listejoueurs = [];
                   for (var joueur of partie.joueurs){listejoueurs.push(pseudos[joueur.idJoueur]);};
-                  console.log(partie)
                   io.emit("gameStarting",{"idPartie":data.idPartie,"lignes":partie.lignes,"joueurs":listejoueurs})}
                 }, 1000);
 
@@ -949,34 +948,38 @@ io.on('connection', (socket) => {
             
             //Demande d'actualisation des infos bataille
             socket.on('isHost', data=>{
-              // console.log("isHost");
               for (var partie of partiesEnCours){
                 if (partie.id==data.idPartie){
                   for(var joueur of partie.joueurs){
-                    // console.log(joueur);
-                    if (joueur.isHost && joueur.idJoueur === socket.data.userId){
+
+                    if ( joueur.idJoueur == socket.data.userId){
+                    if (joueur.isHost){
                       socket.emit('isHost',true);
                       return;
                       // console.log("true host");
                     }
                     else{
                       socket.emit('isHost',false);
+
                       return;
                       // console.log("false host");
                     }
                   }
+                  }
                 }
               }
-            for (var partie of partiesOuvertes){
-              if (partie.id==data.idPartie){
+              for (var partie of partiesOuvertes){
+                if (partie.id==data.idPartie){
                 for(var joueur of partie.joueurs){
-                  if (joueur.isHost && joueur.idJoueur === socket.data.userId){
+                  if ( joueur.idJoueur == socket.data.userId){
+                  if (joueur.isHost){
                     socket.emit('isHost',true);
                     return;
                   }
                   else{
                     socket.emit('isHost',false);
                     return;
+                  }
                   }
                 }
               }
@@ -1074,7 +1077,6 @@ io.on('connection', (socket) => {
                 var joueur = partie.joueurMin();
                 if (joueur==false){return;}
                 var valCarte = joueur.choix.valeur
-                console.log(joueur.idJoueur+" est évalué avec son choix "+valCarte)
 
                 if (partie.placerCarte(joueur.idJoueur)){//Cas où la carte a été placée, pas de problème, aucun autre joueur à évaluer
                     if (partie.joueurMin()==false){

@@ -337,7 +337,7 @@ function Jouer() {
     const handleIsHost = data => {
       // console.log("isHost");
       // console.log(data);
-      if (data === true) {
+      if (data == true) {
         setHost(true);
       }
     }
