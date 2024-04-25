@@ -71,7 +71,7 @@ def MinMax(arbre:ArbrePartie,profondeur:int,maxJoueur):
             valeur = (min(valeur[0],mima[0]),fils.carteJouer if profondeur > mima[2] else mima[1],profondeur)
     return valeur
 
-class  MinMaxZIZI(Player):
+class  BotMinMax(Player):
     def __init__(self, name) -> None:
         super().__init__(name)
         self.carte = Card(1)
