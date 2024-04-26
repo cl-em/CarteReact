@@ -1,5 +1,5 @@
 from players.humanPlayer import HumanPlayer
-from players.Bot import BotRandomFake,BotTrueRandom, BotMin, BotMax, BotEchantillonMieux, BotModéré, BotElouand
+from players.Bot import BotRandomFake,BotTrueRandom, BotMin, BotMax, BotEchantillonMieux, BotModéré, BotElouand,BotFilou
 from players.MinMax import BotMinMax
 # from players.DeepLearningBot import DeepLearningBot
 from game.nimmtGame import NimmtGame

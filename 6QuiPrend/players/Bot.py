@@ -217,3 +217,37 @@ class BotElouand(Bot):
             return res
         else:
             return self.hand[len(self.hand)-1].value
+
+
+
+
+
+class BotFilou(Bot):
+    def player_turn(self, game):
+        return Card(self.getCardToPlay(game))
+    
+    def getCardToPlay(self,game):
+
+        #test de la solution "Placement optimal"
+        main = []
+        for ca in self.hand:
+            main.append(ca.valeur)
+
+        for l in game.lignes:
+            iNCROYABLEVALEUR = l[len(l)].valeur+5-len(l)
+            if iNCROYABLEVALEUR in main:
+                return iNCROYABLEVALEUR
+            
+        #Test de la solution "Avantage de départ"
+        if (len(main)==10):
+            return main[floor(len(main)/2)]##On considère la main triée évidemment
+
+
+        #test de la solution "Bon débarras"
+        #Pour faire simple si on ne peut pas jouer on verra s'il est possible de prendre une toute petite ligne en se débarrassant des cartes les plus faibles, sinon on continue
+
+        if (len(main)<7 and len(main)>3)
+
+        
+
+
