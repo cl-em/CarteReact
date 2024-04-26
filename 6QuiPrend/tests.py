@@ -166,7 +166,7 @@ def stats(filename="game_stats.json"):
         data = json.load(file)
         scores0 = data[0]["scores"]
         for botname in scores0:
-            sous_chaine = botname[:-2]
+            sous_chaine = botname
             if sous_chaine not in strats:
                 strats.append(sous_chaine)
         scores = {}
@@ -176,10 +176,10 @@ def stats(filename="game_stats.json"):
             winners[strat] = 0
         for game in data:
             for botname in game["scores"]:
-                sous_chaine = botname[:-2]
+                sous_chaine = botname
                 scores[sous_chaine].append(game["scores"][botname])
             for winner in game["winners"]:
-                sous_chaine = winner[:-2]
+                sous_chaine = winner
                 winners[sous_chaine] += 1
     return scores, winners
 
@@ -195,9 +195,6 @@ def generate_graphs(scores, winners):
     plt.title("Winners")
     plt.savefig("_".join(winners.keys())+"_winners.png")
     print("Graph generated")
-
-def run_simulation(bot_type, filename):
-    scores = []
     winners = []
     for _ in tqdm(range(100)):
         bots = bot_type(nb_bots=2)
@@ -209,12 +206,21 @@ def run_simulation(bot_type, filename):
     generate_graphs(scores, winners)
 
 
+class AllBots(Tests):
+    def __init__(self, bots) -> None:
+        super().__init__(len(bots))
+        for b in bots:
+            self.players.append(b)
+
+
 if __name__ == "__main__":
-    # run_simulation(BotMinMaxVsMax, "BotMinMaxVsMax.json")
-    # run_simulation(BotMinMaxVsMin, "BotMinMaxVsMin.json")
-    # run_simulation(BotMinMaxVsModéré, "BotMinMaxVsModéré.json")
-    # run_simulation(BotMinMaxVsEchantillonMieux, "BotMinMaxVsEchantillonMieux.json")
-    # run_simulation(BotMinMaxVsTrueRandom, "BotMinMaxVsTrueRandom.json")
-    # run_simulation(BotMinMaxVsRandomFake, "BotMinMaxVsRandomFake.json")
-    # run_simulation(BotMinMaxVsElouand, "BotMinMaxVsElouand.json")
-    pass
+    # for i in range(1):
+    #     test = AllBots([BotRandomFake("random fake"),BotTrueRandom("random true"), BotMin("minn"), BotMax("max"), BotEchantillonMieux("echantillon"), BotModéré("modere"), BotElouand("elouand")])
+    #     test.start_game()
+
+    #     test.save_game_stats("toutTest/touslesbots.json" )
+
+    #     print(i+1)
+
+    scores,winners = stats("toutTest/touslesbots.json")
+    generate_graphs(scores,winners)
